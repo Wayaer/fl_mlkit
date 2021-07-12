@@ -10,16 +10,22 @@ import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 
-class FlMlKitScanningMethodCall(activityPlugin: ActivityPluginBinding, plugin: FlutterPlugin.FlutterPluginBinding) :
+class FlMlKitScanningMethodCall(
+    activityPlugin: ActivityPluginBinding,
+    plugin: FlutterPlugin.FlutterPluginBinding
+) :
     FlCameraMethodCall(activityPlugin, plugin) {
 
-    override fun onMethodCall(_call: MethodCall, _result: MethodChannel.Result) {
-        super.onMethodCall(_call, _result)
-        when (_call.method) {
+    override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
+        Log.i("flutter", call.method)
+        when (call.method) {
             "startPreview" -> {
-                startPreview(imageAnalyzer)
+                Log.i("flutter", (flCameraEvent == null).toString())
+                startPreview(imageAnalyzer, call, result)
             }
-            else -> _result.notImplemented()
+            else -> {
+                super.onMethodCall(call, result)
+            }
         }
     }
 
@@ -31,11 +37,10 @@ class FlMlKitScanningMethodCall(activityPlugin: ActivityPluginBinding, plugin: F
             val map: MutableMap<String, Any> = HashMap()
             map["width"] = imageProxy.width
             map["height"] = imageProxy.height
-            Log.i("flutter", "imageProxy===")
+            Log.i("imageProxyflutter", (flCameraEvent == null).toString())
             flCameraEvent?.sendEvent(map)
         }
-        imageProxy.close()
-
+//        imageProxy.close()
     }
 
 }
