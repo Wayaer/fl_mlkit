@@ -17,12 +17,8 @@ class FlMlKitScanningMethodCall(
     FlCameraMethodCall(activityPlugin, plugin) {
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
-        Log.i("flutter", call.method)
         when (call.method) {
-            "startPreview" -> {
-                Log.i("flutter", (flCameraEvent == null).toString())
-                startPreview(imageAnalyzer, call, result)
-            }
+            "startPreview" -> startPreview(imageAnalyzer, call, result)
             else -> {
                 super.onMethodCall(call, result)
             }
@@ -40,7 +36,7 @@ class FlMlKitScanningMethodCall(
             Log.i("imageProxyflutter", (flCameraEvent == null).toString())
             flCameraEvent?.sendEvent(map)
         }
-//        imageProxy.close()
+        imageProxy.close()
     }
 
 }

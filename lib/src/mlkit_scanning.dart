@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:fl_camera/fl_camera.dart';
 import 'package:fl_mlkit_scanning/fl_mlkit_scanning.dart';
 import 'package:flutter/material.dart';
