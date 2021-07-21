@@ -3,7 +3,15 @@ import 'package:fl_mlkit_scanning/fl_mlkit_scanning.dart';
 import 'package:flutter/material.dart';
 
 class FlMlKitScanning extends StatefulWidget {
-  const FlMlKitScanning({Key? key}) : super(key: key);
+  FlMlKitScanning({
+    Key? key,
+    List<BarcodeFormats>? barcodeFormats,
+    this.onListen,
+  })  : barcodeFormats =
+            barcodeFormats ?? <BarcodeFormats>[BarcodeFormats.qrCode],
+        super(key: key);
+  final EventListen? onListen;
+  final List<BarcodeFormats> barcodeFormats;
 
   @override
   _FlMlKitScanningState createState() => _FlMlKitScanningState();
@@ -14,15 +22,20 @@ class _FlMlKitScanningState extends FlCameraState<FlMlKitScanning> {
   void initState() {
     channel = flMlKitScanningChannel;
     super.initState();
-    WidgetsBinding.instance!.addPostFrameCallback((Duration time) {
-      initEvent();
+    WidgetsBinding.instance!.addPostFrameCallback((Duration time) async {
+      await initEvent(eventListen);
+      await setBarcodeFormats();
+      if (await initCamera()) setState(() {});
     });
   }
 
-  Future<void> initEvent() async {
-    cameraEven.addListener((dynamic data) {
-      print('收到原生发送来的消息$data');
-    });
+  Future<void> setBarcodeFormats() async {
+    await FlMLKitScanningMethodCall.instance
+        .setBarcodeFormats(widget.barcodeFormats);
+  }
+
+  void eventListen(dynamic data) {
+    if (widget.onListen != null) widget.onListen!(data);
   }
 
   @override

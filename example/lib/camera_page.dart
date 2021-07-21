@@ -3,13 +3,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_waya/flutter_waya.dart';
 
 class CameraPage extends StatelessWidget {
-  const CameraPage({Key? key}) : super(key: key);
+  const CameraPage({Key? key, this.barcodeFormats}) : super(key: key);
+  final List<BarcodeFormats>? barcodeFormats;
 
   @override
   Widget build(BuildContext context) {
+    bool backState = true;
+
     return ExtendedScaffold(
-        body: Stack(children: const <Widget>[
-      FlMlKitScanning(),
+        body: Stack(children: <Widget>[
+      FlMlKitScanning(
+        barcodeFormats: barcodeFormats,
+        onListen: (dynamic data) {
+          if (backState && data != null && data is List && data.isNotEmpty) {
+            backState = false;
+            pop(data);
+          }
+        },
+      ),
     ]));
   }
 }
