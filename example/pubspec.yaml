@@ -6,6 +6,7 @@ environment:
   sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
+
   fl_mlkit_scanning:
     path: ../
   flutter:
