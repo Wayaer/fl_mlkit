@@ -29,7 +29,7 @@ class FlMlKitScanningMethodCall(
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {
             "startPreview" -> startPreview(imageAnalyzer, call, result)
-            "setBarcodeFormats" -> {
+            "setBarcodeFormat" -> {
                 setBarcodeFormats(call)
                 result.success(true)
             }
@@ -72,19 +72,21 @@ class FlMlKitScanningMethodCall(
         if (!barcodeFormats.isNullOrEmpty()) {
             barcodeFormats.forEach { type ->
                 when (type) {
-                    "upcA" -> builder.setBarcodeFormats(Barcode.FORMAT_UPC_A)
-                    "upcE" -> builder.setBarcodeFormats(Barcode.FORMAT_UPC_E)
-                    "ean13" -> builder.setBarcodeFormats(Barcode.FORMAT_EAN_13)
-                    "ean8" -> builder.setBarcodeFormats(Barcode.FORMAT_EAN_8)
-                    "codaBar" -> builder.setBarcodeFormats(Barcode.FORMAT_CODABAR)
+                    "unknown" -> builder.setBarcodeFormats(Barcode.FORMAT_UNKNOWN)
+                    "all" -> builder.setBarcodeFormats(Barcode.FORMAT_ALL_FORMATS)
+                    "code128" -> builder.setBarcodeFormats(Barcode.FORMAT_CODE_128)
                     "code39" -> builder.setBarcodeFormats(Barcode.FORMAT_CODE_39)
                     "code93" -> builder.setBarcodeFormats(Barcode.FORMAT_CODE_93)
-                    "code128" -> builder.setBarcodeFormats(Barcode.FORMAT_CODE_128)
+                    "code_bar" -> builder.setBarcodeFormats(Barcode.FORMAT_CODABAR)
+                    "data_matrix" -> builder.setBarcodeFormats(Barcode.FORMAT_DATA_MATRIX)
+                    "ean13" -> builder.setBarcodeFormats(Barcode.FORMAT_EAN_13)
+                    "ean8" -> builder.setBarcodeFormats(Barcode.FORMAT_EAN_8)
                     "itf" -> builder.setBarcodeFormats(Barcode.FORMAT_ITF)
-                    "qrCode" -> builder.setBarcodeFormats(Barcode.FORMAT_QR_CODE)
-                    "aztec" -> builder.setBarcodeFormats(Barcode.FORMAT_AZTEC)
-                    "dataMatrix" -> builder.setBarcodeFormats(Barcode.FORMAT_DATA_MATRIX)
+                    "qr_code" -> builder.setBarcodeFormats(Barcode.FORMAT_QR_CODE)
+                    "upc_a" -> builder.setBarcodeFormats(Barcode.FORMAT_UPC_A)
+                    "upc_e" -> builder.setBarcodeFormats(Barcode.FORMAT_UPC_E)
                     "pdf417" -> builder.setBarcodeFormats(Barcode.FORMAT_PDF417)
+                    "aztec" -> builder.setBarcodeFormats(Barcode.FORMAT_AZTEC)
                 }
             }
         } else {

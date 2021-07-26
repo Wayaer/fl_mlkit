@@ -2,16 +2,18 @@ import 'package:fl_camera/fl_camera.dart';
 import 'package:fl_mlkit_scanning/fl_mlkit_scanning.dart';
 import 'package:flutter/material.dart';
 
+typedef EventBarcodeListen = void Function(List<BarcodeModel> barcodes);
+
 class FlMlKitScanning extends StatefulWidget {
   FlMlKitScanning({
     Key? key,
-    List<BarcodeFormats>? barcodeFormats,
+    List<BarcodeFormat>? barcodeFormats,
     this.onListen,
   })  : barcodeFormats =
-            barcodeFormats ?? <BarcodeFormats>[BarcodeFormats.qrCode],
+            barcodeFormats ?? <BarcodeFormat>[BarcodeFormat.qr_code],
         super(key: key);
-  final EventListen? onListen;
-  final List<BarcodeFormats> barcodeFormats;
+  final EventBarcodeListen? onListen;
+  final List<BarcodeFormat> barcodeFormats;
 
   @override
   _FlMlKitScanningState createState() => _FlMlKitScanningState();
@@ -24,18 +26,20 @@ class _FlMlKitScanningState extends FlCameraState<FlMlKitScanning> {
     super.initState();
     WidgetsBinding.instance!.addPostFrameCallback((Duration time) async {
       await initEvent(eventListen);
-      await setBarcodeFormats();
+      await setBarcodeFormat();
       if (await initCamera()) setState(() {});
     });
   }
 
-  Future<void> setBarcodeFormats() async {
-    await FlMLKitScanningMethodCall.instance
-        .setBarcodeFormats(widget.barcodeFormats);
-  }
+  Future<void> setBarcodeFormat() => FlMLKitScanningMethodCall.instance
+      .setBarcodeFormat(widget.barcodeFormats);
 
   void eventListen(dynamic data) {
-    if (widget.onListen != null) widget.onListen!(data);
+    if (widget.onListen != null) {
+      final List<BarcodeModel> barcodes =
+          getBarcodeModelList((data as List<dynamic>?) ?? <BarcodeModel>[]);
+      widget.onListen!(barcodes);
+    }
   }
 
   @override

@@ -14,7 +14,7 @@ class _App extends StatefulWidget {
 }
 
 class _AppState extends State<_App> {
-  List<dynamic> list = <dynamic>[];
+  List<BarcodeModel> list = <BarcodeModel>[];
 
   @override
   Widget build(BuildContext context) {
@@ -24,37 +24,50 @@ class _AppState extends State<_App> {
         padding: const EdgeInsets.all(30),
         children: <Widget>[
           ElevatedButton(
-              onPressed: () => openCamera(BarcodeFormats.values),
+              onPressed: () => openCamera(BarcodeFormat.values),
               child: const Text('open Camera')),
           const SizedBox(height: 10),
           ElevatedButton(onPressed: openCamera, child: const Text('识别二维码')),
           const SizedBox(height: 10),
           ElevatedButton(
-              onPressed: () => openCamera(<BarcodeFormats>[
-                    BarcodeFormats.code39,
-                    BarcodeFormats.codaBar,
-                    BarcodeFormats.itf,
-                    BarcodeFormats.code93,
-                    BarcodeFormats.code128,
-                    BarcodeFormats.upcA,
-                    BarcodeFormats.upcE,
-                    BarcodeFormats.ean8,
-                    BarcodeFormats.ean13,
+              onPressed: () => openCamera(<BarcodeFormat>[
+                    BarcodeFormat.code39,
+                    BarcodeFormat.code_bar,
+                    BarcodeFormat.itf,
+                    BarcodeFormat.code93,
+                    BarcodeFormat.code128,
+                    BarcodeFormat.upc_a,
+                    BarcodeFormat.upc_e,
+                    BarcodeFormat.ean8,
+                    BarcodeFormat.ean13,
                   ]),
               child: const Text('识别条形码')),
           const SizedBox(height: 30),
           Universal(
-              expanded: true, isScroll: true, child: Text(list.toString())),
+            expanded: true,
+            isScroll: true,
+            children: list.builderEntry((MapEntry<int, BarcodeModel> entry) {
+              return Column(children: [
+                Text('第${entry.key + 1}个二维码'),
+                const SizedBox(height: 6),
+                Text('value:${entry.value.value}')
+                    .sizedBox(width: double.infinity),
+                const SizedBox(height: 6),
+                Text('type:${entry.value.type}')
+                    .sizedBox(width: double.infinity),
+              ]);
+            }),
+          ),
         ]);
   }
 
-  Future<void> openCamera([List<BarcodeFormats>? barcodeFormats]) async {
+  Future<void> openCamera([List<BarcodeFormat>? barcodeFormats]) async {
     final bool permission = await getPermission(Permission.camera);
     if (permission) {
-      final dynamic data =
+      final List<BarcodeModel>? data =
           await push(CameraPage(barcodeFormats: barcodeFormats));
       if (data != null) {
-        list = data as List<Object?>;
+        list = data;
         setState(() {});
       }
     } else {

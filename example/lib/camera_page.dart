@@ -4,7 +4,7 @@ import 'package:flutter_waya/flutter_waya.dart';
 
 class CameraPage extends StatelessWidget {
   const CameraPage({Key? key, this.barcodeFormats}) : super(key: key);
-  final List<BarcodeFormats>? barcodeFormats;
+  final List<BarcodeFormat>? barcodeFormats;
 
   @override
   Widget build(BuildContext context) {
@@ -14,10 +14,10 @@ class CameraPage extends StatelessWidget {
         body: Stack(children: <Widget>[
       FlMlKitScanning(
         barcodeFormats: barcodeFormats,
-        onListen: (dynamic data) {
-          if (backState && data != null && data is List && data.isNotEmpty) {
+        onListen: (List<BarcodeModel> barcodes) {
+          if (backState && barcodes.isNotEmpty) {
             backState = false;
-            pop(data);
+            pop(barcodes);
           }
         },
       ),

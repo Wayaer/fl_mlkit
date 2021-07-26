@@ -19,19 +19,17 @@ class FlMLKitScanningMethodCall {
 
   final MethodChannel _channel = flMlKitScanningChannel;
 
-  List<BarcodeFormats> _barcodeFormats = <BarcodeFormats>[
-    BarcodeFormats.qrCode
-  ];
+  List<BarcodeFormat> _barcodeFormats = <BarcodeFormat>[BarcodeFormat.qr_code];
 
   MethodChannel get channel => _channel;
 
   /// 设置设别码类型
-  Future<bool> setBarcodeFormats(List<BarcodeFormats> barcodeFormats) async {
+  Future<bool> setBarcodeFormat(List<BarcodeFormat> barcodeFormats) async {
     _barcodeFormats = barcodeFormats;
     final bool? state = await _channel
-        .invokeMethod<bool?>('setBarcodeFormats', <String, dynamic>{
+        .invokeMethod<bool?>('setBarcodeFormat', <String, dynamic>{
       'barcodeFormats': _barcodeFormats
-          .map((BarcodeFormats e) => e.toString().split('.')[1])
+          .map((BarcodeFormat e) => e.toString().split('.')[1])
           .toSet()
           .toList()
     });
@@ -58,31 +56,4 @@ class FlMLKitScanningMethodCall {
     }
     return false;
   }
-}
-
-enum BarcodeFormats {
-  /// Android IOS
-  upcE,
-  ean13,
-  ean8,
-  code39,
-  code93,
-  code128,
-  qrCode,
-  aztec,
-  dataMatrix,
-  pdf417,
-
-  /// only ios
-  code39Mod43,
-  itf14,
-  interleaved2of5,
-  dogBody,
-  catBody,
-  humanBody,
-
-  /// only android
-  upcA,
-  codaBar,
-  itf,
 }

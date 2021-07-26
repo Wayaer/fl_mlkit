@@ -4,10 +4,14 @@ import 'dart:ui';
 import 'package:fl_mlkit_scanning/src/enum.dart';
 import 'package:fl_mlkit_scanning/src/util.dart';
 
+List<BarcodeModel> getBarcodeModelList(List<dynamic> list) => list
+    .map((dynamic item) => BarcodeModel.fromMap(item as Map<dynamic, dynamic>))
+    .toList();
+
 /// Represents a single recognized barcode and its value.
-class Barcode {
+class BarcodeModel {
   /// Create a [Barcode] from native data.
-  Barcode.fromMap(Map<dynamic, dynamic> data)
+  BarcodeModel.fromMap(Map<dynamic, dynamic> data)
       : corners = toCorners(data['corners'] as List<dynamic>?),
         format = toFormat(data['format'] as int?),
         bytes = data['bytes'] as Uint8List?,
