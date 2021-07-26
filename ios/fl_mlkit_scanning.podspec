@@ -15,7 +15,6 @@ Google mlkit scanning plugin, supports Android and IOS.
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
   s.dependency 'Flutter'
-  s.dependency 'fl_camera'
   s.dependency 'GoogleMLKit/BarcodeScanning'
   s.static_framework = true
   s.platform = :ios, '10.0'

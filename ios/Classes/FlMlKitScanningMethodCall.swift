@@ -1,4 +1,5 @@
 import AVFoundation
+import FBLPromises
 import Flutter
 import Foundation
 import MLKitBarcodeScanning
@@ -12,7 +13,9 @@ public class FlMlKitScanningMethodCall: NSObject {
         registrar = _registrar
     }
 
-    public func handle(call: FlutterMethodCall, result: @escaping FlutterResult) {}
+    public func handle(call: FlutterMethodCall, result: @escaping FlutterResult) {
+//        FlCameraMethodCall()
+    }
 
 //    let buffer = CMSampleBufferGetImageBuffer(sampleBuffer)
 //    let image = VisionImage(image: buffer!.image)
@@ -30,7 +33,7 @@ public class FlMlKitScanningMethodCall: NSObject {
 
 extension Barcode {
     var data: [String: Any?] {
-        return ["cornerPoints": cornerPoints?.map({ $0.cgPointValue.data }), "format": format.rawValue, "bytes": rawData, "value": rawValue, "type": valueType.rawValue, "calendarEvent": calendarEvent?.data, "contactInfo": contactInfo?.data, "driverLicense": driverLicense?.data, "email": email?.data, "geoPoint": geoPoint?.data, "phone": phone?.data, "sms": sms?.data, "url": url?.data, "wifi": wifi?.data]
+        return ["cornerPoints": cornerPoints?.map { $0.cgPointValue.data }, "format": format.rawValue, "bytes": rawData, "value": rawValue, "type": valueType.rawValue, "calendarEvent": calendarEvent?.data, "contactInfo": contactInfo?.data, "driverLicense": driverLicense?.data, "email": email?.data, "geoPoint": geoPoint?.data, "phone": phone?.data, "sms": sms?.data, "url": url?.data, "wifi": wifi?.data]
     }
 }
 
@@ -54,7 +57,7 @@ extension Date {
 
 extension BarcodeContactInfo {
     var data: [String: Any?] {
-        return ["addresses": addresses?.map({ $0.data }), "emails": emails?.map({ $0.data }), "name": name?.data, "organization": organization, "phones": phones?.map({ $0.data }), "title": jobTitle, "urls": urls]
+        return ["addresses": addresses?.map { $0.data }, "emails": emails?.map { $0.data }, "name": name?.data, "organization": organization, "phones": phones?.map { $0.data }, "title": jobTitle, "urls": urls]
     }
 }
 
