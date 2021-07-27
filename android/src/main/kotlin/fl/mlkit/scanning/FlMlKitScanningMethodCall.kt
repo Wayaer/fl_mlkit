@@ -30,7 +30,7 @@ class FlMlKitScanningMethodCall(
         when (call.method) {
             "startPreview" -> startPreview(imageAnalyzer, call, result)
             "setBarcodeFormat" -> {
-                setBarcodeFormats(call)
+                setBarcodeFormat(call)
                 result.success(true)
             }
             "scanImageByte" -> scanImageByte(call, result)
@@ -51,7 +51,6 @@ class FlMlKitScanningMethodCall(
         if (rotationDegrees == null) rotationDegrees = 0
         val inputImage = InputImage.fromBitmap(bitmap, rotationDegrees)
         analysis(inputImage, result, null)
-
     }
 
     @SuppressLint("UnsafeOptInUsageError")
@@ -66,7 +65,7 @@ class FlMlKitScanningMethodCall(
         }
     }
 
-    private fun setBarcodeFormats(call: MethodCall) {
+    private fun setBarcodeFormat(call: MethodCall) {
         val barcodeFormats = call.argument<List<String>?>("barcodeFormats")
         val builder = BarcodeScannerOptions.Builder()
         if (!barcodeFormats.isNullOrEmpty()) {

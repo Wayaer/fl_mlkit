@@ -1,3 +1,4 @@
+import fl_camera
 import Flutter
 import UIKit
 

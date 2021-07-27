@@ -1,34 +1,91 @@
 import AVFoundation
-import FBLPromises
+import fl_camera
 import Flutter
 import Foundation
 import MLKitBarcodeScanning
 import MLKitVision
 
-public class FlMlKitScanningMethodCall: NSObject {
-    var registrar: FlutterPluginRegistrar?
+class FlMlKitScanningMethodCall: FlCameraMethodCall {
+    var options = BarcodeScannerOptions(formats: .qrCode)
 
-    init(_ _registrar: FlutterPluginRegistrar) {
-        super.init()
-        registrar = _registrar
+    override init(_ _registrar: FlutterPluginRegistrar) {
+        super.init(_registrar)
     }
 
-    public func handle(call: FlutterMethodCall, result: @escaping FlutterResult) {
-//        FlCameraMethodCall()
+    override func handle(call: FlutterMethodCall, result: @escaping FlutterResult) {
+        switch call.method {
+        case "startPreview":
+            startPreview(nil, call: call, result: result)
+        case "setBarcodeFormat":
+            setBarcodeFormat(call)
+            result(true)
+        case "scanImageByte":
+            break
+        default:
+            super.handle(call: call, result: result)
+        }
     }
 
-//    let buffer = CMSampleBufferGetImageBuffer(sampleBuffer)
-//    let image = VisionImage(image: buffer!.image)
-//    let scanner = BarcodeScanner.barcodeScanner()
-//    scanner.process(image) { [self] barcodes, error in
-//        if error == nil && barcodes != nil {
-//            for barcode in barcodes! {
-//                let event: [String: Any?] = ["name": "barcode", "data": barcode.data]
-//                sink?(event)
-//            }
-//        }
-//        analyzing = false
-//    }
+    func setBarcodeFormat(_ call: FlutterMethodCall) {
+        let arguments = call.arguments as! [String: Any?]
+        let barcodeFormats = arguments["barcodeFormats"] as! [String]
+
+        if !barcodeFormats.isEmpty {
+            var formats = BarcodeFormat()
+            for barcodeFomat in barcodeFormats {
+                switch barcodeFomat {
+                case "unknown":
+                    break
+                case "all":
+                    formats.insert(.all)
+                case "code128":
+                    formats.insert(.code128)
+                case "code39":
+                    formats.insert(.code39)
+                case "code93":
+                    formats.insert(.code93)
+                case "code_bar":
+                    formats.insert(.codaBar)
+                case "data_matrix":
+                    formats.insert(.dataMatrix)
+                case "ean13":
+                    formats.insert(.EAN13)
+                case "ean8":
+                    formats.insert(.EAN8)
+                case "itf":
+                    formats.insert(.ITF)
+                case "qr_code":
+                    formats.insert(.qrCode)
+                case "upc_a":
+                    formats.insert(.UPCA)
+                case "upc_e":
+                    formats.insert(.UPCE)
+                case "pdf417":
+                    formats.insert(.PDF417)
+                case "aztec":
+                    formats.insert(.aztec)
+                default:
+                    break
+                }
+            }
+            options = BarcodeScannerOptions(formats: formats)
+        }
+    }
+
+    func analysis(image: UIImage) {
+//        let buffer = CMSampleBufferGetImageBuffer(sampleBuffer)
+        let image = VisionImage(image: image)
+        let scanner = BarcodeScanner.barcodeScanner(options: options)
+        scanner.process(image) { [self] barcodes, error in
+            if error == nil, barcodes != nil {
+                var list = [[String: Any?]]()
+                for barcode in barcodes! {
+                    list.append(barcode.data)
+                }
+                flCameraEvent?.sendEvent(list)
+            }
+        }
+    }
 }
 
 extension Barcode {

@@ -1,1 +1,1 @@
-//#import "FlCameraPlugin.h"
+#import <fl_camera/fl_camera-Swift.h>

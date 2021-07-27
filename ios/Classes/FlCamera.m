@@ -1,14 +1,15 @@
-#import "FlCamera.h"
-#import "FBLPromise.h"
+//
+//  FlCamera.m
+//  fl_mlkit_scanning
+//
+//  Created by Wayaer on 2021/7/27.
+//
 
-#if __has_include(<fl_camera/fl_camera-Swift.h>)
-#import <fl_camera/fl_camera-Swift.h>
-#else
-//#import "fl_camera-Swift.h"
-#endif
+#import "FlCamera.h"
+#import "fl_camera-prefix.pch"
+#import "<#header#>"
+
+
 @implementation FlCamera
 
-+ (void)registerWithRegistrar {
-  [SwiftFlCameraPlugin registerWithRegistrar:registrar];
-}
 @end
