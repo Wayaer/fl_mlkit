@@ -1,13 +1,21 @@
-library fl_mlkit_scanning;
+import 'dart:io';
+import 'dart:typed_data';
 
+import 'package:fl_camera/fl_camera.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 export 'package:fl_camera/fl_camera.dart';
 
-export 'src/enum.dart';
-export 'src/meth_call.dart';
-export 'src/mlkit_scanning.dart';
-export 'src/model.dart';
+part 'src/enum.dart';
 
-const MethodChannel flMlKitScanningChannel = MethodChannel(flMlKitScanning);
-const String flMlKitScanning = 'fl.mlkit.scanning';
+part 'src/meth_call.dart';
+
+part 'src/mlkit_scanning.dart';
+
+part 'src/model.dart';
+
+part 'src/util.dart';
+
+const MethodChannel _flMlKitScanningChannel = MethodChannel(_flMlKitScanning);
+const String _flMlKitScanning = 'fl.mlkit.scanning';

@@ -1,8 +1,4 @@
-import 'dart:typed_data';
-import 'dart:ui';
-
-import 'package:fl_mlkit_scanning/src/enum.dart';
-import 'package:fl_mlkit_scanning/src/util.dart';
+part of '../fl_mlkit_scanning.dart';
 
 List<BarcodeModel> getBarcodeModelList(List<dynamic> list) => list
     .map((dynamic item) => BarcodeModel.fromMap(item as Map<dynamic, dynamic>))

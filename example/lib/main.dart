@@ -1,5 +1,7 @@
+import 'package:example/camera_scan.dart';
 import 'package:fl_mlkit_scanning/fl_mlkit_scanning.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:flutter_waya/flutter_waya.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -18,17 +20,18 @@ class _AppState extends State<_App> {
   @override
   Widget build(BuildContext context) {
     return ExtendedScaffold(
-        appBar: AppBar(title: const Text('Fl MlKit Scanning')),
+        appBar: AppBarText('Fl MlKit Scanning'),
         mainAxisAlignment: MainAxisAlignment.center,
         padding: const EdgeInsets.all(30),
         children: <Widget>[
-          ElevatedButton(
+          ElevatedText(
               onPressed: () => openCamera(BarcodeFormat.values),
-              child: const Text('open Camera')),
+              text: 'open Camera'),
           const SizedBox(height: 10),
-          ElevatedButton(onPressed: openCamera, child: const Text('识别二维码')),
+          ElevatedText(onPressed: scanImage, text: '官方相机扫码'),
+          ElevatedText(onPressed: openCamera, text: '识别二维码'),
           const SizedBox(height: 10),
-          ElevatedButton(
+          ElevatedText(
               onPressed: () => openCamera(<BarcodeFormat>[
                     BarcodeFormat.code39,
                     BarcodeFormat.code_bar,
@@ -40,24 +43,21 @@ class _AppState extends State<_App> {
                     BarcodeFormat.ean8,
                     BarcodeFormat.ean13,
                   ]),
-              child: const Text('识别条形码')),
+              text: '识别条形码'),
           const SizedBox(height: 30),
-          Universal(
-            expanded: true,
-            isScroll: true,
-            children: list.builderEntry((MapEntry<int, BarcodeModel> entry) {
-              return Column(children: [
-                Text('第${entry.key + 1}个二维码'),
-                const SizedBox(height: 6),
-                Text('value:${entry.value.value}')
-                    .sizedBox(width: double.infinity),
-                const SizedBox(height: 6),
-                Text('type:${entry.value.type}')
-                    .sizedBox(width: double.infinity),
-              ]);
-            }),
-          ),
+          ShowCode(list)
         ]);
+  }
+
+  Future<void> scanImage() async {
+    if (!isMobile) return;
+    final bool permission = await getPermission(Permission.camera) &&
+        await getPermission(Permission.storage);
+    if (permission) {
+      push(CameraScanPage());
+    } else {
+      openAppSettings();
+    }
   }
 
   Future<void> openCamera([List<BarcodeFormat>? barcodeFormats]) async {
@@ -75,6 +75,55 @@ class _AppState extends State<_App> {
   }
 }
 
+class ShowCode extends StatelessWidget {
+  const ShowCode(this.list, {Key? key}) : super(key: key);
+  final List<BarcodeModel> list;
+
+  @override
+  Widget build(BuildContext context) {
+    return Universal(
+        expanded: true,
+        isScroll: true,
+        children: list.builderEntry((MapEntry<int, BarcodeModel> entry) {
+          return Column(children: <Widget>[
+            Text('第${entry.key + 1}个二维码'),
+            const SizedBox(height: 6),
+            Text('value:${entry.value.value}').sizedBox(width: double.infinity),
+            const SizedBox(height: 6),
+            Text('type:${entry.value.type}').sizedBox(width: double.infinity),
+          ]);
+        }));
+  }
+}
+
+class AppBarText extends AppBar {
+  AppBarText(String text, {Key? key})
+      : super(
+            key: key,
+            elevation: 0,
+            iconTheme: const IconThemeData.fallback(),
+            title: BText(text,
+                color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
+            centerTitle: true);
+}
+
+class ShowText extends StatelessWidget {
+  const ShowText(this.keyName, this.value) : super();
+  final dynamic keyName;
+  final dynamic value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Visibility(
+        visible: value != null &&
+            value.toString().isNotEmpty &&
+            value.toString() != 'null',
+        child: Container(
+            margin: const EdgeInsets.all(10),
+            child: Text(keyName.toString() + ' = ' + value.toString())));
+  }
+}
+
 Future<bool> getPermission(Permission permission) async {
   PermissionStatus status = await permission.status;
   if (!status.isGranted) {
@@ -85,6 +134,17 @@ Future<bool> getPermission(Permission permission) async {
     }
   }
   return true;
+}
+
+class ElevatedText extends StatelessWidget {
+  const ElevatedText({Key? key, this.onPressed, required this.text})
+      : super(key: key);
+  final VoidCallback? onPressed;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) =>
+      ElevatedButton(onPressed: onPressed, child: Text(text));
 }
 
 class FlMlKitScanningPage extends StatelessWidget {

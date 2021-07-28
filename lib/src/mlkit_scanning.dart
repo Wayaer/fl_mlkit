@@ -1,6 +1,4 @@
-import 'package:fl_camera/fl_camera.dart';
-import 'package:fl_mlkit_scanning/fl_mlkit_scanning.dart';
-import 'package:flutter/material.dart';
+part of '../fl_mlkit_scanning.dart';
 
 typedef EventBarcodeListen = void Function(List<BarcodeModel> barcodes);
 
@@ -10,6 +8,7 @@ class FlMlKitScanning extends StatefulWidget {
     List<BarcodeFormat>? barcodeFormats,
     this.onListen,
     this.overlay,
+    this.uninitialized,
   })  : barcodeFormats =
             barcodeFormats ?? <BarcodeFormat>[BarcodeFormat.qr_code],
         super(key: key);
@@ -23,6 +22,9 @@ class FlMlKitScanning extends StatefulWidget {
   /// 显示在预览框上面
   final Widget? overlay;
 
+  /// 相机在未初始化时显示的布局
+  final Widget? uninitialized;
+
   @override
   _FlMlKitScanningState createState() => _FlMlKitScanningState();
 }
@@ -30,14 +32,20 @@ class FlMlKitScanning extends StatefulWidget {
 class _FlMlKitScanningState extends FlCameraState<FlMlKitScanning> {
   @override
   void initState() {
-    channel = flMlKitScanningChannel;
+    currentChannel = _flMlKitScanningChannel;
+    uninitialized = widget.uninitialized;
     super.initState();
     WidgetsBinding.instance!.addPostFrameCallback((Duration time) => init());
   }
 
   Future<void> init() async {
+    /// 添加消息回调
     await initEvent(eventListen);
+
+    /// 设置识别类型
     await setBarcodeFormat();
+
+    /// 初始化相机
     if (await initCamera()) setState(() {});
   }
 
@@ -58,7 +66,7 @@ class _FlMlKitScanningState extends FlCameraState<FlMlKitScanning> {
     if (oldWidget.overlay != widget.overlay ||
         oldWidget.barcodeFormats != widget.barcodeFormats ||
         oldWidget.onListen != widget.onListen) {
-      cameraMethodCall.disposeCamera().then((bool value) {
+      cameraMethodCall.dispose().then((bool value) {
         if (value) init();
       });
     }

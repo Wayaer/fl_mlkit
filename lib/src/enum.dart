@@ -1,3 +1,5 @@
+part of '../fl_mlkit_scanning.dart';
+
 enum BarcodeFormat {
   /// Barcode format unknown to the current SDK.
   ///

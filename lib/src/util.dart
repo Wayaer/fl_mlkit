@@ -1,6 +1,4 @@
-import 'package:fl_mlkit_scanning/fl_mlkit_scanning.dart';
-import 'package:fl_mlkit_scanning/src/enum.dart';
-import 'package:flutter/material.dart';
+part of '../fl_mlkit_scanning.dart';
 
 Size toSize(Map<dynamic, dynamic> data) {
   final double? width = data['width'] as double?;

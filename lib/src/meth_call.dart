@@ -1,9 +1,4 @@
-import 'dart:io';
-import 'dart:typed_data';
-
-import 'package:fl_camera/fl_camera.dart';
-import 'package:fl_mlkit_scanning/fl_mlkit_scanning.dart';
-import 'package:flutter/services.dart';
+part of '../fl_mlkit_scanning.dart';
 
 class FlMLKitScanningMethodCall {
   factory FlMLKitScanningMethodCall() => _getInstance();
@@ -18,7 +13,7 @@ class FlMLKitScanningMethodCall {
     return _instance!;
   }
 
-  final MethodChannel _channel = flMlKitScanningChannel;
+  final MethodChannel _channel = _flMlKitScanningChannel;
 
   List<BarcodeFormat> _barcodeFormats = <BarcodeFormat>[BarcodeFormat.qr_code];
 
@@ -40,28 +35,30 @@ class FlMLKitScanningMethodCall {
   /// 识别图片字节
   /// [useEvent] 返回消息使用 FLCameraEvent
   /// [rotationDegrees] android 使用
-  Future<bool> scanImageByte(Uint8List uint8list,
+  Future<List<BarcodeModel>> scanImageByte(Uint8List uint8list,
       {int rotationDegrees = 0, bool useEvent = false}) async {
     if (useEvent) {
       assert(
           FLCameraEvent.instance.isPaused, 'Please initialize FLCameraEvent');
     }
-    final bool? state = await _channel.invokeMethod<bool?>(
+    final dynamic list = await _channel.invokeMethod<dynamic>(
         'scanImageByte', <String, dynamic>{
       'byte': uint8list,
       'useEvent': useEvent,
       'rotationDegrees': rotationDegrees
     });
-    return state ?? false;
+    if (list != null && list is List) return getBarcodeModelList(list);
+    return <BarcodeModel>[];
   }
 
   /// 识别本地存储的图片
-  Future<bool> scanImagePath(String path, {int rotationDegrees = 0}) async {
+  Future<List<BarcodeModel>> scanImagePath(String path,
+      {int rotationDegrees = 0, bool useEvent = false}) async {
     final File file = File(path);
     if (file.existsSync()) {
       return await scanImageByte(file.readAsBytesSync(),
-          rotationDegrees: rotationDegrees);
+          rotationDegrees: rotationDegrees, useEvent: useEvent);
     }
-    return false;
+    return <BarcodeModel>[];
   }
 }
