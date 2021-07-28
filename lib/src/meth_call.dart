@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:fl_camera/fl_camera.dart';
 import 'package:fl_mlkit_scanning/fl_mlkit_scanning.dart';
 import 'package:flutter/services.dart';
 
@@ -37,11 +38,18 @@ class FlMLKitScanningMethodCall {
   }
 
   /// 识别图片字节
+  /// [useEvent] 返回消息使用 FLCameraEvent
+  /// [rotationDegrees] android 使用
   Future<bool> scanImageByte(Uint8List uint8list,
-      {int rotationDegrees = 0}) async {
+      {int rotationDegrees = 0, bool useEvent = false}) async {
+    if (useEvent) {
+      assert(
+          FLCameraEvent.instance.isPaused, 'Please initialize FLCameraEvent');
+    }
     final bool? state = await _channel.invokeMethod<bool?>(
         'scanImageByte', <String, dynamic>{
       'byte': uint8list,
+      'useEvent': useEvent,
       'rotationDegrees': rotationDegrees
     });
     return state ?? false;

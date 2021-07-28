@@ -1,4 +1,3 @@
-import 'package:example/camera_page.dart';
 import 'package:fl_mlkit_scanning/fl_mlkit_scanning.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_waya/flutter_waya.dart';
@@ -65,7 +64,7 @@ class _AppState extends State<_App> {
     final bool permission = await getPermission(Permission.camera);
     if (permission) {
       final List<BarcodeModel>? data =
-          await push(CameraPage(barcodeFormats: barcodeFormats));
+          await push(FlMlKitScanningPage(barcodeFormats: barcodeFormats));
       if (data != null) {
         list = data;
         setState(() {});
@@ -86,4 +85,27 @@ Future<bool> getPermission(Permission permission) async {
     }
   }
   return true;
+}
+
+class FlMlKitScanningPage extends StatelessWidget {
+  const FlMlKitScanningPage({Key? key, this.barcodeFormats}) : super(key: key);
+  final List<BarcodeFormat>? barcodeFormats;
+
+  @override
+  Widget build(BuildContext context) {
+    bool backState = true;
+    return ExtendedScaffold(
+        body: Stack(children: <Widget>[
+      FlMlKitScanning(
+        overlay: const ScannerLine(),
+        barcodeFormats: barcodeFormats,
+        onListen: (List<BarcodeModel> barcodes) {
+          if (backState && barcodes.isNotEmpty) {
+            backState = false;
+            pop(barcodes);
+          }
+        },
+      ),
+    ]));
+  }
 }

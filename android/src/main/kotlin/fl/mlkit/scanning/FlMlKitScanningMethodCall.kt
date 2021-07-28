@@ -41,6 +41,7 @@ class FlMlKitScanningMethodCall(
     }
 
     private fun scanImageByte(call: MethodCall, result: MethodChannel.Result) {
+        val useEvent = call.argument<Boolean>("useEvent")!!
         val byteArray = call.argument<ByteArray>("byte")!!
         var rotationDegrees = call.argument<Int>("rotationDegrees")
         val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
@@ -50,7 +51,7 @@ class FlMlKitScanningMethodCall(
         }
         if (rotationDegrees == null) rotationDegrees = 0
         val inputImage = InputImage.fromBitmap(bitmap, rotationDegrees)
-        analysis(inputImage, result, null)
+        analysis(inputImage, if (useEvent) null else result, null)
     }
 
     @SuppressLint("UnsafeOptInUsageError")
