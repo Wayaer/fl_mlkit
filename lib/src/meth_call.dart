@@ -21,6 +21,7 @@ class FlMLKitScanningMethodCall {
 
   /// 设置设别码类型
   Future<bool> setBarcodeFormat(List<BarcodeFormat> barcodeFormats) async {
+    if (!_supportPlatform) return false;
     _barcodeFormats = barcodeFormats;
     final bool? state = await _channel
         .invokeMethod<bool?>('setBarcodeFormat', <String, dynamic>{
@@ -37,6 +38,7 @@ class FlMLKitScanningMethodCall {
   /// [rotationDegrees] android 使用
   Future<List<BarcodeModel>> scanImageByte(Uint8List uint8list,
       {int rotationDegrees = 0, bool useEvent = false}) async {
+    if (!_supportPlatform) return <BarcodeModel>[];
     if (useEvent) {
       assert(
           FLCameraEvent.instance.isPaused, 'Please initialize FLCameraEvent');
@@ -51,14 +53,7 @@ class FlMLKitScanningMethodCall {
     return <BarcodeModel>[];
   }
 
-  /// 识别本地存储的图片
-  Future<List<BarcodeModel>> scanImagePath(String path,
-      {int rotationDegrees = 0, bool useEvent = false}) async {
-    final File file = File(path);
-    if (file.existsSync()) {
-      return await scanImageByte(file.readAsBytesSync(),
-          rotationDegrees: rotationDegrees, useEvent: useEvent);
-    }
-    return <BarcodeModel>[];
-  }
+  /// 打开\关闭 闪光灯
+  Future<bool> setFlashMode(bool status) async =>
+      FlCameraMethodCall.instance.setFlashMode(status);
 }

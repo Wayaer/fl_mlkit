@@ -1,12 +1,8 @@
-import 'dart:io';
-
 import 'package:camera/camera.dart';
-import 'package:example/main.dart';
 import 'package:fl_mlkit_scanning/fl_mlkit_scanning.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:flutter_waya/flutter_waya.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class CameraScanPage extends StatefulWidget {
   @override
@@ -98,68 +94,5 @@ class _CameraScanPageState extends State<CameraScanPage> {
     super.dispose();
     controller?.dispose();
     controller = null;
-  }
-}
-
-class _FileImageScanPage extends StatefulWidget {
-  @override
-  _FileImageScanPageState createState() => _FileImageScanPageState();
-}
-
-class _FileImageScanPageState extends State<_FileImageScanPage> {
-  String? path;
-  List<BarcodeModel> list = <BarcodeModel>[];
-
-  @override
-  Widget build(BuildContext context) {
-    return ExtendedScaffold(
-        appBar: AppBarText('San file image'),
-        padding: const EdgeInsets.all(20),
-        isScroll: true,
-        children: <Widget>[
-          ElevatedText(onPressed: () => openGallery(), text: '选择图片'),
-          ElevatedText(onPressed: () => scanPath(), text: '识别(使用Path识别)'),
-          ElevatedText(onPressed: () => scanByte(), text: '识别(从内存中识别)'),
-          ShowText('path', path),
-          if (path != null && path!.isNotEmpty)
-            Container(
-                width: double.infinity,
-                margin:
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
-                child: Image.file(File(path!))),
-          const SizedBox(height: 20),
-          ShowCode(list)
-        ]);
-  }
-
-  Future<void> scanPath() async {
-    if (path == null || path!.isEmpty) return showToast('请选择图片');
-    if (await getPermission(Permission.storage)) {
-      final List<BarcodeModel> data =
-          await FlMLKitScanningMethodCall.instance.scanImagePath(path!);
-      if (data.isNotEmpty) {
-        list = data;
-        setState(() {});
-      }
-    }
-  }
-
-  Future<void> scanByte() async {
-    if (path == null || path!.isEmpty) return showToast('请选择图片');
-    if (await getPermission(Permission.storage)) {
-      final File file = File(path!);
-      final List<BarcodeModel> data = await FlMLKitScanningMethodCall.instance
-          .scanImageByte(file.readAsBytesSync());
-      if (data.isNotEmpty) {
-        list = data;
-        setState(() {});
-      }
-    }
-  }
-
-  Future<void> openGallery() async {
-    final String? data = await openSystemGallery();
-    path = data;
-    setState(() {});
   }
 }

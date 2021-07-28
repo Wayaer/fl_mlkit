@@ -1,4 +1,5 @@
 import 'package:example/camera_scan.dart';
+import 'package:example/image_scan.dart';
 import 'package:fl_mlkit_scanning/fl_mlkit_scanning.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
@@ -25,11 +26,14 @@ class _AppState extends State<_App> {
         padding: const EdgeInsets.all(30),
         children: <Widget>[
           ElevatedText(
-              onPressed: () => openCamera(BarcodeFormat.values),
-              text: 'open Camera'),
+              onPressed: () => openCamera(<BarcodeFormat>[BarcodeFormat.all]),
+              text: '打开Camera识别'),
           const SizedBox(height: 10),
-          ElevatedText(onPressed: scanImage, text: '官方相机扫码'),
-          ElevatedText(onPressed: openCamera, text: '识别二维码'),
+          ElevatedText(onPressed: scanCamera, text: '官方相机扫码'),
+          const SizedBox(height: 10),
+          ElevatedText(onPressed: scanImage, text: '图片识别'),
+          const SizedBox(height: 10),
+          ElevatedText(onPressed: openCamera, text: 'Camera识别二维码'),
           const SizedBox(height: 10),
           ElevatedText(
               onPressed: () => openCamera(<BarcodeFormat>[
@@ -43,47 +47,46 @@ class _AppState extends State<_App> {
                     BarcodeFormat.ean8,
                     BarcodeFormat.ean13,
                   ]),
-              text: '识别条形码'),
+              text: 'Camera识别条形码'),
           const SizedBox(height: 30),
           ShowCode(list)
         ]);
   }
 
-  Future<void> scanImage() async {
+  void scanImage() {
+    push(ImageScanPage());
+  }
+
+  Future<void> scanCamera() async {
     if (!isMobile) return;
-    final bool permission = await getPermission(Permission.camera) &&
-        await getPermission(Permission.storage);
-    if (permission) {
-      push(CameraScanPage());
-    } else {
-      openAppSettings();
-    }
+    final bool permission = await getPermission(Permission.camera);
+    if (permission) push(CameraScanPage());
   }
 
   Future<void> openCamera([List<BarcodeFormat>? barcodeFormats]) async {
     final bool permission = await getPermission(Permission.camera);
     if (permission) {
+      log(permission);
       final List<BarcodeModel>? data =
           await push(FlMlKitScanningPage(barcodeFormats: barcodeFormats));
       if (data != null) {
         list = data;
         setState(() {});
       }
-    } else {
-      openAppSettings();
     }
   }
 }
 
 class ShowCode extends StatelessWidget {
-  const ShowCode(this.list, {Key? key}) : super(key: key);
+  const ShowCode(this.list, {Key? key, this.expanded = true}) : super(key: key);
   final List<BarcodeModel> list;
+  final bool expanded;
 
   @override
   Widget build(BuildContext context) {
     return Universal(
-        expanded: true,
-        isScroll: true,
+        expanded: expanded,
+        isScroll: expanded,
         children: list.builderEntry((MapEntry<int, BarcodeModel> entry) {
           return Column(children: <Widget>[
             Text('第${entry.key + 1}个二维码'),
@@ -101,9 +104,8 @@ class AppBarText extends AppBar {
       : super(
             key: key,
             elevation: 0,
-            iconTheme: const IconThemeData.fallback(),
             title: BText(text,
-                color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
+                color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
             centerTitle: true);
 }
 
@@ -126,14 +128,13 @@ class ShowText extends StatelessWidget {
 
 Future<bool> getPermission(Permission permission) async {
   PermissionStatus status = await permission.status;
-  if (!status.isGranted) {
+  if (status.isGranted) {
+    return true;
+  } else {
     status = await permission.request();
-    if (!status.isGranted) {
-      final bool has = await openAppSettings();
-      return has;
-    }
+    if (!status.isGranted) openAppSettings();
+    return status.isGranted;
   }
-  return true;
 }
 
 class ElevatedText extends StatelessWidget {

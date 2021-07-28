@@ -9,6 +9,8 @@ class FlMlKitScanning extends StatefulWidget {
     this.onListen,
     this.overlay,
     this.uninitialized,
+    this.onFlashChange,
+    this.isFullScreen = true,
   })  : barcodeFormats =
             barcodeFormats ?? <BarcodeFormat>[BarcodeFormat.qr_code],
         super(key: key);
@@ -25,6 +27,12 @@ class FlMlKitScanning extends StatefulWidget {
   /// 相机在未初始化时显示的布局
   final Widget? uninitialized;
 
+  /// 闪光灯变化
+  final ValueChanged<FlashState>? onFlashChange;
+
+  /// 是否全屏
+  final bool isFullScreen;
+
   @override
   _FlMlKitScanningState createState() => _FlMlKitScanningState();
 }
@@ -33,12 +41,14 @@ class _FlMlKitScanningState extends FlCameraState<FlMlKitScanning> {
   @override
   void initState() {
     currentChannel = _flMlKitScanningChannel;
-    uninitialized = widget.uninitialized;
     super.initState();
     WidgetsBinding.instance!.addPostFrameCallback((Duration time) => init());
   }
 
   Future<void> init() async {
+    fullScreen = widget.isFullScreen;
+    uninitialized = widget.uninitialized;
+
     /// 添加消息回调
     await initEvent(eventListen);
 
@@ -61,10 +71,19 @@ class _FlMlKitScanningState extends FlCameraState<FlMlKitScanning> {
   }
 
   @override
+  void onFlashChange(FlashState state) {
+    super.onFlashChange(state);
+    if (widget.onFlashChange != null) widget.onFlashChange!(state);
+  }
+
+  @override
   void didUpdateWidget(covariant FlMlKitScanning oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.overlay != widget.overlay ||
+        oldWidget.onFlashChange != widget.onFlashChange ||
+        oldWidget.uninitialized != widget.uninitialized ||
         oldWidget.barcodeFormats != widget.barcodeFormats ||
+        oldWidget.isFullScreen != widget.isFullScreen ||
         oldWidget.onListen != widget.onListen) {
       cameraMethodCall.dispose().then((bool value) {
         if (value) init();

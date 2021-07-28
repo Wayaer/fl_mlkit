@@ -22,7 +22,7 @@ class FlMlKitScanningMethodCall: FlCameraMethodCall {
                     let image = VisionImage(image: buffer!.image)
                     self.analysis(image, nil)
                 }
-            }, call: call, result: result)
+            }, call: call, result)
         case "setBarcodeFormat":
             setBarcodeFormat(call)
             result(true)
@@ -90,7 +90,11 @@ class FlMlKitScanningMethodCall: FlCameraMethodCall {
     }
 
     func analysis(_ image: VisionImage, _ result: FlutterResult?) {
-        image.orientation = flCamera!.imageOrientation()
+        if flCamera == nil {
+            image.orientation = .up
+        } else {
+            image.orientation = flCamera!.imageOrientation()
+        }
         let scanner = BarcodeScanner.barcodeScanner(options: options)
         scanner.process(image) { [self] barcodes, error in
             if error == nil, barcodes != nil {
