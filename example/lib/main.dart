@@ -64,9 +64,10 @@ class _AppState extends State<_App> {
   }
 
   Future<void> openCamera([List<BarcodeFormat>? barcodeFormats]) async {
-    final bool permission = await getPermission(Permission.camera);
-    if (permission) {
-      log(permission);
+    bool hasPermission = false;
+    if (isAndroid) hasPermission = await getPermission(Permission.camera);
+    if (isIOS) hasPermission = true;
+    if (hasPermission) {
       final List<BarcodeModel>? data =
           await push(FlMlKitScanningPage(barcodeFormats: barcodeFormats));
       if (data != null) {
@@ -158,15 +159,14 @@ class FlMlKitScanningPage extends StatelessWidget {
     return ExtendedScaffold(
         body: Stack(children: <Widget>[
       FlMlKitScanning(
-        overlay: const ScannerLine(),
-        barcodeFormats: barcodeFormats,
-        onListen: (List<BarcodeModel> barcodes) {
-          if (backState && barcodes.isNotEmpty) {
-            backState = false;
-            pop(barcodes);
-          }
-        },
-      ),
+          overlay: const ScannerLine(),
+          barcodeFormats: barcodeFormats,
+          onListen: (List<BarcodeModel> barcodes) {
+            if (backState && barcodes.isNotEmpty) {
+              backState = false;
+              pop(barcodes);
+            }
+          })
     ]));
   }
 }
