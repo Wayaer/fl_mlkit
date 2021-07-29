@@ -4,7 +4,7 @@
 
 ios 添加相机权限
 
-```plist
+```xml
 	<key>NSCameraUsageDescription</key>
 	<string>是否允许FlMlKitScanning使用你的相机？</string>
 ```
