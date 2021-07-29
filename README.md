@@ -19,7 +19,7 @@ Widget build(BuildContext context) {
   bool backState = true;
   return FlMlKitScanning(
 
-    /// 显示在预览上层
+      /// 显示在预览上层
       overlay: const ScannerLine(),
 
       /// 是否全屏预览（由于原生相机预览为固定尺寸 设置全屏 会裁剪预览）
