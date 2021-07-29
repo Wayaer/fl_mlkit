@@ -160,13 +160,40 @@ class FlMlKitScanningPage extends StatelessWidget {
         body: Stack(children: <Widget>[
       FlMlKitScanning(
           overlay: const ScannerLine(),
+          onFlashChange: (FlashState state) {
+            showToast('闪光灯状态\n$state');
+          },
           barcodeFormats: barcodeFormats,
+          isFullScreen: true,
+          uninitialized: Container(
+              color: Colors.black,
+              alignment: Alignment.center,
+              child:
+                  const Text('相机未初始化', style: TextStyle(color: Colors.white))),
           onListen: (List<BarcodeModel> barcodes) {
             if (backState && barcodes.isNotEmpty) {
               backState = false;
               pop(barcodes);
             }
-          })
+          }),
+      Align(
+        alignment: Alignment.bottomCenter,
+        child: ValueBuilder<bool>(
+            initialValue: false,
+            builder: (_, bool? value, ValueCallback<bool> updater) {
+              value ??= false;
+              return IconBox(
+                  size: 30,
+                  color: value ? Colors.white : Colors.white.withOpacity(0.6),
+                  padding: const EdgeInsets.fromLTRB(10, 10, 10, 40),
+                  icon: value ? Icons.flash_on : Icons.flash_off,
+                  onTap: () async {
+                    final bool state =
+                        await FlCameraMethodCall.instance.setFlashMode(!value!);
+                    if (state) updater(!value);
+                  });
+            }),
+      )
     ]));
   }
 }

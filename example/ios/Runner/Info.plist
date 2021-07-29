@@ -24,8 +24,8 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>是否允许FlMlKitScanning使用你的相机？</string>
-    <key>NSPhotoLibraryUsageDescription</key>
-    <string>是否允许FlMlKitScanning访问你的相册？</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>是否允许FlMlKitScanning访问你的相册？</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
