@@ -16,7 +16,6 @@ ios 添加相机权限
 ```dart
 
 Widget build(BuildContext context) {
-  bool backState = true;
   return FlMlKitScanning(
 
       /// 显示在预览上层
@@ -38,13 +37,13 @@ Widget build(BuildContext context) {
           const Text('相机未初始化', style: TextStyle(color: Colors.white))),
 
       /// 二维码识别类型
-      barcodeFormats: barcodeFormats,
+      /// 默认仅识别qr_code，需要识别几种就添加几种
+      barcodeFormats: <BarcodeFormat>[BarcodeFormat.qr_code],
 
       /// 扫码回调
       onListen: (List<BarcodeModel> barcodes) {
-        if (backState && barcodes.isNotEmpty) {
-          backState = false;
-          pop(barcodes);
+        if (barcodes.isNotEmpty) {
+          /// 返回数组 可识别多个码
         }
       });
 }
