@@ -11,9 +11,17 @@ class FlMlKitScanning extends StatefulWidget {
     this.uninitialized,
     this.onFlashChange,
     this.isFullScreen = true,
+    this.useBackCamera = true,
+    this.zoomQuality = ZoomQuality.low,
   })  : barcodeFormats =
             barcodeFormats ?? <BarcodeFormat>[BarcodeFormat.qr_code],
         super(key: key);
+
+  /// 是否使用后置摄像头
+  final bool useBackCamera;
+
+  /// 相机预览缩放质量
+  final ZoomQuality zoomQuality;
 
   /// 码识别回调
   final EventBarcodeListen? onListen;

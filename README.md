@@ -18,6 +18,12 @@ ios 添加相机权限
 Widget build(BuildContext context) {
   return FlMlKitScanning(
 
+      /// 相机预览缩放质量
+      zoomQuality: ZoomQuality.low,
+      
+      /// 是否使用后置摄像头
+      useBackCamera: true,
+      
       /// 显示在预览上层
       overlay: const ScannerLine(),
 
