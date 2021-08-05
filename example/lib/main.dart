@@ -157,7 +157,7 @@ class FlMlKitScanningPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<BarcodeModel> list = [];
+    final List<BarcodeModel> list = <BarcodeModel>[];
     return ExtendedScaffold(
         onWillPop: () async {
           return false;
@@ -208,7 +208,7 @@ class FlMlKitScanningPage extends StatelessWidget {
               child: BackButton(
                   color: Colors.white,
                   onPressed: () {
-                    pop(list);
+                    pop(list.toSet().toList());
                   })),
           Positioned(
             right: 12,

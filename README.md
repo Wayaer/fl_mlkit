@@ -1,16 +1,16 @@
 # fl_mlkit_scanning
 
-基于[Google ML Kit](https://developers.google.com/ml-kit/vision/barcode-scanning)
-实现快速稳定扫码功能，支持Android \ IOS Realize fast and stable code scanning function based
-on [Google ML Kit](https://developers.google.com/ml-kit/vision/barcode-scanning)
-, and support Android \ IOS
+基于[Google ML Kit](https://developers.google.com/ml-kit/vision/barcode-scanning)实现快速稳定扫码功能，支持Android \ IOS 
 
-ios 添加相机权限 Add camera permissions to IOS
+Realize fast and stable code scanning function based on [Google ML Kit](https://developers.google.com/ml-kit/vision/barcode-scanning), and support Android \ IOS
+
+ios 添加相机权限 
+
+Add camera permissions to IOS
 
 ```xml
-
-<key>NSCameraUsageDescription</key>    <string>是否允许FlMlKitScanning使用你的相机？
-</string>
+<key>NSCameraUsageDescription</key>    
+<string>是否允许FlMlKitScanning使用你的相机？</string>
 ```
 
 ### 使用 use

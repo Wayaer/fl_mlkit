@@ -1,3 +1,5 @@
+## [0.0.5]
+ * Add [start] and [pause] scan methods
 ## [0.0.2]
  * [FlMlKitScanning] add [useBackCamera]、[zoomQuality]
 ## [0.0.1]
