@@ -48,7 +48,7 @@ class _ImageScanPageState extends State<ImageScanPage> {
     if (isIOS) hasPermission = true;
     if (hasPermission) {
       final File file = File(path!);
-      final List<BarcodeModel> data = await FlMLKitScanningMethodCall.instance
+      final List<BarcodeModel> data = await FlMlKitScanningMethodCall.instance
           .scanImageByte(file.readAsBytesSync());
       if (data.isNotEmpty) {
         list = data;

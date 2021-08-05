@@ -9,7 +9,7 @@ export 'package:fl_camera/fl_camera.dart';
 
 part 'src/enum.dart';
 
-part 'src/meth_call.dart';
+part 'src/method_call.dart';
 
 part 'src/mlkit_scanning.dart';
 

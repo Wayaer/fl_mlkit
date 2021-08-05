@@ -78,23 +78,23 @@ void func() {
   
   /// 设置设别码类型
   /// Set type
-  FlMLKitScanningMethodCall.instance.setBarcodeFormat();
+  FlMlKitScanningMethodCall.instance.setBarcodeFormat();
 
   /// 识别图片字节
   /// Identify picture bytes
-  FlMLKitScanningMethodCall.instance.scanImageByte();
+  FlMlKitScanningMethodCall.instance.scanImageByte();
 
   /// 打开\关闭 闪光灯 
   /// Turn flash on / off
-  FlMLKitScanningMethodCall.instance.setFlashMode();
+  FlMlKitScanningMethodCall.instance.setFlashMode();
 
   /// 暂停扫描
   /// Pause scanning
-  FlMLKitScanningMethodCall.instance.pause();
+  FlMlKitScanningMethodCall.instance.pause();
 
   /// 开始扫描
   /// Start scanncing
-  FlMLKitScanningMethodCall.instance.start();
+  FlMlKitScanningMethodCall.instance.start();
   
 }
 

@@ -1,4 +1,4 @@
-## [0.0.6]
+## [1.0.0]
  * Remove useless files
 ## [0.0.5]
  * Add [start] and [pause] scan methods

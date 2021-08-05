@@ -80,11 +80,11 @@ class _FlMlKitScanningState extends FlCameraState<FlMlKitScanning> {
       setState(() {});
 
       /// Start scan
-      if (widget.autoScanning) FlMLKitScanningMethodCall.instance.start();
+      if (widget.autoScanning) FlMlKitScanningMethodCall.instance.start();
     }
   }
 
-  Future<void> setBarcodeFormat() => FlMLKitScanningMethodCall.instance
+  Future<void> setBarcodeFormat() => FlMlKitScanningMethodCall.instance
       .setBarcodeFormat(widget.barcodeFormats);
 
   void eventListen(dynamic data) {

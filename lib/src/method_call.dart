@@ -1,15 +1,15 @@
 part of '../fl_mlkit_scanning.dart';
 
-class FlMLKitScanningMethodCall {
-  factory FlMLKitScanningMethodCall() => _getInstance();
+class FlMlKitScanningMethodCall {
+  factory FlMlKitScanningMethodCall() => _getInstance();
 
-  FlMLKitScanningMethodCall._internal();
+  FlMlKitScanningMethodCall._internal();
 
-  static FlMLKitScanningMethodCall get instance => _getInstance();
-  static FlMLKitScanningMethodCall? _instance;
+  static FlMlKitScanningMethodCall get instance => _getInstance();
+  static FlMlKitScanningMethodCall? _instance;
 
-  static FlMLKitScanningMethodCall _getInstance() {
-    _instance ??= FlMLKitScanningMethodCall._internal();
+  static FlMlKitScanningMethodCall _getInstance() {
+    _instance ??= FlMlKitScanningMethodCall._internal();
     return _instance!;
   }
 

@@ -196,7 +196,7 @@ class FlMlKitScanningPage extends StatelessWidget {
                         padding: const EdgeInsets.fromLTRB(10, 10, 10, 40),
                         icon: value ? Icons.flash_on : Icons.flash_off,
                         onTap: () async {
-                          final bool state = await FlMLKitScanningMethodCall
+                          final bool state = await FlMlKitScanningMethodCall
                               .instance
                               .setFlashMode(!value!);
                           if (state) updater(!value);
@@ -221,8 +221,8 @@ class FlMlKitScanningPage extends StatelessWidget {
                     text: value ? 'pause' : 'start',
                     onPressed: () async {
                       final bool data = value!
-                          ? await FlMLKitScanningMethodCall.instance.pause()
-                          : await FlMLKitScanningMethodCall.instance.start();
+                          ? await FlMlKitScanningMethodCall.instance.pause()
+                          : await FlMlKitScanningMethodCall.instance.start();
                       if (data) updater(!value);
                     },
                   );
