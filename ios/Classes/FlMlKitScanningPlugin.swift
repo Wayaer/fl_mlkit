@@ -3,8 +3,8 @@ import Flutter
 import UIKit
 
 public class FlMlKitScanningPlugin: NSObject, FlutterPlugin {
-    var flMlKitScanningChannel: FlutterMethodChannel?
-    var flMlKitScanningMethodCall: FlMlKitScanningMethodCall?
+    var channel: FlutterMethodChannel?
+    var methodCall: FlMlKitScanningMethodCall?
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "fl.mlkit.scanning",
@@ -14,17 +14,17 @@ public class FlMlKitScanningPlugin: NSObject, FlutterPlugin {
     }
 
     init(_ _registrar: FlutterPluginRegistrar, _ _channel: FlutterMethodChannel) {
-        flMlKitScanningChannel = _channel
-        flMlKitScanningMethodCall = FlMlKitScanningMethodCall(_registrar)
+        channel = _channel
+        methodCall = FlMlKitScanningMethodCall(_registrar)
         super.init()
     }
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-        flMlKitScanningMethodCall?.handle(call: call, result: result)
+        methodCall?.handle(call: call, result: result)
     }
 
     public func detachFromEngine(for registrar: FlutterPluginRegistrar) {
-        flMlKitScanningChannel?.setMethodCallHandler(nil)
-        flMlKitScanningChannel = nil
+        channel?.setMethodCallHandler(nil)
+        channel = nil
     }
 }
