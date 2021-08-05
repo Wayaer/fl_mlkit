@@ -27,13 +27,15 @@ class _AppState extends State<_App> {
         children: <Widget>[
           ElevatedText(
               onPressed: () => openCamera(<BarcodeFormat>[BarcodeFormat.all]),
-              text: '打开Camera识别'),
+              text: 'Turn on camera recognition'),
           const SizedBox(height: 10),
-          ElevatedText(onPressed: scanCamera, text: '官方相机扫码'),
+          ElevatedText(
+              onPressed: scanCamera, text: 'Official camera scanning code'),
           const SizedBox(height: 10),
-          ElevatedText(onPressed: scanImage, text: '图片识别'),
+          ElevatedText(onPressed: scanImage, text: 'Image recognition'),
           const SizedBox(height: 10),
-          ElevatedText(onPressed: openCamera, text: 'Camera识别二维码'),
+          ElevatedText(
+              onPressed: openCamera, text: 'Camera identification QR code'),
           const SizedBox(height: 10),
           ElevatedText(
               onPressed: () => openCamera(<BarcodeFormat>[
@@ -47,7 +49,7 @@ class _AppState extends State<_App> {
                     BarcodeFormat.ean8,
                     BarcodeFormat.ean13,
                   ]),
-              text: 'Camera识别条形码'),
+              text: 'Camera identification bar code'),
           const SizedBox(height: 30),
           ShowCode(list)
         ]);
@@ -90,7 +92,7 @@ class ShowCode extends StatelessWidget {
         isScroll: expanded,
         children: list.builderEntry((MapEntry<int, BarcodeModel> entry) {
           return Column(children: <Widget>[
-            Text('第${entry.key + 1}个二维码'),
+            Text('NO.${entry.key + 1}'),
             const SizedBox(height: 6),
             Text('value:${entry.value.value}').sizedBox(width: double.infinity),
             const SizedBox(height: 6),
@@ -155,45 +157,77 @@ class FlMlKitScanningPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool backState = true;
+    final List<BarcodeModel> list = [];
     return ExtendedScaffold(
+        onWillPop: () async {
+          return false;
+        },
         body: Stack(children: <Widget>[
-      FlMlKitScanning(
-          overlay: const ScannerLine(),
-          onFlashChange: (FlashState state) {
-            showToast('闪光灯状态\n$state');
-          },
-          barcodeFormats: barcodeFormats,
-          isFullScreen: true,
-          uninitialized: Container(
-              color: Colors.black,
-              alignment: Alignment.center,
-              child:
-                  const Text('相机未初始化', style: TextStyle(color: Colors.white))),
-          onListen: (List<BarcodeModel> barcodes) {
-            if (backState && barcodes.isNotEmpty) {
-              backState = false;
-              pop(barcodes);
-            }
-          }),
-      Align(
-        alignment: Alignment.bottomCenter,
-        child: ValueBuilder<bool>(
-            initialValue: false,
-            builder: (_, bool? value, ValueCallback<bool> updater) {
-              value ??= false;
-              return IconBox(
-                  size: 30,
-                  color: value ? Colors.white : Colors.white.withOpacity(0.6),
-                  padding: const EdgeInsets.fromLTRB(10, 10, 10, 40),
-                  icon: value ? Icons.flash_on : Icons.flash_off,
-                  onTap: () async {
-                    final bool state =
-                        await FlCameraMethodCall.instance.setFlashMode(!value!);
-                    if (state) updater(!value);
-                  });
-            }),
-      )
-    ]));
+          FlMlKitScanning(
+              overlay: const ScannerLine(),
+              onFlashChange: (FlashState state) {
+                showToast('$state');
+              },
+              autoStartScan: false,
+              barcodeFormats: barcodeFormats,
+              isFullScreen: true,
+              uninitialized: Container(
+                  color: Colors.black,
+                  alignment: Alignment.center,
+                  child: const Text('Camera not initialized',
+                      style: TextStyle(color: Colors.white))),
+              onListen: (List<BarcodeModel> barcodes) {
+                if (barcodes.isNotEmpty) {
+                  list.addAll(barcodes);
+                  showToast(barcodes.first.value ?? 'unknown');
+                }
+              }),
+          Align(
+              alignment: Alignment.bottomCenter,
+              child: ValueBuilder<bool>(
+                  initialValue: false,
+                  builder: (_, bool? value, ValueCallback<bool> updater) {
+                    value ??= false;
+                    return IconBox(
+                        size: 30,
+                        color: value
+                            ? Colors.white
+                            : Colors.white.withOpacity(0.6),
+                        padding: const EdgeInsets.fromLTRB(10, 10, 10, 40),
+                        icon: value ? Icons.flash_on : Icons.flash_off,
+                        onTap: () async {
+                          final bool state = await FlMLKitScanningMethodCall
+                              .instance
+                              .setFlashMode(!value!);
+                          if (state) updater(!value);
+                        });
+                  })),
+          Positioned(
+              left: 12,
+              top: getStatusBarHeight + 12,
+              child: BackButton(
+                  color: Colors.white,
+                  onPressed: () {
+                    pop(list);
+                  })),
+          Positioned(
+            right: 12,
+            top: getStatusBarHeight + 12,
+            child: ValueBuilder<bool>(
+                initialValue: false,
+                builder: (_, bool? value, ValueCallback<bool> updater) {
+                  value ??= false;
+                  return ElevatedText(
+                    text: value ? 'pause' : 'start',
+                    onPressed: () async {
+                      final bool data = value!
+                          ? await FlMLKitScanningMethodCall.instance.pause()
+                          : await FlMLKitScanningMethodCall.instance.start();
+                      if (data) updater(!value);
+                    },
+                  );
+                }),
+          )
+        ]));
   }
 }

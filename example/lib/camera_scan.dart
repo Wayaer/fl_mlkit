@@ -30,7 +30,7 @@ class _CameraScanPageState extends State<CameraScanPage> {
     final bool state = await event!.initialize();
     if (!state) return;
     event!.addListener((dynamic value) {
-      log('收到了原生发来的消息== $value');
+      log('Received a message from native== $value');
       log(value.runtimeType);
       if (value != null && hasImageStream) {
         // final BarcodeModel scanResult =
@@ -63,7 +63,7 @@ class _CameraScanPageState extends State<CameraScanPage> {
     currentTime = DateTime.now().millisecond;
     controller?.startImageStream((CameraImage image) {
       if ((DateTime.now().millisecond - currentTime) > 400) {
-        /// 每500毫秒解析一次
+        /// Parse every 500 milliseconds
         if (image.planes.isEmpty || image.planes[0].bytes.isEmpty) return;
 
         if (isAndroid && image.format.group != ImageFormatGroup.yuv420) return;

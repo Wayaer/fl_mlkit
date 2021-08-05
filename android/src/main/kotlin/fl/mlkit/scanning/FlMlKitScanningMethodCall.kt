@@ -25,6 +25,7 @@ class FlMlKitScanningMethodCall(
 
     private var options: BarcodeScannerOptions =
         BarcodeScannerOptions.Builder().setBarcodeFormats(Barcode.FORMAT_QR_CODE).build()
+    private var scan = false
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {
@@ -34,6 +35,13 @@ class FlMlKitScanningMethodCall(
                 result.success(true)
             }
             "scanImageByte" -> scanImageByte(call, result)
+            "scan" -> {
+                val argument = call.arguments as Boolean
+                if (argument != scan) {
+                    scan = argument
+                }
+                result.success(true)
+            }
             else -> {
                 super.onMethodCall(call, result)
             }
@@ -57,7 +65,7 @@ class FlMlKitScanningMethodCall(
     @SuppressLint("UnsafeOptInUsageError")
     private val imageAnalyzer = ImageAnalysis.Analyzer { imageProxy ->
         val mediaImage = imageProxy.image
-        if (mediaImage != null) {
+        if (mediaImage != null && scan) {
             val inputImage =
                 InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
             analysis(inputImage, null, imageProxy)

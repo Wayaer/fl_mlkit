@@ -23,8 +23,8 @@ class _ImageScanPageState extends State<ImageScanPage> {
         padding: const EdgeInsets.all(20),
         isScroll: true,
         children: <Widget>[
-          ElevatedText(onPressed: openGallery, text: '选择图片'),
-          ElevatedText(onPressed: scanByte, text: '识别'),
+          ElevatedText(onPressed: openGallery, text: 'Select Picture'),
+          ElevatedText(onPressed: scanByte, text: 'Scanning'),
           ShowText('path', path),
           if (path != null && path!.isNotEmpty)
             Container(
@@ -34,13 +34,15 @@ class _ImageScanPageState extends State<ImageScanPage> {
                     const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
                 child: Image.file(File(path!))),
           const SizedBox(height: 20),
-          if (list != null && list!.isEmpty) const ShowText('未识别', '未识别'),
+          if (list != null && list!.isEmpty)
+            const ShowText('Unrecognized', 'Unrecognized'),
           ShowCode(list ?? <BarcodeModel>[], expanded: false)
         ]);
   }
 
   Future<void> scanByte() async {
-    if (path == null || path!.isEmpty) return showToast('请选择图片');
+    if (path == null || path!.isEmpty)
+      return showToast('Please select a picture');
     bool hasPermission = false;
     if (isAndroid) hasPermission = await getPermission(Permission.storage);
     if (isIOS) hasPermission = true;

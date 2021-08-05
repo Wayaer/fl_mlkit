@@ -13,33 +13,45 @@ class FlMlKitScanning extends StatefulWidget {
     this.isFullScreen = true,
     this.useBackCamera = true,
     this.zoomQuality = ZoomQuality.low,
+    this.autoStartScan = true,
   })  : barcodeFormats =
             barcodeFormats ?? <BarcodeFormat>[BarcodeFormat.qr_code],
         super(key: key);
 
   /// 是否使用后置摄像头
+  /// Using the back camera
   final bool useBackCamera;
 
   /// 相机预览缩放质量
+  /// Camera preview zoom quality
   final ZoomQuality zoomQuality;
 
   /// 码识别回调
+  /// Identify callback
   final EventBarcodeListen? onListen;
 
   /// 码识别类型
+  /// Identification type
   final List<BarcodeFormat> barcodeFormats;
 
   /// 显示在预览框上面
+  /// Display above preview box
   final Widget? overlay;
 
-  /// 相机在未初始化时显示的布局
+  /// 相机在未初始化时显示的UI
+  /// The UI displayed when the camera is not initialized
   final Widget? uninitialized;
 
-  /// 闪光灯变化
+  /// Flash change
   final ValueChanged<FlashState>? onFlashChange;
 
   /// 是否全屏
+  /// Full screen
   final bool isFullScreen;
+
+  /// 是否自动扫描 默认为[true]
+  /// Auto scan defaults to [true]
+  final bool autoStartScan;
 
   @override
   _FlMlKitScanningState createState() => _FlMlKitScanningState();
@@ -57,14 +69,19 @@ class _FlMlKitScanningState extends FlCameraState<FlMlKitScanning> {
     fullScreen = widget.isFullScreen;
     uninitialized = widget.uninitialized;
 
-    /// 添加消息回调
+    /// Add message callback
     await initEvent(eventListen);
 
-    /// 设置识别类型
+    /// Set identification type
     await setBarcodeFormat();
 
-    /// 初始化相机
-    if (await initCamera()) setState(() {});
+    /// Initialize camera
+    if (await initCamera()) {
+      setState(() {});
+
+      /// Start scan
+      if (widget.autoStartScan) FlMLKitScanningMethodCall.instance.start();
+    }
   }
 
   Future<void> setBarcodeFormat() => FlMLKitScanningMethodCall.instance

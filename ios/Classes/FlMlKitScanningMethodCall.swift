@@ -8,6 +8,7 @@ import MLKitVision
 class FlMlKitScanningMethodCall: FlCameraMethodCall {
     var options = BarcodeScannerOptions(formats: .all)
     var analyzing: Bool = false
+    var scan: Bool = false
     override init(_ _registrar: FlutterPluginRegistrar) {
         super.init(_registrar)
     }
@@ -16,7 +17,7 @@ class FlMlKitScanningMethodCall: FlCameraMethodCall {
         switch call.method {
         case "startPreview":
             startPreview({ [self] sampleBuffer in
-                if !analyzing {
+                if !analyzing, scan {
                     analyzing = true
                     let buffer = CMSampleBufferGetImageBuffer(sampleBuffer)
                     let image = VisionImage(image: buffer!.image)
@@ -38,7 +39,12 @@ class FlMlKitScanningMethodCall: FlCameraMethodCall {
                 }
             }
             result([])
-
+        case "scan":
+            let argument = call.arguments as! Bool
+            if argument != scan {
+                scan = argument
+            }
+            result(true)
         default:
             super.handle(call: call, result: result)
         }
