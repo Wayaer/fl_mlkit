@@ -4,16 +4,14 @@
 
 Realize fast and stable code scanning function based on [Google ML Kit](https://developers.google.com/ml-kit/vision/barcode-scanning), and support Android \ IOS
 
-ios 添加相机权限 
+### 使用 use
 
-Add camera permissions to IOS
+-ios 添加相机权限  Add camera permissions to IOS
 
 ```xml
 <key>NSCameraUsageDescription</key>    
 <string>是否允许FlMlKitScanning使用你的相机？</string>
 ```
-
-### 使用 use
 
 - 预览 preview
 
