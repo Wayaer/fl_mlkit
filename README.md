@@ -6,7 +6,7 @@ Realize fast and stable code scanning function based on [Google ML Kit](https://
 
 ### 使用 use
 
--ios 添加相机权限  Add camera permissions to IOS
+- ios 添加相机权限  Add camera permissions to IOS
 
 ```xml
 <key>NSCameraUsageDescription</key>    
