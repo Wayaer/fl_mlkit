@@ -30,7 +30,7 @@ Widget build(BuildContext context) {
 
       /// 是否自动扫描 默认为[true]
       /// Auto scan defaults to [true]
-      autoStartScan: false,
+      autoScanning: false,
 
       /// 显示在预览上层
       /// Display above preview box

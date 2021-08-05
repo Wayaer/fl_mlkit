@@ -168,7 +168,7 @@ class FlMlKitScanningPage extends StatelessWidget {
               onFlashChange: (FlashState state) {
                 showToast('$state');
               },
-              autoStartScan: false,
+              autoScanning: false,
               barcodeFormats: barcodeFormats,
               isFullScreen: true,
               uninitialized: Container(

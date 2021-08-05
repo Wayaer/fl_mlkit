@@ -13,7 +13,7 @@ class FlMlKitScanning extends StatefulWidget {
     this.isFullScreen = true,
     this.useBackCamera = true,
     this.zoomQuality = ZoomQuality.low,
-    this.autoStartScan = true,
+    this.autoScanning = true,
   })  : barcodeFormats =
             barcodeFormats ?? <BarcodeFormat>[BarcodeFormat.qr_code],
         super(key: key);
@@ -51,7 +51,7 @@ class FlMlKitScanning extends StatefulWidget {
 
   /// 是否自动扫描 默认为[true]
   /// Auto scan defaults to [true]
-  final bool autoStartScan;
+  final bool autoScanning;
 
   @override
   _FlMlKitScanningState createState() => _FlMlKitScanningState();
@@ -80,7 +80,7 @@ class _FlMlKitScanningState extends FlCameraState<FlMlKitScanning> {
       setState(() {});
 
       /// Start scan
-      if (widget.autoStartScan) FlMLKitScanningMethodCall.instance.start();
+      if (widget.autoScanning) FlMLKitScanningMethodCall.instance.start();
     }
   }
 
@@ -108,6 +108,7 @@ class _FlMlKitScanningState extends FlCameraState<FlMlKitScanning> {
         oldWidget.onFlashChange != widget.onFlashChange ||
         oldWidget.uninitialized != widget.uninitialized ||
         oldWidget.barcodeFormats != widget.barcodeFormats ||
+        oldWidget.autoScanning != widget.autoScanning ||
         oldWidget.isFullScreen != widget.isFullScreen ||
         oldWidget.onListen != widget.onListen) {
       cameraMethodCall.dispose().then((bool value) {
