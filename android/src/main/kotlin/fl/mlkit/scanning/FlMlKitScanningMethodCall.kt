@@ -130,7 +130,7 @@ class FlMlKitScanningMethodCall(
         get() = mapOf(
             "value" to rawValue,
             "type" to valueType,
-            "cornerPoints" to cornerPoints?.map { corner -> corner.data },
+            "corners" to cornerPoints?.map { corner -> corner.data },
             "boundingBox" to boundingBox?.data,
             "displayValue" to displayValue,
             "format" to format,

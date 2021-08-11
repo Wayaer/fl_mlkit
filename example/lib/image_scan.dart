@@ -53,6 +53,8 @@ class _ImageScanPageState extends State<ImageScanPage> {
       if (data.isNotEmpty) {
         list = data;
         setState(() {});
+      } else {
+        showToast('no data');
       }
     }
   }

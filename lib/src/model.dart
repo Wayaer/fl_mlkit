@@ -12,6 +12,7 @@ class BarcodeModel {
         format = toFormat(data['format'] as int?),
         bytes = data['bytes'] as Uint8List?,
         value = data['value'] as String?,
+        boundingBox = toRect(data['boundingBox'] as Map<dynamic, dynamic>?),
         type = data['type'] != null
             ? BarcodeType.values[data['type'] as int]
             : null,
@@ -37,6 +38,9 @@ class BarcodeModel {
 
   /// Returns barcode format
   final BarcodeFormat? format;
+
+  /// Returns barcode boundingBox
+  final Rect? boundingBox;
 
   /// Returns raw bytes as it was encoded in the barcode.
   ///

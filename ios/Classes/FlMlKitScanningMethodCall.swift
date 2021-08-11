@@ -152,9 +152,21 @@ extension CVBuffer {
     }
 }
 
+extension CGRect {
+    var data: [String: Any?] {
+        return [
+            "x": origin.x,
+            "y": origin.y,
+            "width": width,
+            "height": height
+        ]
+    }
+}
+
 extension Barcode {
     var data: [String: Any?] {
-        return ["cornerPoints": cornerPoints?.map { $0.cgPointValue.data }, "format": format.rawValue, "bytes": rawData, "value": rawValue, "type": valueType.rawValue, "calendarEvent": calendarEvent?.data, "contactInfo": contactInfo?.data, "driverLicense": driverLicense?.data, "email": email?.data, "geoPoint": geoPoint?.data, "phone": phone?.data, "sms": sms?.data, "url": url?.data, "wifi": wifi?.data]
+        return ["corners": cornerPoints?.map { $0.cgPointValue.data }, "format": format.rawValue, "bytes": rawData, "value": rawValue, "type": valueType.rawValue, "calendarEvent": calendarEvent?.data, "contactInfo": contactInfo?.data, "driverLicense": driverLicense?.data, "email": email?.data, "geoPoint": geoPoint?.data, "phone": phone?.data, "sms": sms?.data, "url": url?.data, "wifi": wifi?.data,
+                "boundingBox": frame.data]
     }
 }
 

@@ -1,3 +1,5 @@
+## [1.0.1]
+ * fix the problem that there is no data in the boundingbox
 ## [1.0.0]
  * upgrade Android Gradle
 ## [0.0.6]

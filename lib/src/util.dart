@@ -1,9 +1,24 @@
 part of '../fl_mlkit_scanning.dart';
 
-Size toSize(Map<dynamic, dynamic> data) {
-  final double? width = data['width'] as double?;
-  final double? height = data['height'] as double?;
-  return Size(width ?? 0, height ?? 0);
+Rect? toRect(Map<dynamic, dynamic>? data) {
+  if (data == null) {
+    return null;
+  } else {
+    if (_isAndroid) {
+      final int left = (data['left'] as int?) ?? 0;
+      final int top = (data['top'] as int?) ?? 0;
+      final int right = (data['right'] as int?) ?? 0;
+      final int bottom = (data['bottom'] as int?) ?? 0;
+      return Rect.fromLTRB(
+          left.toDouble(), top.toDouble(), right.toDouble(), bottom.toDouble());
+    } else if (_isIOS) {
+      final double x = (data['x'] as double?) ?? 0;
+      final double y = (data['y'] as double?) ?? 0;
+      final double width = (data['width'] as double?) ?? 0;
+      final double height = (data['height'] as double?) ?? 0;
+      return Rect.fromPoints(Offset(x, y), Offset(x + width, y + height));
+    }
+  }
 }
 
 List<Offset>? toCorners(List<dynamic>? data) => data != null

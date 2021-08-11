@@ -97,6 +97,12 @@ class ShowCode extends StatelessWidget {
             Text('value:${entry.value.value}').sizedBox(width: double.infinity),
             const SizedBox(height: 6),
             Text('type:${entry.value.type}').sizedBox(width: double.infinity),
+            Text('boundingBox:${entry.value.boundingBox?.size}')
+                .sizedBox(width: double.infinity),
+            Text('boundingBox:${entry.value.boundingBox}')
+                .sizedBox(width: double.infinity),
+            Text('corners:${entry.value.corners}')
+                .sizedBox(width: double.infinity),
           ]);
         }));
   }
