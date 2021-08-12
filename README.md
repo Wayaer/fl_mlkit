@@ -94,6 +94,10 @@ void func() {
   /// Turn flash on / off
   FlMlKitScanningMethodCall.instance.setFlashMode();
 
+  /// 相机缩放
+  /// Camera zoom
+  FlMlKitScanningMethodCall.instance.setZoomRatio();
+  
   /// 暂停扫描
   /// Pause scanning
   FlMlKitScanningMethodCall.instance.pause();
