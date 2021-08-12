@@ -11,20 +11,14 @@ class FlMlKitScanning extends StatefulWidget {
     this.uninitialized,
     this.onFlashChange,
     this.isFullScreen = true,
-    this.useBackCamera = true,
-    this.zoomQuality = ZoomQuality.low,
     this.autoScanning = true,
+    this.onZoomChange,
+    this.updateReset = false,
+    this.camera,
+    this.resolution = CameraResolution.high,
   })  : barcodeFormats =
             barcodeFormats ?? <BarcodeFormat>[BarcodeFormat.qr_code],
         super(key: key);
-
-  /// 是否使用后置摄像头
-  /// Using the back camera
-  final bool useBackCamera;
-
-  /// 相机预览缩放质量
-  /// Camera preview zoom quality
-  final ZoomQuality zoomQuality;
 
   /// 码识别回调
   /// Identify callback
@@ -45,13 +39,29 @@ class FlMlKitScanning extends StatefulWidget {
   /// Flash change
   final ValueChanged<FlashState>? onFlashChange;
 
+  /// 缩放变化
+  /// zoom ratio
+  final ValueChanged<CameraZoomState>? onZoomChange;
+
   /// 是否全屏
   /// Full screen
   final bool isFullScreen;
 
+  /// 更新组件时是否重置相机
+  /// Reset camera when updating components
+  final bool updateReset;
+
   /// 是否自动扫描 默认为[true]
   /// Auto scan defaults to [true]
   final bool autoScanning;
+
+  /// 需要预览的相机
+  /// Camera ID to preview
+  final CameraInfo? camera;
+
+  /// 预览相机支持的分辨率
+  /// Preview the resolution supported by the camera
+  final CameraResolution resolution;
 
   @override
   _FlMlKitScanningState createState() => _FlMlKitScanningState();
@@ -76,12 +86,14 @@ class _FlMlKitScanningState extends FlCameraState<FlMlKitScanning> {
     await setBarcodeFormat();
 
     /// Initialize camera
-    if (await initCamera()) {
+    initCamera(camera: widget.camera, resolution: widget.resolution)
+        .then((bool value) {
+      if (!value) return;
       setState(() {});
 
       /// Start scan
       if (widget.autoScanning) FlMlKitScanningMethodCall.instance.start();
-    }
+    });
   }
 
   Future<void> setBarcodeFormat() => FlMlKitScanningMethodCall.instance
@@ -96,6 +108,12 @@ class _FlMlKitScanningState extends FlCameraState<FlMlKitScanning> {
   }
 
   @override
+  void onZoomChange(CameraZoomState state) {
+    super.onZoomChange(state);
+    if (widget.onZoomChange != null) widget.onZoomChange!(state);
+  }
+
+  @override
   void onFlashChange(FlashState state) {
     super.onFlashChange(state);
     if (widget.onFlashChange != null) widget.onFlashChange!(state);
@@ -106,14 +124,18 @@ class _FlMlKitScanningState extends FlCameraState<FlMlKitScanning> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.overlay != widget.overlay ||
         oldWidget.onFlashChange != widget.onFlashChange ||
+        oldWidget.onZoomChange != widget.onZoomChange ||
+        oldWidget.camera != widget.camera ||
+        oldWidget.resolution != widget.resolution ||
         oldWidget.uninitialized != widget.uninitialized ||
         oldWidget.barcodeFormats != widget.barcodeFormats ||
         oldWidget.autoScanning != widget.autoScanning ||
         oldWidget.isFullScreen != widget.isFullScreen ||
         oldWidget.onListen != widget.onListen) {
-      cameraMethodCall.dispose().then((bool value) {
-        if (value) init();
-      });
+      if (widget.updateReset)
+        cameraMethodCall.dispose().then((bool value) {
+          if (value) init();
+        });
     }
   }
 
@@ -135,5 +157,11 @@ class _FlMlKitScanningState extends FlCameraState<FlMlKitScanning> {
         SizedBox.expand(child: widget.overlay),
       ]);
     return camera;
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    FlMlKitScanningMethodCall.instance.pause();
   }
 }

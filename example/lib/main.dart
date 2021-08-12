@@ -1,5 +1,6 @@
 import 'package:example/camera_scan.dart';
 import 'package:example/image_scan.dart';
+import 'package:example/mlkit_scanning.dart';
 import 'package:fl_mlkit_scanning/fl_mlkit_scanning.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
@@ -155,85 +156,4 @@ class ElevatedText extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
       ElevatedButton(onPressed: onPressed, child: Text(text));
-}
-
-class FlMlKitScanningPage extends StatelessWidget {
-  const FlMlKitScanningPage({Key? key, this.barcodeFormats}) : super(key: key);
-  final List<BarcodeFormat>? barcodeFormats;
-
-  @override
-  Widget build(BuildContext context) {
-    final List<BarcodeModel> list = <BarcodeModel>[];
-    return ExtendedScaffold(
-        onWillPop: () async {
-          return false;
-        },
-        body: Stack(children: <Widget>[
-          FlMlKitScanning(
-              overlay: const ScannerLine(),
-              onFlashChange: (FlashState state) {
-                showToast('$state');
-              },
-              autoScanning: false,
-              barcodeFormats: barcodeFormats,
-              isFullScreen: true,
-              uninitialized: Container(
-                  color: Colors.black,
-                  alignment: Alignment.center,
-                  child: const Text('Camera not initialized',
-                      style: TextStyle(color: Colors.white))),
-              onListen: (List<BarcodeModel> barcodes) {
-                if (barcodes.isNotEmpty) {
-                  list.addAll(barcodes);
-                  showToast(barcodes.first.value ?? 'unknown');
-                }
-              }),
-          Align(
-              alignment: Alignment.bottomCenter,
-              child: ValueBuilder<bool>(
-                  initialValue: false,
-                  builder: (_, bool? value, ValueCallback<bool> updater) {
-                    value ??= false;
-                    return IconBox(
-                        size: 30,
-                        color: value
-                            ? Colors.white
-                            : Colors.white.withOpacity(0.6),
-                        padding: const EdgeInsets.fromLTRB(10, 10, 10, 40),
-                        icon: value ? Icons.flash_on : Icons.flash_off,
-                        onTap: () async {
-                          final bool state = await FlMlKitScanningMethodCall
-                              .instance
-                              .setFlashMode(!value!);
-                          if (state) updater(!value);
-                        });
-                  })),
-          Positioned(
-              left: 12,
-              top: getStatusBarHeight + 12,
-              child: BackButton(
-                  color: Colors.white,
-                  onPressed: () {
-                    pop(list.toSet().toList());
-                  })),
-          Positioned(
-            right: 12,
-            top: getStatusBarHeight + 12,
-            child: ValueBuilder<bool>(
-                initialValue: false,
-                builder: (_, bool? value, ValueCallback<bool> updater) {
-                  value ??= false;
-                  return ElevatedText(
-                    text: value ? 'pause' : 'start',
-                    onPressed: () async {
-                      final bool data = value!
-                          ? await FlMlKitScanningMethodCall.instance.pause()
-                          : await FlMlKitScanningMethodCall.instance.start();
-                      if (data) updater(!value);
-                    },
-                  );
-                }),
-          )
-        ]));
-  }
 }

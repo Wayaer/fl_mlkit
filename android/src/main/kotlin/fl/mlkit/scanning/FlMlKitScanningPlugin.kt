@@ -20,7 +20,7 @@ class FlMlKitScanningPlugin : FlutterPlugin, ActivityAware {
 
 
     override fun onAttachedToActivity(pluginBinding: ActivityPluginBinding) {
-        channel.setMethodCallHandler(FlMlKitScanningMethodCall(pluginBinding, plugin!!))
+        channel.setMethodCallHandler(FlMlKitScanningMethodCall(pluginBinding.activity, plugin!!))
     }
 
     override fun onDetachedFromActivityForConfigChanges() {

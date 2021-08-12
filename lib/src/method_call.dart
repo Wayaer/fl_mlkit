@@ -44,7 +44,7 @@ class FlMlKitScanningMethodCall {
     if (!_supportPlatform) return <BarcodeModel>[];
     if (useEvent) {
       assert(
-          FLCameraEvent.instance.isPaused, 'Please initialize FLCameraEvent');
+          FlCameraEvent.instance.isPaused, 'Please initialize FLCameraEvent');
     }
     final dynamic list = await _channel.invokeMethod<dynamic>(
         'scanImageByte', <String, dynamic>{
@@ -60,6 +60,11 @@ class FlMlKitScanningMethodCall {
   /// Turn flash on / off
   Future<bool> setFlashMode(bool status) =>
       FlCameraMethodCall.instance.setFlashMode(status);
+
+  /// 相机缩放
+  /// Camera zoom
+  Future<bool> setZoomRatio(double ratio) =>
+      FlCameraMethodCall.instance.setZoomRatio(ratio);
 
   /// 暂停扫描
   /// Pause scanning

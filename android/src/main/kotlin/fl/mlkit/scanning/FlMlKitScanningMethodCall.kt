@@ -1,9 +1,11 @@
 package fl.mlkit.scanning
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.graphics.BitmapFactory
 import android.graphics.Point
 import android.graphics.Rect
+import android.util.Log
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import com.google.mlkit.vision.barcode.Barcode
@@ -13,15 +15,14 @@ import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
 import fl.camera.FlCameraMethodCall
 import io.flutter.embedding.engine.plugins.FlutterPlugin
-import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 
 class FlMlKitScanningMethodCall(
-    activityPlugin: ActivityPluginBinding,
+    activity: Activity,
     plugin: FlutterPlugin.FlutterPluginBinding
 ) :
-    FlCameraMethodCall(activityPlugin, plugin) {
+    FlCameraMethodCall(activity, plugin) {
 
     private var options: BarcodeScannerOptions =
         BarcodeScannerOptions.Builder().setBarcodeFormats(Barcode.FORMAT_QR_CODE).build()
@@ -112,6 +113,7 @@ class FlMlKitScanningMethodCall(
         val scanner: BarcodeScanner = BarcodeScanning.getClient(options)
         scanner.process(inputImage)
             .addOnSuccessListener { barcodes ->
+                Log.d("imageProxy", imageProxy?.width.toString() + "==" + imageProxy?.height.toString())
                 for (barcode in barcodes) {
                     barcodeList.add(barcode.data)
                 }
@@ -146,7 +148,11 @@ class FlMlKitScanningMethodCall(
             "bytes" to rawBytes,
         )
     private val Rect.data: Map<String, Int>
-        get() = mapOf("top" to top, "bottom" to bottom, "left" to left, "right" to right)
+        get() = mapOf(
+            "top" to top, "bottom" to bottom, "left" to left, "right" to right,
+            "width" to width(),
+            "height" to height()
+        )
 
     private val Point.data: Map<String, Double>
         get() = mapOf("x" to x.toDouble(), "y" to y.toDouble())

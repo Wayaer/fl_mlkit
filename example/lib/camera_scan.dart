@@ -13,7 +13,7 @@ class _CameraScanPageState extends State<CameraScanPage> {
   CameraController? controller;
   int time = 0;
   bool hasImageStream = false;
-  FLCameraEvent? event;
+  FlCameraEvent? event;
   int currentTime = 0;
 
   @override
@@ -26,7 +26,7 @@ class _CameraScanPageState extends State<CameraScanPage> {
   }
 
   Future<void> initEvent() async {
-    event = FLCameraEvent.instance;
+    event = FlCameraEvent.instance;
     final bool state = await event!.initialize();
     if (!state) return;
     event!.addListener((dynamic value) {

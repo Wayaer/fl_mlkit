@@ -4,6 +4,9 @@ List<BarcodeModel> getBarcodeModelList(List<dynamic> list) => list
     .map((dynamic item) => BarcodeModel.fromMap(item as Map<dynamic, dynamic>))
     .toList();
 
+
+
+
 /// Represents a single recognized barcode and its value.
 class BarcodeModel {
   /// Create a [Barcode] from native data.
@@ -12,6 +15,7 @@ class BarcodeModel {
         format = toFormat(data['format'] as int?),
         bytes = data['bytes'] as Uint8List?,
         value = data['value'] as String?,
+        displayValue = data['displayValue'] as String?,
         boundingBox = toRect(data['boundingBox'] as Map<dynamic, dynamic>?),
         type = data['type'] != null
             ? BarcodeType.values[data['type'] as int]
@@ -39,7 +43,9 @@ class BarcodeModel {
   /// Returns barcode format
   final BarcodeFormat? format;
 
-  /// Returns barcode boundingBox
+  /// Gets the bounding rectangle of the detected barcode.
+  ///
+  /// Returns null if the bounding rectangle can not be determined.
   final Rect? boundingBox;
 
   /// Returns raw bytes as it was encoded in the barcode.
@@ -53,6 +59,13 @@ class BarcodeModel {
   ///
   /// Returns null if the raw value can not be determined.
   final String? value;
+
+  /// Returns barcode value in a user-friendly format.
+  /// This method may omit some of the information encoded in the barcode. For example, if getRawValue() returns 'MEBKM:TITLE:Google;URL://www.google.com;;', the display value might be '//www.google.com'.
+  /// This value may be multiline, for example, when line breaks are encoded
+  /// into the original TEXT barcode value. May include the supplement value.
+  ///  Returns null if nothing found.
+  final String? displayValue;
 
   /// Returns format type of the barcode value.
   ///
