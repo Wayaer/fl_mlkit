@@ -1,15 +1,15 @@
 # fl_mlkit_scanning
 
-基于[Google ML Kit](https://developers.google.com/ml-kit/vision/barcode-scanning)实现快速稳定扫码功能，支持Android \ IOS 
+基于[Google ML Kit](https://developers.google.com/ml-kit/vision/barcode-scanning)实现快速稳定扫码功能，支持Android\IOS
 
 Realize fast and stable code scanning function based on [Google ML Kit](https://developers.google.com/ml-kit/vision/barcode-scanning), and support Android \ IOS
 
 ### 使用 use
 
-- ios 添加相机权限  Add camera permissions to IOS
+- ios 添加相机权限 Add camera permissions to IOS
 
-```xml
-<key>NSCameraUsageDescription</key>    
+```plist
+<key>NSCameraUsageDescription</key>
 <string>是否允许FlMlKitScanning使用你的相机？</string>
 ```
 
@@ -20,13 +20,13 @@ Realize fast and stable code scanning function based on [Google ML Kit](https://
 Widget build(BuildContext context) {
   return FlMlKitScanning(
 
-      /// 相机预览缩放质量
-      ///  Camera preview zoom quality
-      zoomQuality: ZoomQuality.low,
+    /// 需要预览的相机
+    /// Camera ID to preview
+      camera: camera,
 
-      /// 是否使用后置摄像头
-      /// Using the back camera
-      useBackCamera: true,
+      /// 预览相机支持的分辨率
+      /// Preview the resolution supported by the camera
+      resolution: CameraResolution.high,
 
       /// 是否自动扫描 默认为[true]
       /// Auto scan defaults to [true]
@@ -42,6 +42,12 @@ Widget build(BuildContext context) {
 
       /// 闪光灯状态
       /// Flash status
+      onFlashChange: (FlashState state) {
+        showToast('$state');
+      },
+
+      /// 缩放变化
+      /// zoom ratio
       onFlashChange: (FlashState state) {
         showToast('$state');
       },
@@ -75,7 +81,7 @@ Widget build(BuildContext context) {
 
 ```dart
 void func() {
-  
+
   /// 设置设别码类型
   /// Set type
   FlMlKitScanningMethodCall.instance.setBarcodeFormat();
@@ -95,7 +101,6 @@ void func() {
   /// 开始扫描
   /// Start scanncing
   FlMlKitScanningMethodCall.instance.start();
-  
 }
 
 ```
