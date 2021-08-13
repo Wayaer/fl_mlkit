@@ -31,7 +31,6 @@ class _CameraScanPageState extends State<CameraScanPage> {
     if (!state) return;
     event!.addListener((dynamic value) {
       log('Received a message from native== $value');
-      log(value.runtimeType);
       if (value != null && hasImageStream) {
         // final Barcode scanResult =
         // Barcode.fromJson(value as Map<dynamic, dynamic>);
