@@ -50,7 +50,7 @@ class _AppState extends State<_App> {
                     BarcodeFormat.ean8,
                     BarcodeFormat.ean13,
                   ]),
-              text: 'Camera identification bar code'),
+              text: 'Camera identification Bar code'),
           const SizedBox(height: 30),
           ShowCode(list)
         ]);

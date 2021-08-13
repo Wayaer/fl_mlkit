@@ -94,6 +94,7 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
                             final bool state = await FlMlKitScanningMethodCall
                                 .instance
                                 .setFlashMode(!flashState);
+                            flashState = !flashState;
                             if (state) zoomState!(() {});
                           })
                     ]);
@@ -119,6 +120,10 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
                                   : await FlMlKitScanningMethodCall.instance
                                       .start();
                               if (data) updater(!value);
+                              if (value) {
+                                model = null;
+                                controller.reset();
+                              }
                             },
                           );
                         }),
@@ -153,7 +158,6 @@ class _RectBox extends StatelessWidget {
     double h = model.height!.toDouble();
     w = w / getDevicePixelRatio;
     h = h / getDevicePixelRatio;
-    log(w.toString() + '===' + h.toString());
     return Universal(
         alignment: Alignment.center,
         child: CustomPaint(size: Size(w, h), painter: _LinePainter(rect)));
@@ -177,8 +181,6 @@ class _LinePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    log('Size==_LinePainter' + size.toString());
-
     final Paint paint = Paint()
       ..color = Colors.red
       ..style = PaintingStyle.stroke
@@ -209,8 +211,6 @@ class _BoxPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    log('Size==_BoxPainter' + size.toString());
-
     final Offset o0 = Offset(corners[0].dx / getDevicePixelRatio,
         corners[0].dy / getDevicePixelRatio);
     final Offset o1 = Offset(corners[1].dx / getDevicePixelRatio,
