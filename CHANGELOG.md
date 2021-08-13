@@ -6,6 +6,7 @@
    The rear camera is used by default
  * remove zoomquality, add resolution, and set the resolution you need, 
  * add updatereset. Do you need to reinitialize the camera preview when calling didupdatewidget
+ * Update [fl_camera](https://pub.dev/packages/fl_camera)
 ## [1.0.1]
  * fix the problem that there is no data in the boundingbox
 ## [1.0.0]

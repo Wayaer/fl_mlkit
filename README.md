@@ -4,6 +4,11 @@
 
 Realize fast and stable code scanning function based on [Google ML Kit](https://developers.google.com/ml-kit/vision/barcode-scanning), and support Android \ IOS
 
+相机相关功能依赖于 [fl_camera](https://pub.dev/packages/fl_camera) 
+
+Camera related functions depend on [fl_camera](https://pub.dev/packages/fl_camera)
+
+
 ### 使用 use
 
 - ios 添加相机权限 Add camera permissions to IOS

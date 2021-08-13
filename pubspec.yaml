@@ -8,13 +8,11 @@ environment:
   flutter: '>=2.0.0'
 
 dependencies:
-  fl_camera:
-    path: ../fl_camera
+  fl_camera: ^1.1.0
   flutter:
     sdk: flutter
 
 flutter:
-
   plugin:
     platforms:
       android:
