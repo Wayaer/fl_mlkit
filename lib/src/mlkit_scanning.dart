@@ -1,6 +1,6 @@
 part of '../fl_mlkit_scanning.dart';
 
-typedef EventBarcodeListen = void Function(List<BarcodeModel> barcodes);
+typedef EventBarcodeListen = void Function(AnalysisImageModel data);
 
 class FlMlKitScanning extends StatefulWidget {
   FlMlKitScanning({
@@ -10,7 +10,7 @@ class FlMlKitScanning extends StatefulWidget {
     this.overlay,
     this.uninitialized,
     this.onFlashChange,
-    this.isFullScreen = true,
+    this.isFullScreen = false,
     this.autoScanning = true,
     this.onZoomChange,
     this.updateReset = false,
@@ -101,9 +101,9 @@ class _FlMlKitScanningState extends FlCameraState<FlMlKitScanning> {
 
   void eventListen(dynamic data) {
     if (widget.onListen != null) {
-      final List<BarcodeModel> barcodes =
-          getBarcodeModelList((data as List<dynamic>?) ?? <BarcodeModel>[]);
-      widget.onListen!(barcodes);
+      if (data is Map) {
+        widget.onListen!(AnalysisImageModel.fromMap(data));
+      }
     }
   }
 

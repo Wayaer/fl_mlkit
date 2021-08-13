@@ -67,8 +67,9 @@ Widget build(BuildContext context) {
 
       /// 扫码回调
       /// Code scanning callback
-      onListen: (List<BarcodeModel> barcodes) {
-        if (barcodes.isNotEmpty) {
+      onListen: (AnalysisImageModel data) {
+        final List<Barcode>? barcodes = data.barcodes;
+        if (barcodes != null && barcodes.isNotEmpty) {
           /// 返回数组 可识别多个码
           /// Return array
         }

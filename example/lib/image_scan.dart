@@ -14,7 +14,7 @@ class ImageScanPage extends StatefulWidget {
 
 class _ImageScanPageState extends State<ImageScanPage> {
   String? path;
-  List<BarcodeModel>? list;
+  List<Barcode>? list;
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +36,7 @@ class _ImageScanPageState extends State<ImageScanPage> {
           const SizedBox(height: 20),
           if (list != null && list!.isEmpty)
             const ShowText('Unrecognized', 'Unrecognized'),
-          ShowCode(list ?? <BarcodeModel>[], expanded: false)
+          ShowCode(list ?? <Barcode>[], expanded: false)
         ]);
   }
 
@@ -48,10 +48,10 @@ class _ImageScanPageState extends State<ImageScanPage> {
     if (isIOS) hasPermission = true;
     if (hasPermission) {
       final File file = File(path!);
-      final List<BarcodeModel> data = await FlMlKitScanningMethodCall.instance
+      final AnalysisImageModel? data = await FlMlKitScanningMethodCall.instance
           .scanImageByte(file.readAsBytesSync());
-      if (data.isNotEmpty) {
-        list = data;
+      if (data != null && data.barcodes != null && data.barcodes!.isNotEmpty) {
+        list = data.barcodes;
         setState(() {});
       } else {
         showToast('no data');

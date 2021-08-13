@@ -1,6 +1,6 @@
 part of '../fl_mlkit_scanning.dart';
 
-Rect? toRect(Map<dynamic, dynamic>? data) {
+Rect? getRect(Map<dynamic, dynamic>? data) {
   if (data == null) {
     return null;
   } else {
@@ -21,7 +21,13 @@ Rect? toRect(Map<dynamic, dynamic>? data) {
   }
 }
 
-List<Offset>? toCorners(List<dynamic>? data) => data != null
+List<Barcode>? getBarcodeList(List<dynamic>? data) => data != null
+    ? data
+        .map((dynamic item) => Barcode.fromMap(item as Map<dynamic, dynamic>))
+        .toList()
+    : null;
+
+List<Offset>? getCorners(List<dynamic>? data) => data != null
     ? List<Offset>.unmodifiable(data.map<dynamic>((dynamic e) {
         final double x = e['x'] as double? ?? 0;
         final double y = e['y'] as double? ?? 0;
@@ -29,7 +35,7 @@ List<Offset>? toCorners(List<dynamic>? data) => data != null
       }))
     : null;
 
-BarcodeFormat toFormat(int? value) {
+BarcodeFormat getFormat(int? value) {
   switch (value) {
     case 0:
       return BarcodeFormat.all;
@@ -64,10 +70,10 @@ BarcodeFormat toFormat(int? value) {
   }
 }
 
-CalendarEvent? toCalendarEvent(Map<dynamic, dynamic>? data) =>
+CalendarEvent? getCalendarEvent(Map<dynamic, dynamic>? data) =>
     data != null ? CalendarEvent.fromMap(data) : null;
 
-DateTime? toDateTime(Map<dynamic, dynamic>? data) {
+DateTime? getDateTime(Map<dynamic, dynamic>? data) {
   if (data != null) {
     final int year = data['year'] as int? ?? 0;
     final int month = data['month'] as int? ?? 0;
@@ -84,29 +90,29 @@ DateTime? toDateTime(Map<dynamic, dynamic>? data) {
   }
 }
 
-ContactInfo? toContactInfo(Map<dynamic, dynamic>? data) =>
+ContactInfo? getContactInfo(Map<dynamic, dynamic>? data) =>
     data != null ? ContactInfo.fromMap(data) : null;
 
-PersonName? toName(Map<dynamic, dynamic>? data) =>
+PersonName? getName(Map<dynamic, dynamic>? data) =>
     data != null ? PersonName.fromMap(data) : null;
 
-DriverLicense? toDriverLicense(Map<dynamic, dynamic>? data) =>
+DriverLicense? getDriverLicense(Map<dynamic, dynamic>? data) =>
     data != null ? DriverLicense.fromMap(data) : null;
 
-Email? toEmail(Map<dynamic, dynamic>? data) =>
+Email? getEmail(Map<dynamic, dynamic>? data) =>
     data != null ? Email.fromMap(data) : null;
 
-GeoPoint? toGeoPoint(Map<dynamic, dynamic>? data) =>
+GeoPoint? getGeoPoint(Map<dynamic, dynamic>? data) =>
     data != null ? GeoPoint.fromMap(data) : null;
 
-Phone? toPhone(Map<dynamic, dynamic>? data) =>
+Phone? getPhone(Map<dynamic, dynamic>? data) =>
     data != null ? Phone.fromMap(data) : null;
 
-SMS? toSMS(Map<dynamic, dynamic>? data) =>
+SMS? getSMS(Map<dynamic, dynamic>? data) =>
     data != null ? SMS.fromMap(data) : null;
 
-UrlBookmark? toUrl(Map<dynamic, dynamic>? data) =>
+UrlBookmark? getUrl(Map<dynamic, dynamic>? data) =>
     data != null ? UrlBookmark.fromMap(data) : null;
 
-WiFi? toWiFi(Map<dynamic, dynamic>? data) =>
+WiFi? getWiFi(Map<dynamic, dynamic>? data) =>
     data != null ? WiFi.fromMap(data) : null;

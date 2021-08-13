@@ -17,7 +17,7 @@ class _App extends StatefulWidget {
 }
 
 class _AppState extends State<_App> {
-  List<BarcodeModel> list = <BarcodeModel>[];
+  List<Barcode> list = <Barcode>[];
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +71,7 @@ class _AppState extends State<_App> {
     if (isAndroid) hasPermission = await getPermission(Permission.camera);
     if (isIOS) hasPermission = true;
     if (hasPermission) {
-      final List<BarcodeModel>? data =
+      final List<Barcode>? data =
           await push(FlMlKitScanningPage(barcodeFormats: barcodeFormats));
       if (data != null) {
         list = data;
@@ -83,7 +83,7 @@ class _AppState extends State<_App> {
 
 class ShowCode extends StatelessWidget {
   const ShowCode(this.list, {Key? key, this.expanded = true}) : super(key: key);
-  final List<BarcodeModel> list;
+  final List<Barcode> list;
   final bool expanded;
 
   @override
@@ -91,7 +91,7 @@ class ShowCode extends StatelessWidget {
     return Universal(
         expanded: expanded,
         isScroll: expanded,
-        children: list.builderEntry((MapEntry<int, BarcodeModel> entry) {
+        children: list.builderEntry((MapEntry<int, Barcode> entry) {
           return Column(children: <Widget>[
             Text('NO.${entry.key + 1}'),
             const SizedBox(height: 6),

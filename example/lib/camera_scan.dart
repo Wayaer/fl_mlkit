@@ -33,8 +33,8 @@ class _CameraScanPageState extends State<CameraScanPage> {
       log('Received a message from native== $value');
       log(value.runtimeType);
       if (value != null && hasImageStream) {
-        // final BarcodeModel scanResult =
-        // BarcodeModel.fromJson(value as Map<dynamic, dynamic>);
+        // final Barcode scanResult =
+        // Barcode.fromJson(value as Map<dynamic, dynamic>);
         // showToast(scanResult.code);
       } else {
         showToast(value.toString());

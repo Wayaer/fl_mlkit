@@ -1,37 +1,53 @@
 part of '../fl_mlkit_scanning.dart';
 
-List<BarcodeModel> getBarcodeModelList(List<dynamic> list) => list
-    .map((dynamic item) => BarcodeModel.fromMap(item as Map<dynamic, dynamic>))
-    .toList();
+class AnalysisImageModel {
+  AnalysisImageModel.fromMap(Map<dynamic, dynamic> data)
+      : barcodes = getBarcodeList(data['barcodes'] as List<dynamic>?),
+        height = data['height'] as double?,
+        width = data['width'] as double?;
 
+  /// The coordinate points of [corners] and the boundary line of [boundingbox] are
+  /// based on width and height
+  /// If you need to display the bar code rectangle and coordinate points,
+  /// you must calculate it yourself and determine whether it is a full screen preview
 
+  /// The height of the image from which the barcode is currently parsed
+  /// The position of the barcode is converted to the screen by high
+  double? height;
 
+  /// The width of the image from which the barcode is currently parsed
+  /// The position of the barcode is converted to the screen by width
+  double? width;
+
+  /// Barcode in image
+  List<Barcode>? barcodes;
+}
 
 /// Represents a single recognized barcode and its value.
-class BarcodeModel {
+class Barcode {
   /// Create a [Barcode] from native data.
-  BarcodeModel.fromMap(Map<dynamic, dynamic> data)
-      : corners = toCorners(data['corners'] as List<dynamic>?),
-        format = toFormat(data['format'] as int?),
+  Barcode.fromMap(Map<dynamic, dynamic> data)
+      : corners = getCorners(data['corners'] as List<dynamic>?),
+        format = getFormat(data['format'] as int?),
         bytes = data['bytes'] as Uint8List?,
         value = data['value'] as String?,
         displayValue = data['displayValue'] as String?,
-        boundingBox = toRect(data['boundingBox'] as Map<dynamic, dynamic>?),
+        boundingBox = getRect(data['boundingBox'] as Map<dynamic, dynamic>?),
         type = data['type'] != null
             ? BarcodeType.values[data['type'] as int]
             : null,
         calendarEvent =
-            toCalendarEvent(data['calendarEvent'] as Map<dynamic, dynamic>?),
+            getCalendarEvent(data['calendarEvent'] as Map<dynamic, dynamic>?),
         contactInfo =
-            toContactInfo(data['contactInfo'] as Map<dynamic, dynamic>?),
+            getContactInfo(data['contactInfo'] as Map<dynamic, dynamic>?),
         driverLicense =
-            toDriverLicense(data['driverLicense'] as Map<dynamic, dynamic>?),
-        email = toEmail(data['email'] as Map<dynamic, dynamic>?),
-        geoPoint = toGeoPoint(data['geoPoint'] as Map<dynamic, dynamic>?),
-        phone = toPhone(data['phone'] as Map<dynamic, dynamic>?),
-        sms = toSMS(data['sms'] as Map<dynamic, dynamic>?),
-        url = toUrl(data['url'] as Map<dynamic, dynamic>?),
-        wifi = toWiFi(data['wifi'] as Map<dynamic, dynamic>?);
+            getDriverLicense(data['driverLicense'] as Map<dynamic, dynamic>?),
+        email = getEmail(data['email'] as Map<dynamic, dynamic>?),
+        geoPoint = getGeoPoint(data['geoPoint'] as Map<dynamic, dynamic>?),
+        phone = getPhone(data['phone'] as Map<dynamic, dynamic>?),
+        sms = getSMS(data['sms'] as Map<dynamic, dynamic>?),
+        url = getUrl(data['url'] as Map<dynamic, dynamic>?),
+        wifi = getWiFi(data['wifi'] as Map<dynamic, dynamic>?);
 
   /// Returns four corner points in clockwise direction starting with top-left.
   ///
@@ -166,7 +182,7 @@ class ContactInfo {
                 .map<dynamic>(
                     (dynamic e) => Email.fromMap(e as Map<dynamic, dynamic>)))
             : null,
-        name = toName(data['name'] as Map<dynamic, dynamic>?),
+        name = getName(data['name'] as Map<dynamic, dynamic>?),
         organization = data['organization'] as String?,
         phones = List<Phone>.unmodifiable((data['phones'] as List<dynamic>)
             .map<dynamic>(

@@ -13,12 +13,8 @@ class FlMlKitScanningPage extends StatefulWidget {
 
 class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
     with TickerProviderStateMixin {
-  final List<BarcodeModel> list = <BarcodeModel>[];
-  Rect? boundingBox;
-  List<Offset>? corners;
-
   late AnimationController controller;
-
+  AnalysisImageModel? model;
   double ratio = 1;
   double? maxRatio;
   StateSetter? zoomState;
@@ -49,42 +45,27 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
                   zoomState!(() {});
                 }
               },
-              resolution: CameraResolution.high,
+              resolution: CameraResolution.veryHigh,
               autoScanning: false,
               barcodeFormats: widget.barcodeFormats,
-              isFullScreen: true,
+              isFullScreen: false,
               uninitialized: Container(
                   color: Colors.black,
                   alignment: Alignment.center,
                   child: const Text('Camera not initialized',
                       style: TextStyle(color: Colors.white))),
-              onListen: (List<BarcodeModel> barcodes) {
-                if (barcodes.isNotEmpty) {
-                  list.addAll(barcodes);
+              onListen: (AnalysisImageModel data) {
+                final List<Barcode>? barcodes = data.barcodes;
+                if (barcodes != null && barcodes.isNotEmpty) {
                   showToast(barcodes.first.value ?? 'unknown');
-                  corners = barcodes.first.corners;
-                  boundingBox = barcodes.first.boundingBox;
+                  model = data;
                   controller.reset();
                 }
               }),
           AnimatedBuilder(
               animation: controller,
-              builder: (_, Widget? child) {
-                return Universal(
-                    expand: true,
-                    isStack: true,
-                    children: <Widget>[
-                      if (boundingBox != null)
-                        Universal(
-                            expand: true,
-                            child: CustomPaint(
-                                painter: _LinePainter(boundingBox!))),
-                      if (corners != null)
-                        Universal(
-                            expand: true,
-                            child: CustomPaint(painter: _BoxPainter(corners!))),
-                    ]);
-              }),
+              builder: (_, __) =>
+                  model != null ? _RectBox(model!) : const SizedBox()),
           Align(
               alignment: Alignment.bottomCenter,
               child: StatefulBuilder(builder: (_, StateSetter state) {
@@ -124,11 +105,7 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
               child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    BackButton(
-                        color: Colors.white,
-                        onPressed: () {
-                          pop(list.toSet().toList());
-                        }),
+                    const BackButton(color: Colors.white, onPressed: pop),
                     ValueBuilder<bool>(
                         initialValue: false,
                         builder: (_, bool? value, ValueCallback<bool> updater) {
@@ -156,6 +133,43 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
   }
 }
 
+class _RectBox extends StatelessWidget {
+  const _RectBox(this.model, {Key? key}) : super(key: key);
+  final AnalysisImageModel model;
+
+  @override
+  Widget build(BuildContext context) {
+    final List<Barcode> barcodes = model.barcodes ?? <Barcode>[];
+    final List<Widget> children = <Widget>[];
+    for (final Barcode barcode in barcodes) {
+      children.add(boundingBox(barcode.boundingBox!));
+      children.add(corners(barcode.corners!));
+    }
+    return Universal(expand: true, isStack: true, children: children);
+  }
+
+  Widget boundingBox(Rect rect) {
+    double w = model.width!.toDouble();
+    double h = model.height!.toDouble();
+    w = w / getDevicePixelRatio;
+    h = h / getDevicePixelRatio;
+    log(w.toString() + '===' + h.toString());
+    return Universal(
+        alignment: Alignment.center,
+        child: CustomPaint(size: Size(w, h), painter: _LinePainter(rect)));
+  }
+
+  Widget corners(List<Offset> corners) {
+    double w = model.width!.toDouble();
+    double h = model.height!.toDouble();
+    w = w / getDevicePixelRatio;
+    h = h / getDevicePixelRatio;
+    return Universal(
+        alignment: Alignment.center,
+        child: CustomPaint(size: Size(w, h), painter: _BoxPainter(corners)));
+  }
+}
+
 class _LinePainter extends CustomPainter {
   _LinePainter(this.rect);
 
@@ -163,6 +177,8 @@ class _LinePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    log('Size==_LinePainter' + size.toString());
+
     final Paint paint = Paint()
       ..color = Colors.red
       ..style = PaintingStyle.stroke
@@ -193,6 +209,8 @@ class _BoxPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    log('Size==_BoxPainter' + size.toString());
+
     final Offset o0 = Offset(corners[0].dx / getDevicePixelRatio,
         corners[0].dy / getDevicePixelRatio);
     final Offset o1 = Offset(corners[1].dx / getDevicePixelRatio,

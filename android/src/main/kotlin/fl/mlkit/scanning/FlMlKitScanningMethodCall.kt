@@ -5,7 +5,6 @@ import android.app.Activity
 import android.graphics.BitmapFactory
 import android.graphics.Point
 import android.graphics.Rect
-import android.util.Log
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import com.google.mlkit.vision.barcode.Barcode
@@ -109,21 +108,33 @@ class FlMlKitScanningMethodCall(
         result: MethodChannel.Result?,
         imageProxy: ImageProxy?
     ) {
-        val barcodeList: ArrayList<Map<String, Any?>> = ArrayList()
+        val list: ArrayList<Map<String, Any?>> = ArrayList()
         val scanner: BarcodeScanner = BarcodeScanning.getClient(options)
         scanner.process(inputImage)
             .addOnSuccessListener { barcodes ->
-                Log.d("imageProxy", imageProxy?.width.toString() + "==" + imageProxy?.height.toString())
                 for (barcode in barcodes) {
-                    barcodeList.add(barcode.data)
+                    list.add(barcode.data)
                 }
+                var width = inputImage.width
+                var height = inputImage.height
+                if (width > height) {
+                    width -= height
+                    height += width
+                    width = height - width
+                }
+
+                val map = mapOf(
+                    "height" to height.toDouble(),
+                    "width" to width.toDouble(),
+                    "barcodes" to list
+                )
                 if (result == null) {
-                    flCameraEvent?.sendEvent(barcodeList)
+                    flCameraEvent?.sendEvent(map)
                 } else {
-                    result.success(barcodeList)
+                    result.success(map)
                 }
             }
-            .addOnFailureListener { result?.success(barcodeList) }
+            .addOnFailureListener { result?.success(null) }
             .addOnCompleteListener { imageProxy?.close() }
     }
 

@@ -20,8 +20,7 @@ class FlMlKitScanningMethodCall: FlCameraMethodCall {
                 if !analyzing, scan {
                     analyzing = true
                     let buffer = CMSampleBufferGetImageBuffer(sampleBuffer)
-                    let image = VisionImage(image: buffer!.image)
-                    self.analysis(image, nil)
+                    self.analysis(buffer!.image, nil)
                 }
             }, call: call, result)
         case "setBarcodeFormat":
@@ -34,7 +33,7 @@ class FlMlKitScanningMethodCall: FlCameraMethodCall {
             if uint8list != nil {
                 let image = UIImage(data: uint8list!.data)
                 if image != nil {
-                    analysis(VisionImage(image: image!), useEvent ? nil : result)
+                    analysis(image!, useEvent ? nil : result)
                     return
                 }
             }
@@ -95,23 +94,30 @@ class FlMlKitScanningMethodCall: FlCameraMethodCall {
         }
     }
 
-    func analysis(_ image: VisionImage, _ result: FlutterResult?) {
+    func analysis(_ image: UIImage, _ result: FlutterResult?) {
+        let visionImage = VisionImage(image: image)
         if flCamera == nil {
-            image.orientation = .up
+            visionImage.orientation = .up
         } else {
-            image.orientation = flCamera!.imageOrientation()
+            visionImage.orientation = flCamera!.imageOrientation()
         }
         let scanner = BarcodeScanner.barcodeScanner(options: options)
-        scanner.process(image) { [self] barcodes, error in
+        scanner.process(visionImage) { [self] barcodes, error in
             if error == nil, barcodes != nil {
                 var list = [[String: Any?]]()
                 for barcode in barcodes! {
                     list.append(barcode.data)
                 }
+                let map = [
+                    "height": image.size.height,
+                    "width": image.size.width,
+                    "barcodes": list
+                ] as [String: Any?]
+
                 if result == nil {
-                    flCameraEvent?.sendEvent(list)
+                    flCameraEvent?.sendEvent(map)
                 } else {
-                    result!(list)
+                    result!(map)
                 }
             }
             analyzing = false
