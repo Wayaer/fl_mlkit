@@ -1,6 +1,6 @@
 ## [2.0.0]
  * add camera zoom function and add [onZoomChange]
- * modify the [onListen] callback value and add the width and height of the 
+ * modify the *[onListen*] callback value and add the width and height of the 
    parsed picture to calculate the bar code rectangle and coordinate points displayed on the screen
  * remove [useBackCamera], add [availableCameras] and select the camera you need.
    The rear camera is used by default
