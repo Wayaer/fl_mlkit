@@ -10,12 +10,12 @@ class FlMlKitScanning extends StatefulWidget {
     this.overlay,
     this.uninitialized,
     this.onFlashChange,
-    this.isFullScreen = false,
     this.autoScanning = true,
     this.onZoomChange,
     this.updateReset = false,
     this.camera,
     this.resolution = CameraResolution.high,
+    this.fit = BoxFit.fitWidth,
   })  : barcodeFormats =
             barcodeFormats ?? <BarcodeFormat>[BarcodeFormat.qr_code],
         super(key: key);
@@ -43,10 +43,6 @@ class FlMlKitScanning extends StatefulWidget {
   /// zoom ratio
   final ValueChanged<CameraZoomState>? onZoomChange;
 
-  /// 是否全屏
-  /// Full screen
-  final bool isFullScreen;
-
   /// 更新组件时是否重置相机
   /// Reset camera when updating components
   final bool updateReset;
@@ -63,6 +59,9 @@ class FlMlKitScanning extends StatefulWidget {
   /// Preview the resolution supported by the camera
   final CameraResolution resolution;
 
+  /// How a camera box should be inscribed into another box.
+  final BoxFit fit;
+
   @override
   _FlMlKitScanningState createState() => _FlMlKitScanningState();
 }
@@ -76,7 +75,7 @@ class _FlMlKitScanningState extends FlCameraState<FlMlKitScanning> {
   }
 
   Future<void> init() async {
-    fullScreen = widget.isFullScreen;
+    boxFit = widget.fit;
     uninitialized = widget.uninitialized;
 
     /// Add message callback
@@ -130,7 +129,7 @@ class _FlMlKitScanningState extends FlCameraState<FlMlKitScanning> {
         oldWidget.uninitialized != widget.uninitialized ||
         oldWidget.barcodeFormats != widget.barcodeFormats ||
         oldWidget.autoScanning != widget.autoScanning ||
-        oldWidget.isFullScreen != widget.isFullScreen ||
+        oldWidget.fit != widget.fit ||
         oldWidget.onListen != widget.onListen) {
       if (widget.updateReset)
         cameraMethodCall.dispose().then((bool value) {

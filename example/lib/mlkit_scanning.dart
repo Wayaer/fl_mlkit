@@ -4,8 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_waya/flutter_waya.dart';
 
 class FlMlKitScanningPage extends StatefulWidget {
-  const FlMlKitScanningPage({Key? key, this.barcodeFormats}) : super(key: key);
+  const FlMlKitScanningPage(
+      {Key? key, this.barcodeFormats, required this.scanState})
+      : super(key: key);
   final List<BarcodeFormat>? barcodeFormats;
+  final bool scanState;
 
   @override
   _FlMlKitScanningPageState createState() => _FlMlKitScanningPageState();
@@ -48,7 +51,7 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
               resolution: CameraResolution.veryHigh,
               autoScanning: false,
               barcodeFormats: widget.barcodeFormats,
-              isFullScreen: false,
+              fit: BoxFit.fitWidth,
               uninitialized: Container(
                   color: Colors.black,
                   alignment: Alignment.center,
@@ -108,7 +111,7 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
                   children: <Widget>[
                     const BackButton(color: Colors.white, onPressed: pop),
                     ValueBuilder<bool>(
-                        initialValue: false,
+                        initialValue: widget.scanState,
                         builder: (_, bool? value, ValueCallback<bool> updater) {
                           value ??= false;
                           return ElevatedText(

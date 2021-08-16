@@ -35,6 +35,7 @@ class FlMlKitScanningMethodCall(
                 result.success(true)
             }
             "scanImageByte" -> scanImageByte(call, result)
+            "getScanState" -> result.success(scan)
             "scan" -> {
                 val argument = call.arguments as Boolean
                 if (argument != scan) {

@@ -1,3 +1,6 @@
+## [2.1.0]
+ * add method `getScanState`
+ * remove `isFullScreen` and add `fit`
 ## [2.0.0]
  * add camera zoom function and add `onZoomChange`
  * modify the `onListen` callback value and add the width and height of the 

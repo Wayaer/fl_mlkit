@@ -25,8 +25,8 @@ Camera related functions depend on [fl_camera](https://pub.dev/packages/fl_camer
 Widget build(BuildContext context) {
   return FlMlKitScanning(
 
-    /// 需要预览的相机
-    /// Camera ID to preview
+      /// 需要预览的相机
+      /// Camera ID to preview
       camera: camera,
 
       /// 预览相机支持的分辨率
@@ -41,9 +41,9 @@ Widget build(BuildContext context) {
       /// Display above preview box
       overlay: const ScannerLine(),
 
-      /// 是否全屏预览（由于原生相机预览为固定尺寸 设置全屏 会裁剪预览）
-      /// Full screen (Because the native camera preview is set to a fixed size, the full screen will crop the preview)
-      isFullScreen: true,
+      /// 相机预览位置
+      /// How a camera box should be inscribed into another box.
+      fit: BoxFit.fitWidth,
 
       /// 闪光灯状态
       /// Flash status
@@ -99,10 +99,14 @@ void func() {
   /// 打开\关闭 闪光灯 
   /// Turn flash on / off
   FlMlKitScanningMethodCall.instance.setFlashMode();
-
+  
   /// 相机缩放
   /// Camera zoom
   FlMlKitScanningMethodCall.instance.setZoomRatio();
+
+  /// 获取识别状态
+  /// get scan state
+  FlMlKitScanningMethodCall.instance.getScanState();
   
   /// 暂停扫描
   /// Pause scanning

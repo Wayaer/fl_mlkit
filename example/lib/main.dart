@@ -71,8 +71,14 @@ class _AppState extends State<_App> {
     if (isAndroid) hasPermission = await getPermission(Permission.camera);
     if (isIOS) hasPermission = true;
     if (hasPermission) {
-      final List<Barcode>? data =
-          await push(FlMlKitScanningPage(barcodeFormats: barcodeFormats));
+      final bool? state =
+          await FlMlKitScanningMethodCall.instance.getScanState();
+      if (state == null) {
+        showToast('Unknown scan status');
+        return;
+      }
+      final List<Barcode>? data = await push(FlMlKitScanningPage(
+          barcodeFormats: barcodeFormats, scanState: state));
       if (data != null) {
         list = data;
         setState(() {});

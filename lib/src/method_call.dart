@@ -79,6 +79,13 @@ class FlMlKitScanningMethodCall {
   /// Start scanncing
   Future<bool> start() => _scanncing(true);
 
+  /// 获取识别状态
+  /// get scan state
+  Future<bool?> getScanState() async {
+    if (!_supportPlatform) return null;
+    return await _channel.invokeMethod<bool?>('getScanState');
+  }
+
   Future<bool> _scanncing(bool scan) async {
     if (!_supportPlatform) return false;
     final bool? state = await _channel.invokeMethod<bool?>('scan', scan);

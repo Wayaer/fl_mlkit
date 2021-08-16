@@ -9,6 +9,7 @@ class FlMlKitScanningMethodCall: FlCameraMethodCall {
     var options = BarcodeScannerOptions(formats: .all)
     var analyzing: Bool = false
     var scan: Bool = false
+
     override init(_ _registrar: FlutterPluginRegistrar) {
         super.init(_registrar)
     }
@@ -38,6 +39,8 @@ class FlMlKitScanningMethodCall: FlCameraMethodCall {
                 }
             }
             result([])
+        case "getScanState":
+            result(scan)
         case "scan":
             let argument = call.arguments as! Bool
             if argument != scan {
