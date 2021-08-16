@@ -157,20 +157,16 @@ class _RectBox extends StatelessWidget {
   }
 
   Widget boundingBox(Rect rect) {
-    double w = model.width!.toDouble();
-    double h = model.height!.toDouble();
-    w = w / getDevicePixelRatio;
-    h = h / getDevicePixelRatio;
+    final double w = model.width! / getDevicePixelRatio;
+    final double h = model.height! / getDevicePixelRatio;
     return Universal(
         alignment: Alignment.center,
         child: CustomPaint(size: Size(w, h), painter: _LinePainter(rect)));
   }
 
   Widget corners(List<Offset> corners) {
-    double w = model.width!.toDouble();
-    double h = model.height!.toDouble();
-    w = w / getDevicePixelRatio;
-    h = h / getDevicePixelRatio;
+    final double w = model.width! / getDevicePixelRatio;
+    final double h = model.height! / getDevicePixelRatio;
     return Universal(
         alignment: Alignment.center,
         child: CustomPaint(size: Size(w, h), painter: _BoxPainter(corners)));
