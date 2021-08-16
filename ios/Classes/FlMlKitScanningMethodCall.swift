@@ -53,8 +53,7 @@ class FlMlKitScanningMethodCall: FlCameraMethodCall {
     }
 
     func setBarcodeFormat(_ call: FlutterMethodCall) {
-        let arguments = call.arguments as! [String: Any?]
-        let barcodeFormats = arguments["barcodeFormats"] as! [String]
+        let barcodeFormats = call.arguments as! [String]
         if !barcodeFormats.isEmpty {
             var formats = BarcodeFormat()
             for barcodeFomat in barcodeFormats {

@@ -76,7 +76,7 @@ class FlMlKitScanningMethodCall(
     }
 
     private fun setBarcodeFormat(call: MethodCall) {
-        val barcodeFormats = call.argument<List<String>?>("barcodeFormats")
+        val barcodeFormats = call.arguments as List<*>?
         val builder = BarcodeScannerOptions.Builder()
         if (!barcodeFormats.isNullOrEmpty()) {
             barcodeFormats.forEach { type ->

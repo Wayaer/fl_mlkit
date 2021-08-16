@@ -24,13 +24,12 @@ class FlMlKitScanningMethodCall {
   Future<bool> setBarcodeFormat(List<BarcodeFormat> barcodeFormats) async {
     if (!_supportPlatform) return false;
     _barcodeFormats = barcodeFormats;
-    final bool? state = await _channel
-        .invokeMethod<bool?>('setBarcodeFormat', <String, dynamic>{
-      'barcodeFormats': _barcodeFormats
-          .map((BarcodeFormat e) => e.toString().split('.')[1])
-          .toSet()
-          .toList()
-    });
+    final bool? state = await _channel.invokeMethod<bool?>(
+        'setBarcodeFormat',
+        _barcodeFormats
+            .map((BarcodeFormat e) => e.toString().split('.')[1])
+            .toSet()
+            .toList());
     return state ?? false;
   }
 
