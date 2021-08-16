@@ -2,7 +2,7 @@ part of '../fl_mlkit_scanning.dart';
 
 class AnalysisImageModel {
   AnalysisImageModel.fromMap(Map<dynamic, dynamic> data)
-      : barcodes = getBarcodeList(data['barcodes'] as List<dynamic>?),
+      : barcodes = _getBarcodeList(data['barcodes'] as List<dynamic>?),
         height = data['height'] as double?,
         width = data['width'] as double?;
 
@@ -27,27 +27,27 @@ class AnalysisImageModel {
 class Barcode {
   /// Create a [Barcode] from native data.
   Barcode.fromMap(Map<dynamic, dynamic> data)
-      : corners = getCorners(data['corners'] as List<dynamic>?),
-        format = getFormat(data['format'] as int?),
+      : corners = _getCorners(data['corners'] as List<dynamic>?),
+        format = _getFormat(data['format'] as int?),
         bytes = data['bytes'] as Uint8List?,
         value = data['value'] as String?,
         displayValue = data['displayValue'] as String?,
-        boundingBox = getRect(data['boundingBox'] as Map<dynamic, dynamic>?),
+        boundingBox = _getRect(data['boundingBox'] as Map<dynamic, dynamic>?),
         type = data['type'] != null
             ? BarcodeType.values[data['type'] as int]
             : null,
         calendarEvent =
-            getCalendarEvent(data['calendarEvent'] as Map<dynamic, dynamic>?),
+            _getCalendarEvent(data['calendarEvent'] as Map<dynamic, dynamic>?),
         contactInfo =
-            getContactInfo(data['contactInfo'] as Map<dynamic, dynamic>?),
+            _getContactInfo(data['contactInfo'] as Map<dynamic, dynamic>?),
         driverLicense =
-            getDriverLicense(data['driverLicense'] as Map<dynamic, dynamic>?),
-        email = getEmail(data['email'] as Map<dynamic, dynamic>?),
-        geoPoint = getGeoPoint(data['geoPoint'] as Map<dynamic, dynamic>?),
-        phone = getPhone(data['phone'] as Map<dynamic, dynamic>?),
-        sms = getSMS(data['sms'] as Map<dynamic, dynamic>?),
-        url = getUrl(data['url'] as Map<dynamic, dynamic>?),
-        wifi = getWiFi(data['wifi'] as Map<dynamic, dynamic>?);
+            _getDriverLicense(data['driverLicense'] as Map<dynamic, dynamic>?),
+        email = _getEmail(data['email'] as Map<dynamic, dynamic>?),
+        geoPoint = _getGeoPoint(data['geoPoint'] as Map<dynamic, dynamic>?),
+        phone = _getPhone(data['phone'] as Map<dynamic, dynamic>?),
+        sms = _getSMS(data['sms'] as Map<dynamic, dynamic>?),
+        url = _getUrl(data['url'] as Map<dynamic, dynamic>?),
+        wifi = _getWiFi(data['wifi'] as Map<dynamic, dynamic>?);
 
   /// Returns four corner points in clockwise direction starting with top-left.
   ///
@@ -182,7 +182,7 @@ class ContactInfo {
                 .map<dynamic>(
                     (dynamic e) => Email.fromMap(e as Map<dynamic, dynamic>)))
             : null,
-        name = getName(data['name'] as Map<dynamic, dynamic>?),
+        name = _getName(data['name'] as Map<dynamic, dynamic>?),
         organization = data['organization'] as String?,
         phones = List<Phone>.unmodifiable((data['phones'] as List<dynamic>)
             .map<dynamic>(
@@ -507,3 +507,117 @@ class WiFi {
   /// Returns null if not available.
   final String? password;
 }
+
+Rect? _getRect(Map<dynamic, dynamic>? data) {
+  if (data == null) {
+    return null;
+  } else {
+    if (_isAndroid) {
+      final int left = (data['left'] as int?) ?? 0;
+      final int top = (data['top'] as int?) ?? 0;
+      final int right = (data['right'] as int?) ?? 0;
+      final int bottom = (data['bottom'] as int?) ?? 0;
+      return Rect.fromLTRB(
+          left.toDouble(), top.toDouble(), right.toDouble(), bottom.toDouble());
+    } else if (_isIOS) {
+      final double x = (data['x'] as double?) ?? 0;
+      final double y = (data['y'] as double?) ?? 0;
+      final double width = (data['width'] as double?) ?? 0;
+      final double height = (data['height'] as double?) ?? 0;
+      return Rect.fromPoints(Offset(x, y), Offset(x + width, y + height));
+    }
+  }
+}
+
+List<Barcode>? _getBarcodeList(List<dynamic>? data) => data != null
+    ? data
+        .map((dynamic item) => Barcode.fromMap(item as Map<dynamic, dynamic>))
+        .toList()
+    : null;
+
+List<Offset>? _getCorners(List<dynamic>? data) => data != null
+    ? List<Offset>.unmodifiable(data.map<dynamic>(
+        (dynamic e) => Offset(e['x'] as double? ?? 0, e['y'] as double? ?? 0)))
+    : null;
+
+BarcodeFormat _getFormat(int? value) {
+  switch (value) {
+    case 0:
+      return BarcodeFormat.all;
+    case 1:
+      return BarcodeFormat.code128;
+    case 2:
+      return BarcodeFormat.code39;
+    case 4:
+      return BarcodeFormat.code93;
+    case 8:
+      return BarcodeFormat.code_bar;
+    case 16:
+      return BarcodeFormat.data_matrix;
+    case 32:
+      return BarcodeFormat.ean13;
+    case 64:
+      return BarcodeFormat.ean8;
+    case 128:
+      return BarcodeFormat.itf;
+    case 256:
+      return BarcodeFormat.qr_code;
+    case 512:
+      return BarcodeFormat.upc_a;
+    case 1024:
+      return BarcodeFormat.upc_e;
+    case 2048:
+      return BarcodeFormat.pdf417;
+    case 4096:
+      return BarcodeFormat.aztec;
+    default:
+      return BarcodeFormat.unknown;
+  }
+}
+
+CalendarEvent? _getCalendarEvent(Map<dynamic, dynamic>? data) =>
+    data != null ? CalendarEvent.fromMap(data) : null;
+
+DateTime? _getDateTime(Map<dynamic, dynamic>? data) {
+  if (data != null) {
+    final int year = data['year'] as int? ?? 0;
+    final int month = data['month'] as int? ?? 0;
+    final int day = data['day'] as int? ?? 0;
+    final int hour = data['hours'] as int? ?? 0;
+    final int minute = data['minutes'] as int? ?? 0;
+    final int second = data['seconds'] as int? ?? 0;
+    final bool isUtc = data['isUtc'] as bool? ?? false;
+    return isUtc
+        ? DateTime.utc(year, month, day, hour, minute, second)
+        : DateTime(year, month, day, hour, minute, second);
+  } else {
+    return null;
+  }
+}
+
+ContactInfo? _getContactInfo(Map<dynamic, dynamic>? data) =>
+    data != null ? ContactInfo.fromMap(data) : null;
+
+PersonName? _getName(Map<dynamic, dynamic>? data) =>
+    data != null ? PersonName.fromMap(data) : null;
+
+DriverLicense? _getDriverLicense(Map<dynamic, dynamic>? data) =>
+    data != null ? DriverLicense.fromMap(data) : null;
+
+Email? _getEmail(Map<dynamic, dynamic>? data) =>
+    data != null ? Email.fromMap(data) : null;
+
+GeoPoint? _getGeoPoint(Map<dynamic, dynamic>? data) =>
+    data != null ? GeoPoint.fromMap(data) : null;
+
+Phone? _getPhone(Map<dynamic, dynamic>? data) =>
+    data != null ? Phone.fromMap(data) : null;
+
+SMS? _getSMS(Map<dynamic, dynamic>? data) =>
+    data != null ? SMS.fromMap(data) : null;
+
+UrlBookmark? _getUrl(Map<dynamic, dynamic>? data) =>
+    data != null ? UrlBookmark.fromMap(data) : null;
+
+WiFi? _getWiFi(Map<dynamic, dynamic>? data) =>
+    data != null ? WiFi.fromMap(data) : null;

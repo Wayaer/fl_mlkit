@@ -15,8 +15,6 @@ part 'src/mlkit_scanning.dart';
 
 part 'src/model.dart';
 
-part 'src/util.dart';
-
 const MethodChannel _flMlKitScanningChannel = MethodChannel(_flMlKitScanning);
 const String _flMlKitScanning = 'fl.mlkit.scanning';
 
