@@ -82,8 +82,7 @@ class _FlMlKitScanningState extends FlCameraState<FlMlKitScanning> {
     await initEvent(eventListen);
 
     /// Set identification type
-    await FlMlKitScanningMethodCall.instance
-        .setBarcodeFormat(widget.barcodeFormats);
+    await FlMlKitScanningMethodCall().setBarcodeFormat(widget.barcodeFormats);
 
     /// Initialize camera
     initCamera(camera: widget.camera, resolution: widget.resolution)
@@ -92,7 +91,7 @@ class _FlMlKitScanningState extends FlCameraState<FlMlKitScanning> {
       setState(() {});
 
       /// Start scan
-      if (widget.autoScanning) FlMlKitScanningMethodCall.instance.start();
+      if (widget.autoScanning) FlMlKitScanningMethodCall().start();
     });
   }
 
@@ -159,6 +158,6 @@ class _FlMlKitScanningState extends FlCameraState<FlMlKitScanning> {
   @override
   void dispose() {
     super.dispose();
-    FlMlKitScanningMethodCall.instance.pause();
+    FlMlKitScanningMethodCall().pause();
   }
 }

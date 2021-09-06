@@ -26,7 +26,7 @@ class _CameraScanPageState extends State<CameraScanPage> {
   }
 
   Future<void> initEvent() async {
-    event = FlCameraEvent.instance;
+    event = FlCameraEvent();
     final bool state = await event!.initialize();
     if (!state) return;
     event!.addListener((dynamic value) {

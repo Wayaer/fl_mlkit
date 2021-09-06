@@ -48,7 +48,7 @@ class _ImageScanPageState extends State<ImageScanPage> {
     if (isIOS) hasPermission = true;
     if (hasPermission) {
       final File file = File(path!);
-      final AnalysisImageModel? data = await FlMlKitScanningMethodCall.instance
+      final AnalysisImageModel? data = await FlMlKitScanningMethodCall()
           .scanImageByte(file.readAsBytesSync());
       if (data != null && data.barcodes != null && data.barcodes!.isNotEmpty) {
         list = data.barcodes;
@@ -64,7 +64,7 @@ class _ImageScanPageState extends State<ImageScanPage> {
     if (isAndroid) hasPermission = await getPermission(Permission.storage);
     if (isIOS) hasPermission = true;
     if (hasPermission) {
-      final String? data = await openSystemGallery();
+      final String? data = await Curiosity().gallery.openSystemGallery();
       path = data;
       setState(() {});
     }

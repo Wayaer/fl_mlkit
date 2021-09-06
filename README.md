@@ -90,31 +90,31 @@ void func() {
 
   /// 设置设别码类型
   /// Set type
-  FlMlKitScanningMethodCall.instance.setBarcodeFormat();
+  FlMlKitScanningMethodCall().setBarcodeFormat();
 
   /// 识别图片字节
   /// Identify picture bytes
-  FlMlKitScanningMethodCall.instance.scanImageByte();
+  FlMlKitScanningMethodCall().scanImageByte();
 
   /// 打开\关闭 闪光灯 
   /// Turn flash on / off
-  FlMlKitScanningMethodCall.instance.setFlashMode();
+  FlMlKitScanningMethodCall().setFlashMode();
   
   /// 相机缩放
   /// Camera zoom
-  FlMlKitScanningMethodCall.instance.setZoomRatio();
+  FlMlKitScanningMethodCall().setZoomRatio();
 
   /// 获取识别状态
   /// get scan state
-  FlMlKitScanningMethodCall.instance.getScanState();
+  FlMlKitScanningMethodCall().getScanState();
   
   /// 暂停扫描
   /// Pause scanning
-  FlMlKitScanningMethodCall.instance.pause();
+  FlMlKitScanningMethodCall().pause();
 
   /// 开始扫描
   /// Start scanncing
-  FlMlKitScanningMethodCall.instance.start();
+  FlMlKitScanningMethodCall().start();
 }
 
 ```

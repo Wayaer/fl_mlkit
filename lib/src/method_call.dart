@@ -1,17 +1,14 @@
 part of '../fl_mlkit_scanning.dart';
 
 class FlMlKitScanningMethodCall {
-  factory FlMlKitScanningMethodCall() => _getInstance();
-
-  FlMlKitScanningMethodCall._internal();
-
-  static FlMlKitScanningMethodCall get instance => _getInstance();
-  static FlMlKitScanningMethodCall? _instance;
-
-  static FlMlKitScanningMethodCall _getInstance() {
-    _instance ??= FlMlKitScanningMethodCall._internal();
-    return _instance!;
+  factory FlMlKitScanningMethodCall() {
+    _singleton ??= FlMlKitScanningMethodCall._();
+    return _singleton!;
   }
+
+  FlMlKitScanningMethodCall._();
+
+  static FlMlKitScanningMethodCall? _singleton;
 
   final MethodChannel _channel = _flMlKitScanningChannel;
 
@@ -42,8 +39,7 @@ class FlMlKitScanningMethodCall {
       {int rotationDegrees = 0, bool useEvent = false}) async {
     if (!_supportPlatform) return null;
     if (useEvent) {
-      assert(
-          FlCameraEvent.instance.isPaused, 'Please initialize FLCameraEvent');
+      assert(FlCameraEvent().isPaused, 'Please initialize FLCameraEvent');
     }
     final dynamic map = await _channel.invokeMethod<dynamic>(
         'scanImageByte', <String, dynamic>{
@@ -58,17 +54,17 @@ class FlMlKitScanningMethodCall {
   /// 打开\关闭 闪光灯
   /// Turn flash on / off
   Future<bool> setFlashMode(bool status) =>
-      FlCameraMethodCall.instance.setFlashMode(status);
+      FlCameraMethodCall().setFlashMode(status);
 
   /// 相机缩放
   /// Camera zoom
   Future<bool> setZoomRatio(double ratio) =>
-      FlCameraMethodCall.instance.setZoomRatio(ratio);
+      FlCameraMethodCall().setZoomRatio(ratio);
 
   /// 获取可用摄像头
   /// get available Cameras
   Future<List<CameraInfo>?> availableCameras() =>
-      FlCameraMethodCall.instance.availableCameras();
+      FlCameraMethodCall().availableCameras();
 
   /// 暂停扫描
   /// Pause scanning

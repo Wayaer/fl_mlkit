@@ -1,3 +1,5 @@
+## [2.2.0]
+ * remove instance , direct initialization
 ## [2.1.0]
  * add method `getScanState`
  * remove `isFullScreen` and add `fit`

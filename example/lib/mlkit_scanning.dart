@@ -83,8 +83,7 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
                           onChanged: (double value) async {
                             ratio = value;
                             zoomState!(() {});
-                            FlMlKitScanningMethodCall.instance
-                                .setZoomRatio(value);
+                            FlMlKitScanningMethodCall().setZoomRatio(value);
                           }),
                       IconBox(
                           size: 30,
@@ -94,8 +93,7 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
                           padding: const EdgeInsets.fromLTRB(10, 10, 10, 40),
                           icon: flashState ? Icons.flash_on : Icons.flash_off,
                           onTap: () async {
-                            final bool state = await FlMlKitScanningMethodCall
-                                .instance
+                            final bool state = await FlMlKitScanningMethodCall()
                                 .setFlashMode(!flashState);
                             flashState = !flashState;
                             if (state) zoomState!(() {});
@@ -118,10 +116,8 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
                             text: value ? 'pause' : 'start',
                             onPressed: () async {
                               final bool data = value!
-                                  ? await FlMlKitScanningMethodCall.instance
-                                      .pause()
-                                  : await FlMlKitScanningMethodCall.instance
-                                      .start();
+                                  ? await FlMlKitScanningMethodCall().pause()
+                                  : await FlMlKitScanningMethodCall().start();
                               if (data) updater(!value);
                               if (value) {
                                 model = null;
