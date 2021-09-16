@@ -1,10 +1,8 @@
 part of '../fl_mlkit_scanning.dart';
 
 class FlMlKitScanningMethodCall {
-  factory FlMlKitScanningMethodCall() {
-    _singleton ??= FlMlKitScanningMethodCall._();
-    return _singleton!;
-  }
+  factory FlMlKitScanningMethodCall() =>
+      _singleton ??= FlMlKitScanningMethodCall._();
 
   FlMlKitScanningMethodCall._();
 
