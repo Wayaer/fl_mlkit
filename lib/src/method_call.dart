@@ -12,7 +12,7 @@ class FlMlKitScanningMethodCall {
 
   final MethodChannel _channel = _flMlKitScanningChannel;
 
-  List<BarcodeFormat> _barcodeFormats = <BarcodeFormat>[BarcodeFormat.qr_code];
+  List<BarcodeFormat> _barcodeFormats = <BarcodeFormat>[BarcodeFormat.qrCode];
 
   MethodChannel get channel => _channel;
 

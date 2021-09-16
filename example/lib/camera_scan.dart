@@ -5,6 +5,8 @@ import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:flutter_waya/flutter_waya.dart';
 
 class CameraScanPage extends StatefulWidget {
+  const CameraScanPage({Key? key}) : super(key: key);
+
   @override
   _CameraScanPageState createState() => _CameraScanPageState();
 }
@@ -45,8 +47,9 @@ class _CameraScanPageState extends State<CameraScanPage> {
     final List<CameraDescription> cameras = await availableCameras();
     CameraDescription? description;
     for (final CameraDescription element in cameras) {
-      if (element.lensDirection == CameraLensDirection.back)
+      if (element.lensDirection == CameraLensDirection.back) {
         description = element;
+      }
     }
     if (description == null) return;
     controller = CameraController(description, ResolutionPreset.high,

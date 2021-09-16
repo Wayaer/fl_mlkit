@@ -20,7 +20,7 @@ const String _flMlKitScanning = 'fl.mlkit.scanning';
 
 bool get _supportPlatform {
   if (!kIsWeb && (_isAndroid || _isIOS)) return true;
-  print('Not support platform for $defaultTargetPlatform');
+  debugPrint('Not support platform for $defaultTargetPlatform');
   return false;
 }
 

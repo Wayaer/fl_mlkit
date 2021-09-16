@@ -8,6 +8,8 @@ import 'package:flutter_waya/flutter_waya.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class ImageScanPage extends StatefulWidget {
+  const ImageScanPage({Key? key}) : super(key: key);
+
   @override
   _ImageScanPageState createState() => _ImageScanPageState();
 }
@@ -41,8 +43,9 @@ class _ImageScanPageState extends State<ImageScanPage> {
   }
 
   Future<void> scanByte() async {
-    if (path == null || path!.isEmpty)
+    if (path == null || path!.isEmpty) {
       return showToast('Please select a picture');
+    }
     bool hasPermission = false;
     if (isAndroid) hasPermission = await getPermission(Permission.storage);
     if (isIOS) hasPermission = true;

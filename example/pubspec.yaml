@@ -14,11 +14,10 @@ dependencies:
     sdk: flutter
   flutter_curiosity: ^3.3.0
   flutter_waya: ^1.13.1
-  permission_handler: ^8.1.4+2
+  permission_handler: ^7.2.0
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
+  flutter_lints: ^1.0.4
 
 flutter:
   uses-material-design: true

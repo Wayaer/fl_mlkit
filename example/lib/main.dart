@@ -41,12 +41,12 @@ class _AppState extends State<_App> {
           ElevatedText(
               onPressed: () => openCamera(<BarcodeFormat>[
                     BarcodeFormat.code39,
-                    BarcodeFormat.code_bar,
+                    BarcodeFormat.codeBar,
                     BarcodeFormat.itf,
                     BarcodeFormat.code93,
                     BarcodeFormat.code128,
-                    BarcodeFormat.upc_a,
-                    BarcodeFormat.upc_e,
+                    BarcodeFormat.upcA,
+                    BarcodeFormat.upcE,
                     BarcodeFormat.ean8,
                     BarcodeFormat.ean13,
                   ]),
@@ -57,13 +57,13 @@ class _AppState extends State<_App> {
   }
 
   void scanImage() {
-    push(ImageScanPage());
+    push(const ImageScanPage());
   }
 
   Future<void> scanCamera() async {
     if (!isMobile) return;
     final bool permission = await getPermission(Permission.camera);
-    if (permission) push(CameraScanPage());
+    if (permission) push(const CameraScanPage());
   }
 
   Future<void> openCamera([List<BarcodeFormat>? barcodeFormats]) async {
@@ -125,9 +125,10 @@ class AppBarText extends AppBar {
 }
 
 class ShowText extends StatelessWidget {
-  const ShowText(this.keyName, this.value) : super();
   final dynamic keyName;
   final dynamic value;
+
+  const ShowText(this.keyName, this.value, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

@@ -529,11 +529,9 @@ Rect? _getRect(Map<dynamic, dynamic>? data) {
   }
 }
 
-List<Barcode>? _getBarcodeList(List<dynamic>? data) => data != null
-    ? data
-        .map((dynamic item) => Barcode.fromMap(item as Map<dynamic, dynamic>))
-        .toList()
-    : null;
+List<Barcode>? _getBarcodeList(List<dynamic>? data) => data
+    ?.map((dynamic item) => Barcode.fromMap(item as Map<dynamic, dynamic>))
+    .toList();
 
 List<Offset>? _getCorners(List<dynamic>? data) => data != null
     ? List<Offset>.unmodifiable(data.map<dynamic>(
@@ -551,9 +549,9 @@ BarcodeFormat _getFormat(int? value) {
     case 4:
       return BarcodeFormat.code93;
     case 8:
-      return BarcodeFormat.code_bar;
+      return BarcodeFormat.codeBar;
     case 16:
-      return BarcodeFormat.data_matrix;
+      return BarcodeFormat.dataMatrix;
     case 32:
       return BarcodeFormat.ean13;
     case 64:
@@ -561,11 +559,11 @@ BarcodeFormat _getFormat(int? value) {
     case 128:
       return BarcodeFormat.itf;
     case 256:
-      return BarcodeFormat.qr_code;
+      return BarcodeFormat.qrCode;
     case 512:
-      return BarcodeFormat.upc_a;
+      return BarcodeFormat.upcA;
     case 1024:
-      return BarcodeFormat.upc_e;
+      return BarcodeFormat.upcE;
     case 2048:
       return BarcodeFormat.pdf417;
     case 4096:
@@ -578,22 +576,22 @@ BarcodeFormat _getFormat(int? value) {
 CalendarEvent? _getCalendarEvent(Map<dynamic, dynamic>? data) =>
     data != null ? CalendarEvent.fromMap(data) : null;
 
-DateTime? _getDateTime(Map<dynamic, dynamic>? data) {
-  if (data != null) {
-    final int year = data['year'] as int? ?? 0;
-    final int month = data['month'] as int? ?? 0;
-    final int day = data['day'] as int? ?? 0;
-    final int hour = data['hours'] as int? ?? 0;
-    final int minute = data['minutes'] as int? ?? 0;
-    final int second = data['seconds'] as int? ?? 0;
-    final bool isUtc = data['isUtc'] as bool? ?? false;
-    return isUtc
-        ? DateTime.utc(year, month, day, hour, minute, second)
-        : DateTime(year, month, day, hour, minute, second);
-  } else {
-    return null;
-  }
-}
+// DateTime? _getDateTime(Map<dynamic, dynamic>? data) {
+//   if (data != null) {
+//     final int year = data['year'] as int? ?? 0;
+//     final int month = data['month'] as int? ?? 0;
+//     final int day = data['day'] as int? ?? 0;
+//     final int hour = data['hours'] as int? ?? 0;
+//     final int minute = data['minutes'] as int? ?? 0;
+//     final int second = data['seconds'] as int? ?? 0;
+//     final bool isUtc = data['isUtc'] as bool? ?? false;
+//     return isUtc
+//         ? DateTime.utc(year, month, day, hour, minute, second)
+//         : DateTime(year, month, day, hour, minute, second);
+//   } else {
+//     return null;
+//   }
+// }
 
 ContactInfo? _getContactInfo(Map<dynamic, dynamic>? data) =>
     data != null ? ContactInfo.fromMap(data) : null;
