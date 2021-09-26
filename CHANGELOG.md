@@ -1,3 +1,5 @@
+## [2.2.1]
+ * fix invalid `uninitialized`
 ## [2.2.0]
  * remove instance , direct initialization
 ## [2.1.0]

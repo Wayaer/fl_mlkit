@@ -71,12 +71,12 @@ class _FlMlKitScanningState extends FlCameraState<FlMlKitScanning> {
   void initState() {
     currentChannel = _flMlKitScanningChannel;
     super.initState();
+    uninitialized = widget.uninitialized;
     WidgetsBinding.instance!.addPostFrameCallback((Duration time) => init());
   }
 
   Future<void> init() async {
     boxFit = widget.fit;
-    uninitialized = widget.uninitialized;
 
     /// Add message callback
     await initEvent(eventListen);
@@ -128,6 +128,7 @@ class _FlMlKitScanningState extends FlCameraState<FlMlKitScanning> {
         oldWidget.autoScanning != widget.autoScanning ||
         oldWidget.fit != widget.fit ||
         oldWidget.onListen != widget.onListen) {
+      uninitialized = widget.uninitialized;
       if (widget.updateReset) {
         cameraMethodCall.dispose().then((bool value) {
           if (value) init();

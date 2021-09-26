@@ -56,7 +56,7 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
                   color: Colors.black,
                   alignment: Alignment.center,
                   child: const Text('Camera not initialized',
-                      style: TextStyle(color: Colors.white))),
+                      style: TextStyle(color: Colors.red))),
               onListen: (AnalysisImageModel data) {
                 final List<Barcode>? barcodes = data.barcodes;
                 if (barcodes != null && barcodes.isNotEmpty) {
