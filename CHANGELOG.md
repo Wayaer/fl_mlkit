@@ -1,4 +1,5 @@
-## 2.2.1
+## 2.2.2
+ * update [`fl_camera`](https://pub.dev/packages/fl_camera)
  * fix invalid `uninitialized`
 ## 2.2.0
  * remove instance , direct initialization
@@ -13,7 +14,7 @@
    The rear camera is used by default
  * remove `zoomQuality`, add `resolution`, and set the resolution you need, 
  * add `updatereset`. Do you need to reinitialize the camera preview when calling didupdatewidget
- * Update [`fl_camera`](https://pub.dev/packages/fl_camera)
+ * update [`fl_camera`](https://pub.dev/packages/fl_camera)
  * modify `FlMLKitScanningMethodCall` to `FlMlKitScanningMethodCall`
 ## 1.0.1
  * fix the problem that there is no data in the `boundingbox`

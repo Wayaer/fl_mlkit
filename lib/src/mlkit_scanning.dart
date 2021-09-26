@@ -88,10 +88,12 @@ class _FlMlKitScanningState extends FlCameraState<FlMlKitScanning> {
     initCamera(camera: widget.camera, resolution: widget.resolution)
         .then((bool value) {
       if (!value) return;
-      setState(() {});
+      if (mounted) {
+        setState(() {});
 
-      /// Start scan
-      if (widget.autoScanning) FlMlKitScanningMethodCall().start();
+        /// Start scan
+        if (widget.autoScanning) FlMlKitScanningMethodCall().start();
+      }
     });
   }
 
