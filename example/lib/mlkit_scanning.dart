@@ -22,6 +22,7 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
   double? maxRatio;
   StateSetter? zoomState;
   bool flashState = false;
+  FlMlKitScanningController? scanningController;
 
   @override
   void initState() {
@@ -37,14 +38,17 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
         },
         body: Stack(children: <Widget>[
           FlMlKitScanning(
+              onCreateView: (FlMlKitScanningController controller) {
+                scanningController = controller;
+              },
               overlay: const ScannerLine(),
-              onFlashChange: (FlashState state) {
+              onFlashChanged: (FlashState state) {
                 showToast('$state');
               },
-              onZoomChange: (CameraZoomState zommState) {
-                showToast('zoom ratio:${zommState.zoomRatio}');
+              onZoomChanged: (CameraZoomState zoom) {
+                showToast('zoom ratio:${zoom.zoomRatio}');
                 if (maxRatio == null && zoomState != null) {
-                  maxRatio = zommState.maxZoomRatio;
+                  maxRatio = zoom.maxZoomRatio;
                   zoomState!(() {});
                 }
               },
@@ -52,11 +56,16 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
               autoScanning: false,
               barcodeFormats: widget.barcodeFormats,
               fit: BoxFit.fitWidth,
+              notPreviewed: Container(
+                  color: Colors.black,
+                  alignment: Alignment.center,
+                  child: const Text('Camera not previewed',
+                      style: TextStyle(color: Colors.blueAccent))),
               uninitialized: Container(
                   color: Colors.black,
                   alignment: Alignment.center,
                   child: const Text('Camera not initialized',
-                      style: TextStyle(color: Colors.red))),
+                      style: TextStyle(color: Colors.blueAccent))),
               onListen: (AnalysisImageModel data) {
                 final List<Barcode>? barcodes = data.barcodes;
                 if (barcodes != null && barcodes.isNotEmpty) {
@@ -83,7 +92,7 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
                           onChanged: (double value) async {
                             ratio = value;
                             zoomState!(() {});
-                            FlMlKitScanningMethodCall().setZoomRatio(value);
+                            FlMlKitScanningController().setZoomRatio(value);
                           }),
                       IconBox(
                           size: 30,
@@ -93,8 +102,10 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
                           padding: const EdgeInsets.fromLTRB(10, 10, 10, 40),
                           icon: flashState ? Icons.flash_on : Icons.flash_off,
                           onTap: () async {
-                            final bool state = await FlMlKitScanningMethodCall()
-                                .setFlashMode(!flashState);
+                            final bool state = await FlMlKitScanningController()
+                                .setFlashMode(flashState
+                                    ? FlashState.off
+                                    : FlashState.on);
                             flashState = !flashState;
                             if (state) zoomState!(() {});
                           })
@@ -108,24 +119,55 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     const BackButton(color: Colors.white, onPressed: pop),
-                    ValueBuilder<bool>(
-                        initialValue: widget.scanState,
-                        builder: (_, bool? value, ValueCallback<bool> updater) {
-                          value ??= false;
-                          return ElevatedText(
-                            text: value ? 'pause' : 'start',
-                            onPressed: () async {
-                              final bool data = value!
-                                  ? await FlMlKitScanningMethodCall().pause()
-                                  : await FlMlKitScanningMethodCall().start();
-                              if (data) updater(!value);
-                              if (value) {
-                                model = null;
-                                controller.reset();
-                              }
-                            },
-                          );
-                        }),
+                    Row(children: [
+                      ValueBuilder<bool>(
+                          initialValue:
+                              scanningController?.cameraOptions != null,
+                          builder:
+                              (_, bool? value, ValueCallback<bool> updater) {
+                            value ??= false;
+                            return ElevatedText(
+                                text: value ? 'start' : 'stop',
+                                onPressed: () async {
+                                  if (scanningController == null) return;
+                                  bool state = false;
+                                  if (value!) {
+                                    if (scanningController!.previousCameraId !=
+                                        null) {
+                                      final options = await scanningController!
+                                          .startPreview(scanningController!
+                                              .previousCameraId!);
+                                      state = options != null;
+                                    }
+                                  } else {
+                                    state =
+                                        await scanningController!.stopPreview();
+                                  }
+                                  if (state) updater(!value);
+                                });
+                          }),
+                      const SizedBox(width: 12),
+                      ValueBuilder<bool>(
+                          initialValue: widget.scanState,
+                          builder:
+                              (_, bool? value, ValueCallback<bool> updater) {
+                            value ??= false;
+                            return ElevatedText(
+                              text: value ? 'pause' : 'start',
+                              onPressed: () async {
+                                if (scanningController == null) return;
+                                final bool data = value!
+                                    ? await scanningController!.pauseScan()
+                                    : await scanningController!.startScan();
+                                if (data) updater(!value);
+                                if (value) {
+                                  model = null;
+                                  controller.reset();
+                                }
+                              },
+                            );
+                          }),
+                    ])
                   ])),
         ]));
   }

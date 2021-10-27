@@ -71,7 +71,7 @@ class _AppState extends State<_App> {
     if (isAndroid) hasPermission = await getPermission(Permission.camera);
     if (isIOS) hasPermission = true;
     if (hasPermission) {
-      final bool? state = await FlMlKitScanningMethodCall().getScanState();
+      final bool? state = await FlMlKitScanningController().getScanState();
       if (state == null) {
         showToast('Unknown scan status');
         return;

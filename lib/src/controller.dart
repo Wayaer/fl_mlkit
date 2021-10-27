@@ -1,31 +1,47 @@
 part of '../fl_mlkit_scanning.dart';
 
-class FlMlKitScanningMethodCall {
-  factory FlMlKitScanningMethodCall() =>
-      _singleton ??= FlMlKitScanningMethodCall._();
+class FlMlKitScanningController extends CameraController {
+  factory FlMlKitScanningController() =>
+      _singleton ??= FlMlKitScanningController._();
 
-  FlMlKitScanningMethodCall._();
+  FlMlKitScanningController._() {
+    channel = _flMlKitScanningChannel;
+    cameraEvent.setMethodChannel(channel);
+  }
 
-  static FlMlKitScanningMethodCall? _singleton;
+  /// 解析出来的数据
+  /// barCode data
+  ValueNotifier<AnalysisImageModel?>? analysisData;
 
-  final MethodChannel _channel = _flMlKitScanningChannel;
+  static FlMlKitScanningController? _singleton;
 
   List<BarcodeFormat> _barcodeFormats = <BarcodeFormat>[BarcodeFormat.qrCode];
-
-  MethodChannel get channel => _channel;
 
   /// 设置设别码类型
   /// Set type
   Future<bool> setBarcodeFormat(List<BarcodeFormat> barcodeFormats) async {
     if (!_supportPlatform) return false;
     _barcodeFormats = barcodeFormats;
-    final bool? state = await _channel.invokeMethod<bool?>(
+    final bool? state = await channel.invokeMethod<bool?>(
         'setBarcodeFormat',
         _barcodeFormats
             .map((BarcodeFormat e) => e.toString().split('.')[1])
             .toSet()
             .toList());
     return state ?? false;
+  }
+
+  @override
+  void eventListen(dynamic data) {
+    super.eventListen(data);
+    if (data is Map) {
+      try {
+        analysisData ??= ValueNotifier(null);
+        analysisData!.value = AnalysisImageModel.fromMap(data);
+      } catch (e) {
+        debugPrint(e.toString());
+      }
+    }
   }
 
   /// 识别图片字节
@@ -39,7 +55,7 @@ class FlMlKitScanningMethodCall {
     if (useEvent) {
       assert(FlCameraEvent().isPaused, 'Please initialize FLCameraEvent');
     }
-    final dynamic map = await _channel.invokeMethod<dynamic>(
+    final dynamic map = await channel.invokeMethod<dynamic>(
         'scanImageByte', <String, dynamic>{
       'byte': uint8list,
       'useEvent': useEvent,
@@ -49,39 +65,24 @@ class FlMlKitScanningMethodCall {
     return null;
   }
 
-  /// 打开\关闭 闪光灯
-  /// Turn flash on / off
-  Future<bool> setFlashMode(bool status) =>
-      FlCameraMethodCall().setFlashMode(status);
-
-  /// 相机缩放
-  /// Camera zoom
-  Future<bool> setZoomRatio(double ratio) =>
-      FlCameraMethodCall().setZoomRatio(ratio);
-
-  /// 获取可用摄像头
-  /// get available Cameras
-  Future<List<CameraInfo>?> availableCameras() =>
-      FlCameraMethodCall().availableCameras();
-
   /// 暂停扫描
   /// Pause scanning
-  Future<bool> pause() => _scanncing(false);
+  Future<bool> pauseScan() => _scanncing(false);
 
   /// 开始扫描
   /// Start scanncing
-  Future<bool> start() => _scanncing(true);
+  Future<bool> startScan() => _scanncing(true);
 
   /// 获取识别状态
   /// get scan state
   Future<bool?> getScanState() async {
     if (!_supportPlatform) return null;
-    return await _channel.invokeMethod<bool?>('getScanState');
+    return await channel.invokeMethod<bool?>('getScanState');
   }
 
   Future<bool> _scanncing(bool scan) async {
     if (!_supportPlatform) return false;
-    final bool? state = await _channel.invokeMethod<bool?>('scan', scan);
+    final bool? state = await channel.invokeMethod<bool?>('scan', scan);
     return state ?? false;
   }
 }

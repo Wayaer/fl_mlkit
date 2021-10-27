@@ -5,17 +5,18 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-export 'package:fl_camera/fl_camera.dart';
+export 'package:fl_camera/fl_camera.dart' hide CameraController;
+
+part 'src/controller.dart';
 
 part 'src/enum.dart';
-
-part 'src/method_call.dart';
 
 part 'src/mlkit_scanning.dart';
 
 part 'src/model.dart';
 
 const MethodChannel _flMlKitScanningChannel = MethodChannel(_flMlKitScanning);
+
 const String _flMlKitScanning = 'fl.mlkit.scanning';
 
 bool get _supportPlatform {
