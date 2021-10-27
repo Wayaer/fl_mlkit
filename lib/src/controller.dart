@@ -9,13 +9,21 @@ class FlMlKitScanningController extends CameraController {
     cameraEvent.setMethodChannel(channel);
   }
 
-  /// 解析出来的数据
-  /// barCode data
-  ValueNotifier<AnalysisImageModel?>? analysisData;
-
   static FlMlKitScanningController? _singleton;
 
+  /// 解析出来的数据回调
+  /// barCode data onChanged
+  EventBarcodeListen? onDataChanged;
+
+  /// 解析出来的数据
+  /// barCode data
+  AnalysisImageModel? data;
+
   List<BarcodeFormat> _barcodeFormats = <BarcodeFormat>[BarcodeFormat.qrCode];
+
+  @override
+  Future<bool> initialize({CameraEventListen? listen}) =>
+      super.initialize(listen: eventListen);
 
   /// 设置设别码类型
   /// Set type
@@ -35,11 +43,10 @@ class FlMlKitScanningController extends CameraController {
   void eventListen(dynamic data) {
     super.eventListen(data);
     if (data is Map) {
-      try {
-        analysisData ??= ValueNotifier(null);
-        analysisData!.value = AnalysisImageModel.fromMap(data);
-      } catch (e) {
-        debugPrint(e.toString());
+      final List<dynamic>? barcodes = data['barcodes'] as List<dynamic>?;
+      if (barcodes != null) {
+        data = AnalysisImageModel.fromMap(data);
+        if (onDataChanged != null) onDataChanged!(data);
       }
     }
   }

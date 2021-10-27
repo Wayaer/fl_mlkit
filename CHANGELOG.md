@@ -1,4 +1,11 @@
 ## 3.0.0
+ * remove `FlMlKitScanningMethodCall()`
+ * add `onCreateView` for `FlMlKitScanning()`
+ * add `notPreviewed` for `FlMlKitScanning()`
+ * add `stopPreview()` for `FlMlKitScanningController()`
+ * modify `onFlashChange` to `onFlashChanged`
+ * modify `onZoomChange` to `onZoomChanged`
+ * modify `onListen` to `onDataChanged`
 ## 2.2.2
  * update [`fl_camera`](https://pub.dev/packages/fl_camera)
  * fix invalid `uninitialized`

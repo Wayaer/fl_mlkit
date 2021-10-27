@@ -117,7 +117,9 @@ class FlMlKitScanningMethodCall: FlCameraMethodCall {
                 ] as [String: Any?]
 
                 if result == nil {
-                    flCameraEvent?.sendEvent(map)
+                    if !list.isEmpty {
+                        flCameraEvent?.sendEvent(map)
+                    }
                 } else {
                     result!(map)
                 }

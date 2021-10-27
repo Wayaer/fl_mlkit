@@ -14,7 +14,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_curiosity: ^3.3.2
-  flutter_waya: ^1.15.0
+  flutter_waya: ^1.15.7
   permission_handler: ^7.2.0
 
 dev_dependencies:

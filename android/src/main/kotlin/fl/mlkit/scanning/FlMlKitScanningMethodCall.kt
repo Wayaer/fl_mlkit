@@ -24,7 +24,8 @@ class FlMlKitScanningMethodCall(
     FlCameraMethodCall(activity, plugin) {
 
     private var options: BarcodeScannerOptions =
-        BarcodeScannerOptions.Builder().setBarcodeFormats(Barcode.FORMAT_QR_CODE).build()
+        BarcodeScannerOptions.Builder()
+            .setBarcodeFormats(Barcode.FORMAT_QR_CODE).build()
     private var scan = false
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
@@ -68,7 +69,10 @@ class FlMlKitScanningMethodCall(
         val mediaImage = imageProxy.image
         if (mediaImage != null && scan) {
             val inputImage =
-                InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+                InputImage.fromMediaImage(
+                    mediaImage,
+                    imageProxy.imageInfo.rotationDegrees
+                )
             analysis(inputImage, null, imageProxy)
         } else {
             imageProxy.close()
@@ -130,7 +134,9 @@ class FlMlKitScanningMethodCall(
                     "barcodes" to list
                 )
                 if (result == null) {
-                    flCameraEvent?.sendEvent(map)
+                    if (list.isNotEmpty()) {
+                        flCameraEvent?.sendEvent(map)
+                    }
                 } else {
                     result.success(map)
                 }
@@ -171,8 +177,12 @@ class FlMlKitScanningMethodCall(
 
     private val Barcode.CalendarEvent.data: Map<String, Any?>
         get() = mapOf(
-            "description" to description, "end" to end?.rawValue, "location" to location,
-            "organizer" to organizer, "start" to start?.rawValue, "status" to status,
+            "description" to description,
+            "end" to end?.rawValue,
+            "location" to location,
+            "organizer" to organizer,
+            "start" to start?.rawValue,
+            "status" to status,
             "summary" to summary
         )
 
@@ -240,6 +250,10 @@ class FlMlKitScanningMethodCall(
         get() = mapOf("title" to title, "url" to url)
 
     private val Barcode.WiFi.data: Map<String, Any?>
-        get() = mapOf("encryptionType" to encryptionType, "password" to password, "ssid" to ssid)
+        get() = mapOf(
+            "encryptionType" to encryptionType,
+            "password" to password,
+            "ssid" to ssid
+        )
 
 }

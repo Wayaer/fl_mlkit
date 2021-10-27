@@ -9,7 +9,8 @@ environment:
 
 dependencies:
   fl_camera:
-    path: ../fl_camera
+    git:
+      url: git://github.com/Wayaer/fl_camera.git
   flutter:
     sdk: flutter
 

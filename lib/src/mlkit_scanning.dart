@@ -8,7 +8,7 @@ class FlMlKitScanning extends StatefulWidget {
   FlMlKitScanning({
     Key? key,
     List<BarcodeFormat>? barcodeFormats,
-    this.onListen,
+    this.onDataChanged,
     this.overlay,
     this.uninitialized,
     this.onFlashChanged,
@@ -23,10 +23,6 @@ class FlMlKitScanning extends StatefulWidget {
   })  : barcodeFormats =
             barcodeFormats ?? <BarcodeFormat>[BarcodeFormat.qrCode],
         super(key: key);
-
-  /// 码识别回调
-  /// Identify callback
-  final EventBarcodeListen? onListen;
 
   /// 码识别类型
   /// Identification type
@@ -50,6 +46,10 @@ class FlMlKitScanning extends StatefulWidget {
   /// 缩放变化
   /// zoom ratio
   final ValueChanged<CameraZoomState>? onZoomChanged;
+
+  /// 码识别回调
+  /// Identify callback
+  final EventBarcodeListen? onDataChanged;
 
   /// 更新组件时是否重置相机
   /// Reset camera when updating components
@@ -80,8 +80,8 @@ class FlMlKitScanning extends StatefulWidget {
 class _FlMlKitScanningState extends FlCameraComposeState<FlMlKitScanning> {
   @override
   void initState() {
-    super.initState();
     controller = FlMlKitScanningController();
+    super.initState();
     if (widget.onCreateView != null) {
       widget.onCreateView!(controller as FlMlKitScanningController);
     }
@@ -106,7 +106,7 @@ class _FlMlKitScanningState extends FlCameraComposeState<FlMlKitScanning> {
     }
     if (camera == null) return;
     var scanningController = controller as FlMlKitScanningController;
-    final data = await controller.initialize();
+    final data = await scanningController.initialize();
     if (data) {
       await scanningController.setBarcodeFormat(widget.barcodeFormats);
       initializeListen();
@@ -120,34 +120,14 @@ class _FlMlKitScanningState extends FlCameraComposeState<FlMlKitScanning> {
 
   void initializeListen() {
     if (widget.onZoomChanged != null) {
-      controller.cameraZoom?.addListener(onZoomChanged);
+      controller.onZoomChanged = widget.onZoomChanged;
     }
     if (widget.onFlashChanged != null) {
-      controller.cameraFlash?.addListener(onFlashChanged);
+      controller.onFlashChanged = widget.onFlashChanged;
     }
-    if (widget.onListen != null) {
-      (controller as FlMlKitScanningController)
-          .analysisData
-          ?.addListener(onAnalysisData);
-    }
-  }
-
-  void onAnalysisData() {
-    final scanningController = (controller as FlMlKitScanningController);
-    if (scanningController.analysisData?.value != null) {
-      widget.onListen!(scanningController.analysisData!.value!);
-    }
-  }
-
-  void onZoomChanged() {
-    if (controller.cameraZoom!.value != null) {
-      widget.onZoomChanged!(controller.cameraZoom!.value!);
-    }
-  }
-
-  void onFlashChanged() {
-    if (controller.cameraFlash!.value != null) {
-      widget.onFlashChanged!(controller.cameraFlash!.value!);
+    if (widget.onDataChanged != null) {
+      (controller as FlMlKitScanningController).onDataChanged =
+          widget.onDataChanged;
     }
   }
 
@@ -163,7 +143,7 @@ class _FlMlKitScanningState extends FlCameraComposeState<FlMlKitScanning> {
         oldWidget.barcodeFormats != widget.barcodeFormats ||
         oldWidget.autoScanning != widget.autoScanning ||
         oldWidget.fit != widget.fit ||
-        oldWidget.onListen != widget.onListen) {
+        oldWidget.onDataChanged != widget.onDataChanged) {
       uninitialized = widget.uninitialized;
       if (widget.updateReset) {
         controller.dispose().then((bool value) {
@@ -197,10 +177,6 @@ class _FlMlKitScanningState extends FlCameraComposeState<FlMlKitScanning> {
   @override
   void dispose() {
     super.dispose();
-    final scanningController = controller as FlMlKitScanningController;
-    scanningController.analysisData?.removeListener(onAnalysisData);
-    scanningController.cameraZoom?.removeListener(onZoomChanged);
-    scanningController.cameraFlash?.removeListener(onFlashChanged);
     controller.dispose();
   }
 }

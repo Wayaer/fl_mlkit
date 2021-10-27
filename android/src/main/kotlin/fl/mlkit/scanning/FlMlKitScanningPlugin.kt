@@ -14,13 +14,21 @@ class FlMlKitScanningPlugin : FlutterPlugin, ActivityAware {
 
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-        channel = MethodChannel(flutterPluginBinding.binaryMessenger, "fl.mlkit.scanning")
+        channel = MethodChannel(
+            flutterPluginBinding.binaryMessenger,
+            "fl.mlkit.scanning"
+        )
         plugin = flutterPluginBinding
     }
 
 
     override fun onAttachedToActivity(pluginBinding: ActivityPluginBinding) {
-        channel.setMethodCallHandler(FlMlKitScanningMethodCall(pluginBinding.activity, plugin!!))
+        channel.setMethodCallHandler(
+            FlMlKitScanningMethodCall(
+                pluginBinding.activity,
+                plugin!!
+            )
+        )
     }
 
     override fun onDetachedFromActivityForConfigChanges() {
