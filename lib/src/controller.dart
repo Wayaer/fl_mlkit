@@ -19,6 +19,9 @@ class FlMlKitScanningController extends CameraController {
   /// barCode data
   AnalysisImageModel? data;
 
+  @protected
+  bool _scan = false;
+
   List<BarcodeFormat> _barcodeFormats = <BarcodeFormat>[BarcodeFormat.qrCode];
 
   @override
@@ -42,6 +45,7 @@ class FlMlKitScanningController extends CameraController {
   @override
   void eventListen(dynamic data) {
     super.eventListen(data);
+    if (!_scan) return;
     if (data is Map) {
       final List<dynamic>? barcodes = data['barcodes'] as List<dynamic>?;
       if (barcodes != null) {
@@ -89,6 +93,7 @@ class FlMlKitScanningController extends CameraController {
 
   Future<bool> _scanncing(bool scan) async {
     if (!_supportPlatform) return false;
+    _scan = scan;
     final bool? state = await channel.invokeMethod<bool?>('scan', scan);
     return state ?? false;
   }

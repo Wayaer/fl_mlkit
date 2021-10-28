@@ -1,4 +1,5 @@
 ## 3.0.0
+ * add intercept callback
  * remove `FlMlKitScanningMethodCall()`
  * add `onCreateView` for `FlMlKitScanning()`
  * add `notPreviewed` for `FlMlKitScanning()`
