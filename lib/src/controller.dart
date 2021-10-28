@@ -19,8 +19,11 @@ class FlMlKitScanningController extends CameraController {
   /// barCode data
   AnalysisImageModel? data;
 
-  @protected
-  bool _scan = false;
+  double currentFrequency = 0.1;
+
+  bool _canScan = false;
+
+  bool get canScan => _canScan;
 
   List<BarcodeFormat> _barcodeFormats = <BarcodeFormat>[BarcodeFormat.qrCode];
 
@@ -34,15 +37,15 @@ class FlMlKitScanningController extends CameraController {
   /// [frequency] 解析频率 Analytical frequency
   /// [resolution] 预览相机支持的分辨率 Preview the resolution supported by the camera
   @override
-  Future<FlCameraOptions?> startPreview(String camerId,
-      {CameraResolution resolution = CameraResolution.high,
+  Future<FlCameraOptions?> startPreview(CameraInfo camera,
+      {CameraResolution? resolution,
       Map<String, dynamic>? options,
-      double frequency = 1}) {
-    final arguments = <String, dynamic>{};
+      double? frequency}) {
+    if (frequency != null) currentFrequency = frequency;
+    final arguments = <String, dynamic>{'frequency': currentFrequency};
     if (options != null) arguments.addAll(options);
-    arguments['frequency'] = frequency;
     return super
-        .startPreview(camerId, resolution: resolution, options: arguments);
+        .startPreview(camera, resolution: resolution, options: arguments);
   }
 
   /// 设置设别码类型
@@ -62,7 +65,7 @@ class FlMlKitScanningController extends CameraController {
   @override
   void eventListen(dynamic data) {
     super.eventListen(data);
-    if (!_scan) return;
+    if (!_canScan) return;
     if (data is Map) {
       final List<dynamic>? barcodes = data['barcodes'] as List<dynamic>?;
       if (barcodes != null) {
@@ -101,17 +104,15 @@ class FlMlKitScanningController extends CameraController {
   /// Start scanncing
   Future<bool> startScan() => _scanncing(true);
 
-  /// 获取识别状态
-  /// get scan state
-  Future<bool?> getScanState() async {
-    if (!_supportPlatform) return null;
-    return await channel.invokeMethod<bool?>('getScanState');
-  }
-
   Future<bool> _scanncing(bool scan) async {
-    if (!_supportPlatform) return false;
-    _scan = scan;
+    if (!_supportPlatform || _canScan == scan) return false;
+    _canScan = scan;
+    notifyListeners();
     final bool? state = await channel.invokeMethod<bool?>('scan', scan);
+    if (state != true) {
+      _canScan = !_canScan;
+      notifyListeners();
+    }
     return state ?? false;
   }
 }

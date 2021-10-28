@@ -5,8 +5,6 @@ import android.app.Activity
 import android.graphics.BitmapFactory
 import android.graphics.Point
 import android.graphics.Rect
-import android.os.Handler
-import android.os.Looper
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import com.google.mlkit.vision.barcode.Barcode
@@ -28,15 +26,15 @@ class FlMlKitScanningMethodCall(
     private var options: BarcodeScannerOptions =
         BarcodeScannerOptions.Builder()
             .setBarcodeFormats(Barcode.FORMAT_QR_CODE).build()
-    private var analyzing = false
-    private var scan = false
-    private var frequency: Double = 1.0
-    private val handler = Handler(Looper.getMainLooper())
+    private var canScan = false
+    private var frequency = 0L
+    private var lastCurrentTime = 0L
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {
             "startPreview" -> {
-                frequency = call.argument<Double>("frequency")!!
+                val value = call.argument<Double>("frequency")!!
+                frequency = value.toLong()
                 startPreview(imageAnalyzer, call, result)
             }
             "setBarcodeFormat" -> {
@@ -44,9 +42,8 @@ class FlMlKitScanningMethodCall(
                 result.success(true)
             }
             "scanImageByte" -> scanImageByte(call, result)
-            "getScanState" -> result.success(scan)
             "scan" -> {
-                scan = call.arguments as Boolean
+                canScan = call.arguments as Boolean
                 result.success(true)
             }
             else -> {
@@ -72,14 +69,15 @@ class FlMlKitScanningMethodCall(
     @SuppressLint("UnsafeOptInUsageError")
     private val imageAnalyzer = ImageAnalysis.Analyzer { imageProxy ->
         val mediaImage = imageProxy.image
-        if (mediaImage != null && scan && !analyzing) {
-            analyzing = true
+        val currentTime = System.currentTimeMillis()
+        if (currentTime - lastCurrentTime >= frequency && mediaImage != null && canScan) {
             val inputImage =
                 InputImage.fromMediaImage(
                     mediaImage,
                     imageProxy.imageInfo.rotationDegrees
                 )
             analysis(inputImage, null, imageProxy)
+            lastCurrentTime = currentTime
         } else {
             imageProxy.close()
         }
@@ -151,9 +149,6 @@ class FlMlKitScanningMethodCall(
                 result?.success(null)
             }
             .addOnCompleteListener {
-                handler.postDelayed({
-                    analyzing = false
-                }, (frequency * 1000).toLong())
                 imageProxy?.close()
             }
     }

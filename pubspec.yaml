@@ -8,7 +8,9 @@ environment:
   flutter: '>=2.0.0'
 
 dependencies:
-  fl_camera: ^2.0.0
+  fl_camera:
+    git:
+      url: git://github.com/Wayaer/fl_camera.git
   flutter:
     sdk: flutter
 

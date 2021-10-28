@@ -6,10 +6,13 @@ import MLKitBarcodeScanning
 import MLKitVision
 
 class FlMlKitScanningMethodCall: FlCameraMethodCall {
-    var options = BarcodeScannerOptions(formats: .all)
-    var analyzing: Bool = false
-    var scan: Bool = false
-    var frequency: Double = 1
+    private var options = BarcodeScannerOptions(formats: .all)
+
+    private var canScan: Bool = false
+
+    private var frequency: Double = 0
+
+    private var lastCurrentTime: TimeInterval = 0
 
     override init(_ _registrar: FlutterPluginRegistrar) {
         super.init(_registrar)
@@ -20,10 +23,11 @@ class FlMlKitScanningMethodCall: FlCameraMethodCall {
         case "startPreview":
             frequency = (call.arguments as! [String: Any?])["frequency"] as! Double
             startPreview({ [self] sampleBuffer in
-                if !analyzing, scan {
-                    analyzing = true
+                let currentTime = Date().timeIntervalSince1970 * 1000
+                if currentTime - lastCurrentTime >= frequency, canScan {
                     let buffer = CMSampleBufferGetImageBuffer(sampleBuffer)
                     self.analysis(buffer!.image, nil)
+                    lastCurrentTime = currentTime
                 }
             }, call: call, result)
         case "setBarcodeFormat":
@@ -41,13 +45,8 @@ class FlMlKitScanningMethodCall: FlCameraMethodCall {
                 }
             }
             result([])
-        case "getScanState":
-            result(scan)
         case "scan":
-            let argument = call.arguments as! Bool
-            if argument != scan {
-                scan = argument
-            }
+            canScan = call.arguments as! Bool
             result(true)
         default:
             super.handle(call: call, result: result)
@@ -125,9 +124,6 @@ class FlMlKitScanningMethodCall: FlCameraMethodCall {
                 } else {
                     result!(map)
                 }
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + frequency) {
-                analyzing = false
             }
         }
     }

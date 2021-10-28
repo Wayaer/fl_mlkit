@@ -71,13 +71,8 @@ class _AppState extends State<_App> {
     if (isAndroid) hasPermission = await getPermission(Permission.camera);
     if (isIOS) hasPermission = true;
     if (hasPermission) {
-      final bool? state = await FlMlKitScanningController().getScanState();
-      if (state == null) {
-        showToast('Unknown scan status');
-        return;
-      }
-      final List<Barcode>? data = await push(FlMlKitScanningPage(
-          barcodeFormats: barcodeFormats, scanState: state));
+      final List<Barcode>? data =
+          await push(FlMlKitScanningPage(barcodeFormats: barcodeFormats));
       if (data != null) {
         list = data;
         setState(() {});
@@ -162,4 +157,15 @@ class ElevatedText extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
       ElevatedButton(onPressed: onPressed, child: Text(text));
+}
+
+class ElevatedIcon extends StatelessWidget {
+  const ElevatedIcon({Key? key, this.onPressed, required this.icon})
+      : super(key: key);
+  final VoidCallback? onPressed;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) => ElevatedButton(
+      onPressed: onPressed, child: Icon(icon, color: Colors.white));
 }
