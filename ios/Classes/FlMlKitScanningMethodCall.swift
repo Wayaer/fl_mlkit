@@ -9,6 +9,7 @@ class FlMlKitScanningMethodCall: FlCameraMethodCall {
     var options = BarcodeScannerOptions(formats: .all)
     var analyzing: Bool = false
     var scan: Bool = false
+    var frequency: Double = 1
 
     override init(_ _registrar: FlutterPluginRegistrar) {
         super.init(_registrar)
@@ -17,6 +18,7 @@ class FlMlKitScanningMethodCall: FlCameraMethodCall {
     override func handle(call: FlutterMethodCall, result: @escaping FlutterResult) {
         switch call.method {
         case "startPreview":
+            frequency = (call.arguments as! [String: Any?])["frequency"] as! Double
             startPreview({ [self] sampleBuffer in
                 if !analyzing, scan {
                     analyzing = true
@@ -124,7 +126,9 @@ class FlMlKitScanningMethodCall: FlCameraMethodCall {
                     result!(map)
                 }
             }
-            analyzing = false
+            DispatchQueue.main.asyncAfter(deadline: .now() + frequency) {
+                analyzing = false
+            }
         }
     }
 }

@@ -20,6 +20,7 @@ class FlMlKitScanning extends StatefulWidget {
     this.fit = BoxFit.fitWidth,
     this.onCreateView,
     this.notPreviewed,
+    this.frequency = 1,
   })  : barcodeFormats =
             barcodeFormats ?? <BarcodeFormat>[BarcodeFormat.qrCode],
         super(key: key);
@@ -67,6 +68,10 @@ class FlMlKitScanning extends StatefulWidget {
   /// Preview the resolution supported by the camera
   final CameraResolution resolution;
 
+  /// 解析频率 单位是秒
+  /// Analytical frequency The unit is seconds
+  final double frequency;
+
   /// How a camera box should be inscribed into another box.
   final BoxFit fit;
 
@@ -110,7 +115,8 @@ class _FlMlKitScanningState extends FlCameraComposeState<FlMlKitScanning> {
     if (data) {
       await scanningController.setBarcodeFormat(widget.barcodeFormats);
       initializeListen();
-      final options = await controller.startPreview(camera.name);
+      final options = await scanningController.startPreview(camera.name,
+          resolution: widget.resolution, frequency: widget.frequency);
       if (options != null && mounted) {
         scanningController.startScan();
         setState(() {});

@@ -24,7 +24,10 @@ Camera related functions depend on [fl_camera](https://pub.dev/packages/fl_camer
 
 Widget build(BuildContext context) {
   return FlMlKitScanning(
-
+      /// 解析频率 单位是秒
+      /// Analytical frequency The unit is seconds
+      frequency: 2,
+      
       /// 需要预览的相机
       /// Camera ID to preview
       camera: camera,

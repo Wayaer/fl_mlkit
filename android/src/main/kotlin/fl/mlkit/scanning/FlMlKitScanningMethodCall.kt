@@ -5,6 +5,8 @@ import android.app.Activity
 import android.graphics.BitmapFactory
 import android.graphics.Point
 import android.graphics.Rect
+import android.os.Handler
+import android.os.Looper
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import com.google.mlkit.vision.barcode.Barcode
@@ -26,11 +28,17 @@ class FlMlKitScanningMethodCall(
     private var options: BarcodeScannerOptions =
         BarcodeScannerOptions.Builder()
             .setBarcodeFormats(Barcode.FORMAT_QR_CODE).build()
+    private var analyzing = false
     private var scan = false
+    private var frequency: Double = 1.0
+    private val handler = Handler(Looper.getMainLooper())
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {
-            "startPreview" -> startPreview(imageAnalyzer, call, result)
+            "startPreview" -> {
+                frequency = call.argument<Double>("frequency")!!
+                startPreview(imageAnalyzer, call, result)
+            }
             "setBarcodeFormat" -> {
                 setBarcodeFormat(call)
                 result.success(true)
@@ -38,10 +46,7 @@ class FlMlKitScanningMethodCall(
             "scanImageByte" -> scanImageByte(call, result)
             "getScanState" -> result.success(scan)
             "scan" -> {
-                val argument = call.arguments as Boolean
-                if (argument != scan) {
-                    scan = argument
-                }
+                scan = call.arguments as Boolean
                 result.success(true)
             }
             else -> {
@@ -67,7 +72,8 @@ class FlMlKitScanningMethodCall(
     @SuppressLint("UnsafeOptInUsageError")
     private val imageAnalyzer = ImageAnalysis.Analyzer { imageProxy ->
         val mediaImage = imageProxy.image
-        if (mediaImage != null && scan) {
+        if (mediaImage != null && scan && !analyzing) {
+            analyzing = true
             val inputImage =
                 InputImage.fromMediaImage(
                     mediaImage,
@@ -141,8 +147,15 @@ class FlMlKitScanningMethodCall(
                     result.success(map)
                 }
             }
-            .addOnFailureListener { result?.success(null) }
-            .addOnCompleteListener { imageProxy?.close() }
+            .addOnFailureListener {
+                result?.success(null)
+            }
+            .addOnCompleteListener {
+                handler.postDelayed({
+                    analyzing = false
+                }, (frequency * 1000).toLong())
+                imageProxy?.close()
+            }
     }
 
 

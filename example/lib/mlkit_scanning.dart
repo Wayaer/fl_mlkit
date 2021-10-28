@@ -38,10 +38,11 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
         },
         body: Stack(children: <Widget>[
           FlMlKitScanning(
+              frequency: 3,
               onCreateView: (FlMlKitScanningController controller) {
                 scanningController = controller;
               },
-              overlay: const ScannerLine(),
+              // overlay: const ScannerBox(),
               onFlashChanged: (FlashState state) {
                 showToast('$state');
               },

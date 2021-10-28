@@ -28,6 +28,23 @@ class FlMlKitScanningController extends CameraController {
   Future<bool> initialize({CameraEventListen? listen}) =>
       super.initialize(listen: eventListen);
 
+  /// 开始预览
+  /// start Preview
+  /// [camerId] 需要预览的相机 Camera ID to preview
+  /// [frequency] 解析频率 Analytical frequency
+  /// [resolution] 预览相机支持的分辨率 Preview the resolution supported by the camera
+  @override
+  Future<FlCameraOptions?> startPreview(String camerId,
+      {CameraResolution resolution = CameraResolution.high,
+      Map<String, dynamic>? options,
+      double frequency = 1}) {
+    final arguments = <String, dynamic>{};
+    if (options != null) arguments.addAll(options);
+    arguments['frequency'] = frequency;
+    return super
+        .startPreview(camerId, resolution: resolution, options: arguments);
+  }
+
   /// 设置设别码类型
   /// Set type
   Future<bool> setBarcodeFormat(List<BarcodeFormat> barcodeFormats) async {
