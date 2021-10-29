@@ -104,7 +104,7 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
                           onChanged: (double value) async {
                             ratio = value;
                             zoomState!(() {});
-                            FlMlKitScanningController().setZoomRatio(value);
+                            scanningController.value?.setZoomRatio(value);
                           }),
                       IconBox(
                           size: 30,
@@ -114,12 +114,15 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
                           padding: const EdgeInsets.fromLTRB(10, 10, 10, 40),
                           icon: flashState ? Icons.flash_on : Icons.flash_off,
                           onTap: () async {
-                            final bool state = await FlMlKitScanningController()
-                                .setFlashMode(flashState
+                            final bool? state = await scanningController.value
+                                ?.setFlashMode(flashState
                                     ? FlashState.off
                                     : FlashState.on);
                             flashState = !flashState;
-                            if (state) zoomState!(() {});
+                            if (state == true) {
+                              flashState = !flashState;
+                              zoomState!(() {});
+                            }
                           })
                     ]);
               })),
@@ -186,15 +189,6 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
           );
         });
   }
-
-  @override
-  void dispose() {
-    super.dispose();
-    animationController.dispose();
-    scanningController.dispose();
-    hasPreview.dispose();
-  }
-
   Future<void> switchCamera() async {
     if (scanningController.value == null) return;
     for (final CameraInfo cameraInfo in scanningController.value!.cameras!) {
@@ -207,6 +201,15 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
     await scanningController.value!.switchCamera(currentCamera!);
     isBcakCamera = !isBcakCamera;
   }
+  @override
+  void dispose() {
+    super.dispose();
+    animationController.dispose();
+    scanningController.dispose();
+    hasPreview.dispose();
+  }
+
+
 }
 
 class _RectBox extends StatelessWidget {

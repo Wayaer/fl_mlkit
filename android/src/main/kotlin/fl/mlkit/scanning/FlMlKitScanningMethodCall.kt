@@ -145,12 +145,8 @@ class FlMlKitScanningMethodCall(
                     result.success(map)
                 }
             }
-            .addOnFailureListener {
-                result?.success(null)
-            }
-            .addOnCompleteListener {
-                imageProxy?.close()
-            }
+            .addOnFailureListener { result?.success(null) }
+            .addOnCompleteListener { imageProxy?.close() }
     }
 
 
