@@ -18,7 +18,7 @@ class FlMlKitScanning extends StatefulWidget {
     this.resolution = CameraResolution.high,
     this.fit = BoxFit.fitWidth,
     this.onCreateView,
-    this.notPreviewed,
+    this.uninitialized,
     this.frequency = 1,
   })  : barcodeFormats =
             barcodeFormats ?? <BarcodeFormat>[BarcodeFormat.qrCode],
@@ -33,8 +33,8 @@ class FlMlKitScanning extends StatefulWidget {
   final Widget? overlay;
 
   /// 停止预览时显示的UI
-  /// The UI displayed when the camera is not previewed
-  final Widget? notPreviewed;
+  /// The UI displayed when the camera is not uninitialized
+  final Widget? uninitialized;
 
   /// Flash change
   final ValueChanged<FlashState>? onFlashChanged;
@@ -87,7 +87,7 @@ class _FlMlKitScanningState extends FlCameraState<FlMlKitScanning> {
   void initState() {
     controller = FlMlKitScanningController();
     super.initState();
-    notPreviewed = widget.notPreviewed;
+    uninitialized = widget.uninitialized;
     WidgetsBinding.instance!.addPostFrameCallback((Duration time) async {
       await controller.initialize();
       if (widget.onCreateView != null) {

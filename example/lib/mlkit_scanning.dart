@@ -73,10 +73,10 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
               autoScanning: true,
               barcodeFormats: widget.barcodeFormats,
               fit: BoxFit.fitWidth,
-              notPreviewed: Container(
+              uninitialized: Container(
                   color: Colors.black,
                   alignment: Alignment.center,
-                  child: const Text('Camera not previewed',
+                  child: const Text('Camera not initialized',
                       style: TextStyle(color: Colors.blueAccent))),
               onDataChanged: (AnalysisImageModel data) {
                 final List<Barcode>? barcodes = data.barcodes;
