@@ -24,9 +24,11 @@ Camera related functions depend on [fl_camera](https://pub.dev/packages/fl_camer
 
 Widget build(BuildContext context) {
   return FlMlKitScanning(
-      /// 解析频率 单位是秒
-      /// Analytical frequency The unit is seconds
-      frequency: 2,
+    /// 如果你设置为10, 2次解析数据间隔为10 毫秒，数字越小 在ios上cpu占有率越高，数字越大，识别速度会变慢，建议设置500-100
+    /// If you set it to 10, The interval between data parsing is 10 milliseconds
+    /// The larger the number, the slower the parsing,If the number is too small, the CPU percentage will be too high on ios
+    /// Therefore, the recommended setting range is 500 to 1000
+      frequency: 500,
       
       /// 需要预览的相机
       /// Camera ID to preview
