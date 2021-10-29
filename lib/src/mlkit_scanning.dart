@@ -19,7 +19,7 @@ class FlMlKitScanning extends StatefulWidget {
     this.fit = BoxFit.fitWidth,
     this.onCreateView,
     this.uninitialized,
-    this.frequency = 1,
+    this.frequency = 500,
   })  : barcodeFormats =
             barcodeFormats ?? <BarcodeFormat>[BarcodeFormat.qrCode],
         super(key: key);

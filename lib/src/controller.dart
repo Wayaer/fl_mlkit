@@ -19,17 +19,21 @@ class FlMlKitScanningController extends CameraController {
   /// barCode data
   AnalysisImageModel? data;
 
-  double currentFrequency = 0.1;
+  /// 当前间隔时间
+  double currentFrequency = 500;
 
   bool _canScan = false;
 
+  /// 是否可以扫描
   bool get canScan => _canScan;
 
   List<BarcodeFormat> _barcodeFormats = <BarcodeFormat>[BarcodeFormat.qrCode];
 
+  /// 初始化消息通道和基础配置
+  /// Initialize the message channel and basic configuration
   @override
   Future<bool> initialize({CameraEventListen? listen}) =>
-      super.initialize(listen: eventListen);
+      super.initialize(listen: _eventListen);
 
   /// 开始预览
   /// start Preview
@@ -62,8 +66,8 @@ class FlMlKitScanningController extends CameraController {
     return state ?? false;
   }
 
-  @override
-  void eventListen(dynamic data) {
+  @protected
+  void _eventListen(dynamic data) {
     super.eventListen(data);
     if (!_canScan) return;
     if (data is Map) {
@@ -104,6 +108,7 @@ class FlMlKitScanningController extends CameraController {
   /// Start scanncing
   Future<bool> startScan() => _scanncing(true);
 
+  @protected
   Future<bool> _scanncing(bool scan) async {
     if (!_supportPlatform || _canScan == scan) return false;
     _canScan = scan;
