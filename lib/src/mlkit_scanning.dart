@@ -78,6 +78,9 @@ class FlMlKitScanning extends StatefulWidget {
 }
 
 class _FlMlKitScanningState extends FlCameraState<FlMlKitScanning> {
+  FlashState? _flashState;
+  CameraZoomState? _zoomState;
+
   @override
   void initState() {
     controller = FlMlKitScanningController();
@@ -94,11 +97,17 @@ class _FlMlKitScanningState extends FlCameraState<FlMlKitScanning> {
   }
 
   void changedListener() {
-    if (widget.onFlashChanged != null && controller.cameraFlash != null) {
-      widget.onFlashChanged!(controller.cameraFlash!);
+    if (widget.onFlashChanged != null &&
+        controller.cameraFlash != null &&
+        controller.cameraFlash != _flashState) {
+      _flashState = controller.cameraFlash!;
+      widget.onFlashChanged!(_flashState!);
     }
-    if (widget.onZoomChanged != null && controller.cameraZoom != null) {
-      widget.onZoomChanged!(controller.cameraZoom!);
+    if (widget.onZoomChanged != null &&
+        controller.cameraZoom != null &&
+        controller.cameraZoom != _zoomState) {
+      _zoomState = controller.cameraZoom!;
+      widget.onZoomChanged!(_zoomState!);
     }
   }
 
