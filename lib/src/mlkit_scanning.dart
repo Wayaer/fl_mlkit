@@ -131,8 +131,7 @@ class _FlMlKitScanningState extends FlCameraState<FlMlKitScanning> {
     if (data) {
       await scanningController.setBarcodeFormat(widget.barcodeFormats);
       if (widget.onDataChanged != null) {
-        (controller as FlMlKitScanningController).onDataChanged =
-            widget.onDataChanged;
+        scanningController.onDataChanged = widget.onDataChanged;
       }
       final options = await scanningController.startPreview(camera,
           resolution: widget.resolution, frequency: widget.frequency);
