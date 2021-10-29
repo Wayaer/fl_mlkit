@@ -52,7 +52,7 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
         },
         body: Stack(children: <Widget>[
           FlMlKitScanning(
-              frequency: 1000,
+              frequency: 800,
               camera: currentCamera,
               onCreateView: (FlMlKitScanningController _controller) {
                 scanningController.value = _controller;
@@ -79,7 +79,6 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
                   child: const Text('Camera not initialized',
                       style: TextStyle(color: Colors.blueAccent))),
               onDataChanged: (AnalysisImageModel data) {
-                print('解析到数据');
                 final List<Barcode>? barcodes = data.barcodes;
                 if (barcodes != null && barcodes.isNotEmpty) {
                   showToast(barcodes.first.value ?? 'unknown');

@@ -2,9 +2,10 @@
  * add intercept callback
  * remove `FlMlKitScanningMethodCall()`
  * add `onCreateView` for `FlMlKitScanning()`
- * add `notPreviewed` for `FlMlKitScanning()`
  * add `frequency` for `FlMlKitScanning()`
  * add `stopPreview()` for `FlMlKitScanningController()`
+ * add `switchCamera()` for `FlMlKitScanningController()`
+ * add `resetCamera()` for `FlMlKitScanningController()`
  * modify `onFlashChange` to `onFlashChanged`
  * modify `onZoomChange` to `onZoomChanged`
  * modify `onListen` to `onDataChanged`

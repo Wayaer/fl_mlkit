@@ -30,7 +30,7 @@ Widget build(BuildContext context) {
     /// Therefore, the recommended setting range is 500 to 1000
       frequency: 500,
       
-      /// 需要预览的相机
+      /// 需要预览的相机 不传值 默认为后摄像头
       /// Camera ID to preview
       camera: camera,
 
@@ -75,15 +75,6 @@ Widget build(BuildContext context) {
           const Text(
               'Camera not initialized', style: TextStyle(color: Colors.white))),
       
-      /// 相机在暂停预览时显示的UI
-      /// The UI displayed when the camera is not previewed
-      notPreviewed: Container(
-          color: Colors.black,
-          alignment: Alignment.center,
-          child:
-          const Text(
-              'Camera not previewed', style: TextStyle(color: Colors.white))),
-
       /// 二维码识别类型  默认仅识别qr_code，需要识别几种就添加几种
       /// Identification type Only QRcode is recognized by default
       barcodeFormats: <BarcodeFormat>[BarcodeFormat.qr_code],
@@ -121,10 +112,6 @@ void func() {
   /// 相机缩放
   /// Camera zoom
   controller.setZoomRatio();
-
-  /// 获取识别状态
-  /// get scan state
-  controller.getScanState();
   
   /// 暂停扫描
   /// Pause scanning
@@ -133,6 +120,9 @@ void func() {
   /// 开始扫描
   /// Start scanncing
   controller.start();
+  
+  
+  
 }
 
 ```

@@ -63,10 +63,10 @@ class FlMlKitScanning extends StatefulWidget {
   /// Preview the resolution supported by the camera
   final CameraResolution resolution;
 
-  /// 如果你设置为10, 2次解析数据间隔为10 毫秒，数字越小 在ios上cpu占有率越高，数字越大，识别速度会变慢，建议设置500-100
+  /// 如果你设置为10, 2次解析数据间隔为10 毫秒，数字越小 在ios上cpu占有率越高，数字越大，识别速度会变慢，建议设置500-1500
   /// If you set it to 10, The interval between data parsing is 10 milliseconds
   /// The larger the number, the slower the parsing,If the number is too small, the CPU percentage will be too high on ios
-  /// Therefore, the recommended setting range is 500 to 1000
+  /// Therefore, the recommended setting range is 500 to 1500
   final double frequency;
 
   /// How a camera box should be inscribed into another box.
