@@ -74,7 +74,7 @@ class FlMlKitScanningController extends CameraController {
       final List<dynamic>? barcodes = data['barcodes'] as List<dynamic>?;
       if (barcodes != null) {
         data = AnalysisImageModel.fromMap(data);
-        if (onDataChanged != null) onDataChanged!(data);
+        onDataChanged?.call(data);
       }
     }
   }

@@ -90,26 +90,21 @@ class _FlMlKitScanningState extends FlCameraState<FlMlKitScanning> {
     uninitialized = widget.uninitialized;
     WidgetsBinding.instance!.addPostFrameCallback((Duration time) async {
       await controller.initialize();
-      if (widget.onCreateView != null) {
-        widget.onCreateView!(controller as FlMlKitScanningController);
-      }
+      widget.onCreateView?.call(controller as FlMlKitScanningController);
       initialize();
     });
     controller.addListener(changedListener);
   }
 
   void changedListener() {
-    if (widget.onFlashChanged != null &&
-        controller.cameraFlash != null &&
+    if (controller.cameraFlash != null &&
         controller.cameraFlash != _flashState) {
       _flashState = controller.cameraFlash!;
-      widget.onFlashChanged!(_flashState!);
+      widget.onFlashChanged?.call(_flashState!);
     }
-    if (widget.onZoomChanged != null &&
-        controller.cameraZoom != null &&
-        controller.cameraZoom != _zoomState) {
+    if (controller.cameraZoom != null && controller.cameraZoom != _zoomState) {
       _zoomState = controller.cameraZoom!;
-      widget.onZoomChanged!(_zoomState!);
+      widget.onZoomChanged?.call(_zoomState!);
     }
   }
 
