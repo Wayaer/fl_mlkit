@@ -2,12 +2,13 @@
 
 基于[Google ML Kit](https://developers.google.com/ml-kit/vision/barcode-scanning)实现快速稳定扫码功能，支持Android\IOS
 
-Realize fast and stable code scanning function based on [Google ML Kit](https://developers.google.com/ml-kit/vision/barcode-scanning), and support Android \ IOS
+Realize fast and stable code scanning function based
+on [Google ML Kit](https://developers.google.com/ml-kit/vision/barcode-scanning), and support
+Android \ IOS
 
-相机相关功能依赖于 [fl_camera](https://pub.dev/packages/fl_camera) 
+相机相关功能依赖于 [fl_camera](https://pub.dev/packages/fl_camera)
 
 Camera related functions depend on [fl_camera](https://pub.dev/packages/fl_camera)
-
 
 ### 使用 use
 
@@ -24,12 +25,13 @@ Camera related functions depend on [fl_camera](https://pub.dev/packages/fl_camer
 
 Widget build(BuildContext context) {
   return FlMlKitScanning(
+
     /// 如果你设置为10, 2次解析数据间隔为10 毫秒，数字越小 在ios上cpu占有率越高，数字越大，识别速度会变慢，建议设置500-100
     /// If you set it to 10, The interval between data parsing is 10 milliseconds
     /// The larger the number, the slower the parsing,If the number is too small, the CPU percentage will be too high on ios
     /// Therefore, the recommended setting range is 500 to 1000
       frequency: 500,
-      
+
       /// 需要预览的相机 不传值 默认为后摄像头
       /// Camera ID to preview
       camera: camera,
@@ -45,11 +47,11 @@ Widget build(BuildContext context) {
       /// 显示在预览上层
       /// Display above preview box
       overlay: const ScannerLine(),
-      
+
       /// 更新组件时是否重置相机
       /// Reset camera when updating components
       updateReset: false,
-      
+
       /// 相机预览位置
       /// How a camera box should be inscribed into another box.
       fit: BoxFit.fitWidth,
@@ -74,7 +76,7 @@ Widget build(BuildContext context) {
           child:
           const Text(
               'Camera not initialized', style: TextStyle(color: Colors.white))),
-      
+
       /// 二维码识别类型  默认仅识别qr_code，需要识别几种就添加几种
       /// Identification type Only QRcode is recognized by default
       barcodeFormats: <BarcodeFormat>[BarcodeFormat.qr_code],
@@ -108,11 +110,11 @@ void func() {
   /// 打开\关闭 闪光灯 
   /// Turn flash on / off
   controller.setFlashMode();
-  
+
   /// 相机缩放
   /// Camera zoom
   controller.setZoomRatio();
-  
+
   /// 暂停扫描
   /// Pause scanning
   controller.pause();
@@ -120,8 +122,14 @@ void func() {
   /// 开始扫描
   /// Start scanncing
   controller.start();
-  
-  
 }
 
 ```
+
+| android | ios |
+| --- | --- |
+| <img src="https://github.com/Wayaer/fl_mlkit_scanning/raw/main/res/android.png" /> |  <img src="https://github.com/Wayaer/fl_mlkit_scanning/raw/main/res/ios.png"/> |
+| <img src="https://github.com/Wayaer/fl_mlkit_scanning/raw/main/res/android_image.png" /> |  <img src="https://github.com/Wayaer/fl_mlkit_scanning/raw/main/res/ios_image.png"/> |
+| <img src="https://github.com/Wayaer/fl_mlkit_scanning/raw/main/res/android_scan.png" /> |  <img src="https://github.com/Wayaer/fl_mlkit_scanning/raw/main/res/ios_scan.png"/> |
+
+<img src="https://github.com/Wayaer/fl_mlkit_scanning/raw/main/res/text.png" width="50%"/>
