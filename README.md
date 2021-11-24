@@ -128,7 +128,7 @@ void func() {
 
 | android | ios |
 | --- | --- |
-| <img src="https://github.com/Wayaer/fl_mlkit_scanning/raw/main/res/ios.png" width="360" />  |  <img src="https://github.com/Wayaer/fl_mlkit_scanning/raw/main/res/android.jpg" width="360"/> |
+| <img src="https://github.com/Wayaer/fl_mlkit_scanning/raw/main/res/ios.png" width=360 />  |  <img src="https://github.com/Wayaer/fl_mlkit_scanning/raw/main/res/android.jpg" width=360/> |
 | <img src="https://github.com/Wayaer/fl_mlkit_scanning/raw/main/res/android_image.jpg" width="100%"/> |  <img src="https://github.com/Wayaer/fl_mlkit_scanning/raw/main/res/ios_image.png" width="48%"/> |
 | <img src="https://github.com/Wayaer/fl_mlkit_scanning/raw/main/res/android_scan.jpg" width="100%"/> |  <img src="https://github.com/Wayaer/fl_mlkit_scanning/raw/main/res/ios_scan.png" width="48%"/> |
 
