@@ -128,8 +128,8 @@ void func() {
 
 | android | ios |
 | --- | --- |
-| <img src="https://github.com/Wayaer/fl_mlkit_scanning/raw/main/res/android.png" /> |  <img src="https://github.com/Wayaer/fl_mlkit_scanning/raw/main/res/ios.png"/> |
-| <img src="https://github.com/Wayaer/fl_mlkit_scanning/raw/main/res/android_image.png" /> |  <img src="https://github.com/Wayaer/fl_mlkit_scanning/raw/main/res/ios_image.png"/> |
-| <img src="https://github.com/Wayaer/fl_mlkit_scanning/raw/main/res/android_scan.png" /> |  <img src="https://github.com/Wayaer/fl_mlkit_scanning/raw/main/res/ios_scan.png"/> |
+| <img src="https://github.com/Wayaer/fl_mlkit_scanning/raw/main/res/android.jpg" /> |  <img src="https://github.com/Wayaer/fl_mlkit_scanning/raw/main/res/ios.png"/> |
+| <img src="https://github.com/Wayaer/fl_mlkit_scanning/raw/main/res/android_image.jpg" /> |  <img src="https://github.com/Wayaer/fl_mlkit_scanning/raw/main/res/ios_image.png"/> |
+| <img src="https://github.com/Wayaer/fl_mlkit_scanning/raw/main/res/android_scan.jpg" /> |  <img src="https://github.com/Wayaer/fl_mlkit_scanning/raw/main/res/ios_scan.png"/> |
 
 <img src="https://github.com/Wayaer/fl_mlkit_scanning/raw/main/res/text.png" width="50%"/>
