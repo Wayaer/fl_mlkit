@@ -1,3 +1,8 @@
+## 3.1.0
+
+* Optimization can switch languages without destroying the camera
+* Optimize some problems
+
 ## 3.0.1
 
 * Add doc

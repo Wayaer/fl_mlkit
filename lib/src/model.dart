@@ -549,7 +549,7 @@ BarcodeFormat _getFormat(int? value) {
     case 4:
       return BarcodeFormat.code93;
     case 8:
-      return BarcodeFormat.codeBar;
+      return BarcodeFormat.codaBar;
     case 16:
       return BarcodeFormat.dataMatrix;
     case 32:

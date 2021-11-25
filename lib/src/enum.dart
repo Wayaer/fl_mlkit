@@ -29,7 +29,7 @@ enum BarcodeFormat {
   /// Barcode format constant for Codabar.
   ///
   /// Constant Value: 8
-  codeBar,
+  codaBar,
 
   /// Barcode format constant for Data Matrix.
   ///

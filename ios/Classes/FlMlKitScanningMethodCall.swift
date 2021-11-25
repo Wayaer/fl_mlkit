@@ -7,12 +7,10 @@ import MLKitVision
 
 class FlMlKitScanningMethodCall: FlCameraMethodCall {
     private var options = BarcodeScannerOptions(formats: .all)
-
     private var canScan: Bool = false
-
     private var frequency: Double = 0
-
     private var lastCurrentTime: TimeInterval = 0
+    private var scanner: BarcodeScanner?
 
     override init(_ _registrar: FlutterPluginRegistrar) {
         super.init(_registrar)
@@ -32,6 +30,7 @@ class FlMlKitScanningMethodCall: FlCameraMethodCall {
             }, call: call, result)
         case "setBarcodeFormat":
             setBarcodeFormat(call)
+            scanner = nil
             result(true)
         case "scanImageByte":
             let arguments = call.arguments as! [AnyHashable: Any?]
@@ -48,9 +47,17 @@ class FlMlKitScanningMethodCall: FlCameraMethodCall {
         case "scan":
             canScan = call.arguments as! Bool
             result(true)
+        case "dispose":
+            dispose()
+            result(true)
         default:
             super.handle(call: call, result: result)
         }
+    }
+
+    override func dispose() {
+        super.dispose()
+        scanner = nil
     }
 
     func setBarcodeFormat(_ call: FlutterMethodCall) {
@@ -60,7 +67,7 @@ class FlMlKitScanningMethodCall: FlCameraMethodCall {
             for barcodeFomat in barcodeFormats {
                 switch barcodeFomat {
                 case "unknown":
-                    break
+                    formats.insert(.all)
                 case "all":
                     formats.insert(.all)
                 case "code128":
@@ -69,9 +76,9 @@ class FlMlKitScanningMethodCall: FlCameraMethodCall {
                     formats.insert(.code39)
                 case "code93":
                     formats.insert(.code93)
-                case "code_bar":
+                case "codaBar":
                     formats.insert(.codaBar)
-                case "data_matrix":
+                case "dataMatrix":
                     formats.insert(.dataMatrix)
                 case "ean13":
                     formats.insert(.EAN13)
@@ -79,11 +86,11 @@ class FlMlKitScanningMethodCall: FlCameraMethodCall {
                     formats.insert(.EAN8)
                 case "itf":
                     formats.insert(.ITF)
-                case "qr_code":
+                case "qrCode":
                     formats.insert(.qrCode)
-                case "upc_a":
+                case "upcA":
                     formats.insert(.UPCA)
-                case "upc_e":
+                case "upcE":
                     formats.insert(.UPCE)
                 case "pdf417":
                     formats.insert(.PDF417)
@@ -97,6 +104,13 @@ class FlMlKitScanningMethodCall: FlCameraMethodCall {
         }
     }
 
+    private func getBarcodeScanner() -> BarcodeScanner {
+        if scanner == nil {
+            scanner = BarcodeScanner.barcodeScanner(options: options)
+        }
+        return scanner!
+    }
+
     func analysis(_ image: UIImage, _ result: FlutterResult?) {
         let visionImage = VisionImage(image: image)
         if flCamera == nil {
@@ -104,8 +118,7 @@ class FlMlKitScanningMethodCall: FlCameraMethodCall {
         } else {
             visionImage.orientation = flCamera!.imageOrientation()
         }
-        let scanner = BarcodeScanner.barcodeScanner(options: options)
-        scanner.process(visionImage) { [self] barcodes, error in
+        getBarcodeScanner().process(visionImage) { [self] barcodes, error in
             if error == nil, barcodes != nil {
                 var list = [[String: Any?]]()
                 for barcode in barcodes! {
@@ -175,22 +188,24 @@ extension CGRect {
 
 extension Barcode {
     var data: [String: Any?] {
-        ["corners": cornerPoints?.map { $0.cgPointValue.data },
-         "format": format.rawValue,
-         "bytes": rawData,
-         "value": rawValue,
-         "type": valueType.rawValue,
-         "calendarEvent": calendarEvent?.data,
-         "contactInfo": contactInfo?.data,
-         "driverLicense": driverLicense?.data,
-         "email": email?.data,
-         "geoPoint": geoPoint?.data,
-         "phone": phone?.data,
-         "sms": sms?.data,
-         "url": url?.data,
-         "wifi": wifi?.data,
-         "displayValue": displayValue,
-         "boundingBox": frame.data]
+        ["corners": cornerPoints?.map {
+            $0.cgPointValue.data
+        },
+        "format": format.rawValue,
+        "bytes": rawData,
+        "value": rawValue,
+        "type": valueType.rawValue,
+        "calendarEvent": calendarEvent?.data,
+        "contactInfo": contactInfo?.data,
+        "driverLicense": driverLicense?.data,
+        "email": email?.data,
+        "geoPoint": geoPoint?.data,
+        "phone": phone?.data,
+        "sms": sms?.data,
+        "url": url?.data,
+        "wifi": wifi?.data,
+        "displayValue": displayValue,
+        "boundingBox": frame.data]
     }
 }
 
@@ -214,7 +229,13 @@ extension Date {
 
 extension BarcodeContactInfo {
     var data: [String: Any?] {
-        return ["addresses": addresses?.map { $0.data }, "emails": emails?.map { $0.data }, "name": name?.data, "organization": organization, "phones": phones?.map { $0.data }, "title": jobTitle, "urls": urls]
+        return ["addresses": addresses?.map {
+            $0.data
+        }, "emails": emails?.map {
+            $0.data
+        }, "name": name?.data, "organization": organization, "phones": phones?.map {
+            $0.data
+        }, "title": jobTitle, "urls": urls]
     }
 }
 

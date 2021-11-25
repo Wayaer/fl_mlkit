@@ -27,30 +27,10 @@ class _AppState extends State<_App> {
         padding: const EdgeInsets.all(30),
         children: <Widget>[
           ElevatedText(
-              onPressed: () => openCamera(<BarcodeFormat>[BarcodeFormat.all]),
+              onPressed: () => openCamera(),
               text: 'Turn on camera recognition'),
           const SizedBox(height: 10),
-          ElevatedText(
-              onPressed: scanCamera, text: 'Official camera scanning code'),
-          const SizedBox(height: 10),
           ElevatedText(onPressed: scanImage, text: 'Image recognition'),
-          const SizedBox(height: 10),
-          ElevatedText(
-              onPressed: openCamera, text: 'Camera identification QR code'),
-          const SizedBox(height: 10),
-          ElevatedText(
-              onPressed: () => openCamera(<BarcodeFormat>[
-                    BarcodeFormat.code39,
-                    BarcodeFormat.codeBar,
-                    BarcodeFormat.itf,
-                    BarcodeFormat.code93,
-                    BarcodeFormat.code128,
-                    BarcodeFormat.upcA,
-                    BarcodeFormat.upcE,
-                    BarcodeFormat.ean8,
-                    BarcodeFormat.ean13,
-                  ]),
-              text: 'Camera identification Bar code'),
           const SizedBox(height: 30),
           ShowCode(list)
         ]);
@@ -66,13 +46,12 @@ class _AppState extends State<_App> {
     if (permission) push(const CameraScanPage());
   }
 
-  Future<void> openCamera([List<BarcodeFormat>? barcodeFormats]) async {
+  Future<void> openCamera() async {
     bool hasPermission = false;
     if (isAndroid) hasPermission = await getPermission(Permission.camera);
     if (isIOS) hasPermission = true;
     if (hasPermission) {
-      final List<Barcode>? data =
-          await push(FlMlKitScanningPage(barcodeFormats: barcodeFormats));
+      final List<Barcode>? data = await push(const FlMlKitScanningPage());
       if (data != null) {
         list = data;
         setState(() {});

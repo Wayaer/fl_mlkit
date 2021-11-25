@@ -27,7 +27,10 @@ class FlMlKitScanningController extends CameraController {
   /// 是否可以扫描
   bool get canScan => _canScan;
 
-  List<BarcodeFormat> _barcodeFormats = <BarcodeFormat>[BarcodeFormat.qrCode];
+  List<BarcodeFormat> _barcodeFormats = <BarcodeFormat>[BarcodeFormat.all];
+
+  /// The currently BarcodeFormat
+  List<BarcodeFormat> get currentBarcodeFormats => _barcodeFormats;
 
   /// 初始化消息通道和基础配置
   /// Initialize the message channel and basic configuration
@@ -56,13 +59,13 @@ class FlMlKitScanningController extends CameraController {
   /// Set type
   Future<bool> setBarcodeFormat(List<BarcodeFormat> barcodeFormats) async {
     if (!_supportPlatform) return false;
-    _barcodeFormats = barcodeFormats;
     final bool? state = await channel.invokeMethod<bool?>(
         'setBarcodeFormat',
-        _barcodeFormats
+        barcodeFormats
             .map((BarcodeFormat e) => e.toString().split('.')[1])
             .toSet()
             .toList());
+    if (state == true) _barcodeFormats = barcodeFormats;
     return state ?? false;
   }
 

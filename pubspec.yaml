@@ -1,6 +1,6 @@
 name: fl_mlkit_scanning
 description: Google mlkit scanning for flutter plugin , supports Android and IOS.
-version: 3.0.1
+version: 3.1.0
 repository: https://github.com/Wayaer/fl_mlkit_scanning.git
 
 environment:
@@ -8,7 +8,7 @@ environment:
   flutter: '>=2.0.0'
 
 dependencies:
-  fl_camera: ^2.1.0
+  fl_camera: ^2.2.1
   flutter:
     sdk: flutter
 

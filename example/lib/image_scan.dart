@@ -35,7 +35,6 @@ class _ImageScanPageState extends State<ImageScanPage> {
                 margin:
                     const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
                 child: Image.file(File(path!))),
-          const SizedBox(height: 20),
           if (list != null && list!.isEmpty)
             const ShowText('Unrecognized', 'Unrecognized'),
           ShowCode(list ?? <Barcode>[], expanded: false)

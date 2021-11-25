@@ -4,8 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_waya/flutter_waya.dart';
 
 class FlMlKitScanningPage extends StatefulWidget {
-  const FlMlKitScanningPage({Key? key, this.barcodeFormats}) : super(key: key);
-  final List<BarcodeFormat>? barcodeFormats;
+  const FlMlKitScanningPage({Key? key}) : super(key: key);
 
   @override
   _FlMlKitScanningPageState createState() => _FlMlKitScanningPageState();
@@ -13,6 +12,8 @@ class FlMlKitScanningPage extends StatefulWidget {
 
 class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
     with TickerProviderStateMixin {
+  List<String> types = BarcodeFormat.values.builder((item) => item.toString());
+
   late AnimationController animationController;
   AnalysisImageModel? model;
   double ratio = 1;
@@ -71,7 +72,7 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
               },
               resolution: CameraResolution.veryHigh,
               autoScanning: true,
-              barcodeFormats: widget.barcodeFormats,
+              barcodeFormats: const [BarcodeFormat.all],
               fit: BoxFit.fitWidth,
               uninitialized: Container(
                   color: Colors.black,
@@ -81,7 +82,6 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
               onDataChanged: (AnalysisImageModel data) {
                 final List<Barcode>? barcodes = data.barcodes;
                 if (barcodes != null && barcodes.isNotEmpty) {
-                  showToast(barcodes.first.value ?? 'unknown');
                   model = data;
                   animationController.reset();
                 }
@@ -126,6 +126,29 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
                           })
                     ]);
               })),
+          Align(
+              alignment: Alignment.centerRight,
+              child: SizedBox(
+                  width: 150,
+                  height: 300,
+                  child: ListWheel(
+                      initialIndex: 1,
+                      useMagnifier: true,
+                      magnification: 1.5,
+                      onChanged: (int index) {
+                        var format = BarcodeFormat.values[index];
+                        scanningController.value
+                            ?.setBarcodeFormat([format]).then((value) {
+                          animationReset();
+                          showToast('setBarcodeFormat:$format $value');
+                        });
+                      },
+                      childDelegateType: ListWheelChildDelegateType.builder,
+                      itemBuilder: (_, int index) => Align(
+                          alignment: Alignment.center,
+                          child: BText(types[index].split('.')[1],
+                              fontSize: 16, fontWeight: FontWeight.bold)),
+                      itemCount: types.length))),
           Positioned(
               right: 12,
               left: 12,
@@ -164,10 +187,14 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
                 value
                     ? await scanningController.pauseScan()
                     : await scanningController.startScan();
-                model = null;
-                animationController.reset();
+                animationReset();
               });
         });
+  }
+
+  void animationReset() {
+    model = null;
+    animationController.reset();
   }
 
   Widget previewButton(FlMlKitScanningController scanningController) {
@@ -189,6 +216,7 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
           );
         });
   }
+
   Future<void> switchCamera() async {
     if (scanningController.value == null) return;
     for (final CameraInfo cameraInfo in scanningController.value!.cameras!) {
@@ -201,6 +229,7 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
     await scanningController.value!.switchCamera(currentCamera!);
     isBcakCamera = !isBcakCamera;
   }
+
   @override
   void dispose() {
     super.dispose();
@@ -208,8 +237,6 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
     scanningController.dispose();
     hasPreview.dispose();
   }
-
-
 }
 
 class _RectBox extends StatelessWidget {

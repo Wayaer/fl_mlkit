@@ -25,7 +25,8 @@ class FlMlKitScanningMethodCall(
 
     private var options: BarcodeScannerOptions =
         BarcodeScannerOptions.Builder()
-            .setBarcodeFormats(Barcode.FORMAT_QR_CODE).build()
+            .setBarcodeFormats(Barcode.FORMAT_ALL_FORMATS).build()
+    private var scanner: BarcodeScanner? = null
     private var canScan = false
     private var frequency = 0L
     private var lastCurrentTime = 0L
@@ -39,6 +40,8 @@ class FlMlKitScanningMethodCall(
             }
             "setBarcodeFormat" -> {
                 setBarcodeFormat(call)
+                scanner?.close()
+                scanner = null
                 result.success(true)
             }
             "scanImageByte" -> scanImageByte(call, result)
@@ -46,10 +49,20 @@ class FlMlKitScanningMethodCall(
                 canScan = call.arguments as Boolean
                 result.success(true)
             }
+            "dispose" -> {
+                dispose()
+                result.success(true)
+            }
             else -> {
                 super.onMethodCall(call, result)
             }
         }
+    }
+
+    override fun dispose() {
+        super.dispose()
+        scanner?.close()
+        scanner = null
     }
 
     private fun scanImageByte(call: MethodCall, result: MethodChannel.Result) {
@@ -94,20 +107,20 @@ class FlMlKitScanningMethodCall(
                     "code128" -> builder.setBarcodeFormats(Barcode.FORMAT_CODE_128)
                     "code39" -> builder.setBarcodeFormats(Barcode.FORMAT_CODE_39)
                     "code93" -> builder.setBarcodeFormats(Barcode.FORMAT_CODE_93)
-                    "code_bar" -> builder.setBarcodeFormats(Barcode.FORMAT_CODABAR)
-                    "data_matrix" -> builder.setBarcodeFormats(Barcode.FORMAT_DATA_MATRIX)
+                    "codaBar" -> builder.setBarcodeFormats(Barcode.FORMAT_CODABAR)
+                    "dataMatrix" -> builder.setBarcodeFormats(Barcode.FORMAT_DATA_MATRIX)
                     "ean13" -> builder.setBarcodeFormats(Barcode.FORMAT_EAN_13)
                     "ean8" -> builder.setBarcodeFormats(Barcode.FORMAT_EAN_8)
                     "itf" -> builder.setBarcodeFormats(Barcode.FORMAT_ITF)
-                    "qr_code" -> builder.setBarcodeFormats(Barcode.FORMAT_QR_CODE)
-                    "upc_a" -> builder.setBarcodeFormats(Barcode.FORMAT_UPC_A)
-                    "upc_e" -> builder.setBarcodeFormats(Barcode.FORMAT_UPC_E)
+                    "qrCode" -> builder.setBarcodeFormats(Barcode.FORMAT_QR_CODE)
+                    "upcA" -> builder.setBarcodeFormats(Barcode.FORMAT_UPC_A)
+                    "upcE" -> builder.setBarcodeFormats(Barcode.FORMAT_UPC_E)
                     "pdf417" -> builder.setBarcodeFormats(Barcode.FORMAT_PDF417)
                     "aztec" -> builder.setBarcodeFormats(Barcode.FORMAT_AZTEC)
                 }
             }
         } else {
-            builder.setBarcodeFormats((Barcode.FORMAT_QR_CODE))
+            builder.setBarcodeFormats((Barcode.FORMAT_ALL_FORMATS))
         }
         options = builder.build()
     }
@@ -118,8 +131,7 @@ class FlMlKitScanningMethodCall(
         imageProxy: ImageProxy?
     ) {
         val list: ArrayList<Map<String, Any?>> = ArrayList()
-        val scanner: BarcodeScanner = BarcodeScanning.getClient(options)
-        scanner.process(inputImage)
+        getBarcodeScanner().process(inputImage)
             .addOnSuccessListener { barcodes ->
                 for (barcode in barcodes) {
                     list.add(barcode.data)
@@ -147,6 +159,13 @@ class FlMlKitScanningMethodCall(
             }
             .addOnFailureListener { result?.success(null) }
             .addOnCompleteListener { imageProxy?.close() }
+    }
+
+    private fun getBarcodeScanner(): BarcodeScanner {
+        if (scanner == null) {
+            scanner = BarcodeScanning.getClient(options)
+        }
+        return scanner!!
     }
 
 
