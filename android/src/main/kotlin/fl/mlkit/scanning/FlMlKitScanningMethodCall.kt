@@ -23,9 +23,8 @@ class FlMlKitScanningMethodCall(
 ) :
     FlCameraMethodCall(activity, plugin) {
 
-    private var options: BarcodeScannerOptions =
-        BarcodeScannerOptions.Builder()
-            .setBarcodeFormats(Barcode.FORMAT_ALL_FORMATS).build()
+    private var options = BarcodeScannerOptions.Builder()
+        .setBarcodeFormats(Barcode.FORMAT_ALL_FORMATS).build()
     private var scanner: BarcodeScanner? = null
     private var canScan = false
     private var frequency = 0L
@@ -97,33 +96,38 @@ class FlMlKitScanningMethodCall(
     }
 
     private fun setBarcodeFormat(call: MethodCall) {
-        val barcodeFormats = call.arguments as List<*>?
+        val barcodeFormats = call.arguments as List<*>
         val builder = BarcodeScannerOptions.Builder()
         if (!barcodeFormats.isNullOrEmpty()) {
-            barcodeFormats.forEach { type ->
-                when (type) {
-                    "unknown" -> builder.setBarcodeFormats(Barcode.FORMAT_UNKNOWN)
-                    "all" -> builder.setBarcodeFormats(Barcode.FORMAT_ALL_FORMATS)
-                    "code128" -> builder.setBarcodeFormats(Barcode.FORMAT_CODE_128)
-                    "code39" -> builder.setBarcodeFormats(Barcode.FORMAT_CODE_39)
-                    "code93" -> builder.setBarcodeFormats(Barcode.FORMAT_CODE_93)
-                    "codaBar" -> builder.setBarcodeFormats(Barcode.FORMAT_CODABAR)
-                    "dataMatrix" -> builder.setBarcodeFormats(Barcode.FORMAT_DATA_MATRIX)
-                    "ean13" -> builder.setBarcodeFormats(Barcode.FORMAT_EAN_13)
-                    "ean8" -> builder.setBarcodeFormats(Barcode.FORMAT_EAN_8)
-                    "itf" -> builder.setBarcodeFormats(Barcode.FORMAT_ITF)
-                    "qrCode" -> builder.setBarcodeFormats(Barcode.FORMAT_QR_CODE)
-                    "upcA" -> builder.setBarcodeFormats(Barcode.FORMAT_UPC_A)
-                    "upcE" -> builder.setBarcodeFormats(Barcode.FORMAT_UPC_E)
-                    "pdf417" -> builder.setBarcodeFormats(Barcode.FORMAT_PDF417)
-                    "aztec" -> builder.setBarcodeFormats(Barcode.FORMAT_AZTEC)
-                }
-            }
+            val formats = barcodeFormats.map { type -> getBarcodeFormat(type as String) }
+            builder.setBarcodeFormats(formats.first(), *formats.toIntArray())
         } else {
-            builder.setBarcodeFormats((Barcode.FORMAT_ALL_FORMATS))
+            builder.setBarcodeFormats(Barcode.FORMAT_ALL_FORMATS, Barcode.FORMAT_CODE_39)
         }
         options = builder.build()
     }
+
+    private fun getBarcodeFormat(type: String): Int {
+        when (type) {
+            "unknown" -> return Barcode.FORMAT_UNKNOWN
+            "all" -> return Barcode.FORMAT_ALL_FORMATS
+            "code128" -> return Barcode.FORMAT_CODE_128
+            "code39" -> return Barcode.FORMAT_CODE_39
+            "code93" -> return Barcode.FORMAT_CODE_93
+            "codaBar" -> return Barcode.FORMAT_CODABAR
+            "dataMatrix" -> return Barcode.FORMAT_DATA_MATRIX
+            "ean13" -> return Barcode.FORMAT_EAN_13
+            "ean8" -> return Barcode.FORMAT_EAN_8
+            "itf" -> return Barcode.FORMAT_ITF
+            "qrCode" -> return Barcode.FORMAT_QR_CODE
+            "upcA" -> return Barcode.FORMAT_UPC_A
+            "upcE" -> return Barcode.FORMAT_UPC_E
+            "pdf417" -> return Barcode.FORMAT_PDF417
+            "aztec" -> return Barcode.FORMAT_AZTEC
+        }
+        return Barcode.FORMAT_UNKNOWN
+    }
+
 
     private fun analysis(
         inputImage: InputImage,

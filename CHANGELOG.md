@@ -1,3 +1,7 @@
+## 3.1.1
+
+* Fix bug [#10](https://github.com/Wayaer/fl_mlkit_scanning/issues/10#issue-1071446534)
+
 ## 3.1.0
 
 * Optimization can switch languages without destroying the camera

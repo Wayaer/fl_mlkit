@@ -59,6 +59,7 @@ class FlMlKitScanningController extends CameraController {
   /// Set type
   Future<bool> setBarcodeFormat(List<BarcodeFormat> barcodeFormats) async {
     if (!_supportPlatform) return false;
+    if (barcodeFormats.isEmpty) barcodeFormats = [BarcodeFormat.all];
     final bool? state = await channel.invokeMethod<bool?>(
         'setBarcodeFormat',
         barcodeFormats
