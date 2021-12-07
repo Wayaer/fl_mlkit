@@ -27,8 +27,7 @@ class _AppState extends State<_App> {
         padding: const EdgeInsets.all(30),
         children: <Widget>[
           ElevatedText(
-              onPressed: () => openCamera(),
-              text: 'Turn on camera recognition'),
+              onPressed: openCamera, text: 'Turn on camera recognition'),
           const SizedBox(height: 10),
           ElevatedText(onPressed: scanImage, text: 'Image recognition'),
           const SizedBox(height: 30),
