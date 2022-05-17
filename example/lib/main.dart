@@ -111,7 +111,7 @@ class ShowText extends StatelessWidget {
             value.toString() != 'null',
         child: Container(
             margin: const EdgeInsets.all(10),
-            child: Text(keyName.toString() + ' = ' + value.toString())));
+            child: Text('$keyName = $value')));
   }
 }
 

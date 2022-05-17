@@ -7,7 +7,7 @@ class FlMlKitScanningPage extends StatefulWidget {
   const FlMlKitScanningPage({Key? key}) : super(key: key);
 
   @override
-  _FlMlKitScanningPageState createState() => _FlMlKitScanningPageState();
+  State<FlMlKitScanningPage> createState() => _FlMlKitScanningPageState();
 }
 
 class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
@@ -27,21 +27,26 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
   CameraInfo? currentCamera;
   bool isBcakCamera = true;
 
-  ValueNotifier<bool> hasPreview = ValueNotifier<bool>(false);
-  ValueNotifier<bool> canScan = ValueNotifier<bool>(false);
+  ValueNotifier<bool>? hasPreview;
+
+  ValueNotifier<bool>? canScan;
 
   @override
   void initState() {
     super.initState();
     animationController = AnimationController(vsync: this);
+    hasPreview = ValueNotifier<bool>(false);
+    canScan = ValueNotifier<bool>(false);
   }
 
   void listener() {
-    if (hasPreview.value != scanningController.value!.hasPreview) {
-      hasPreview.value = scanningController.value!.hasPreview;
+    if (hasPreview != null &&
+        hasPreview!.value != scanningController.value!.hasPreview) {
+      hasPreview!.value = scanningController.value!.hasPreview;
     }
-    if (canScan.value != scanningController.value!.canScan) {
-      canScan.value = scanningController.value!.canScan;
+    if (canScan != null &&
+        canScan!.value != scanningController.value!.canScan) {
+      canScan!.value = scanningController.value!.canScan;
     }
   }
 
@@ -55,8 +60,8 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
           FlMlKitScanning(
               frequency: 800,
               camera: currentCamera,
-              onCreateView: (FlMlKitScanningController _controller) {
-                scanningController.value = _controller;
+              onCreateView: (FlMlKitScanningController controller) {
+                scanningController.value = controller;
                 scanningController.value!.addListener(listener);
               },
               // overlay: const ScannerBox(),
@@ -180,7 +185,7 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
 
   Widget canScanButton(FlMlKitScanningController scanningController) {
     return ValueListenableBuilder(
-        valueListenable: canScan,
+        valueListenable: canScan!,
         builder: (_, bool value, __) {
           return ElevatedText(
               text: value ? 'pause' : 'start',
@@ -200,7 +205,7 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
 
   Widget previewButton(FlMlKitScanningController scanningController) {
     return ValueListenableBuilder(
-        valueListenable: hasPreview,
+        valueListenable: hasPreview!,
         builder: (_, bool hasPreview, __) {
           return ElevatedText(
             text: !hasPreview ? 'start' : 'stop',
@@ -236,7 +241,8 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
     super.dispose();
     animationController.dispose();
     scanningController.dispose();
-    hasPreview.dispose();
+    hasPreview?.dispose();
+    canScan?.dispose();
   }
 }
 

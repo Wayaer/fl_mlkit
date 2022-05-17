@@ -8,7 +8,7 @@ class CameraScanPage extends StatefulWidget {
   const CameraScanPage({Key? key}) : super(key: key);
 
   @override
-  _CameraScanPageState createState() => _CameraScanPageState();
+  State<CameraScanPage>  createState() => _CameraScanPageState();
 }
 
 class _CameraScanPageState extends State<CameraScanPage> {

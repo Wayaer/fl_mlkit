@@ -11,7 +11,7 @@ class ImageScanPage extends StatefulWidget {
   const ImageScanPage({Key? key}) : super(key: key);
 
   @override
-  _ImageScanPageState createState() => _ImageScanPageState();
+  State<ImageScanPage> createState() => _ImageScanPageState();
 }
 
 class _ImageScanPageState extends State<ImageScanPage> {
