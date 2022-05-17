@@ -131,18 +131,19 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
               child: SizedBox(
                   width: 150,
                   height: 300,
-                  child: ListWheel(
-                      initialIndex: 1,
-                      useMagnifier: true,
-                      magnification: 1.5,
-                      onChanged: (int index) {
-                        var format = BarcodeFormat.values[index];
-                        scanningController.value
-                            ?.setBarcodeFormat([format]).then((value) {
-                          animationReset();
-                          showToast('setBarcodeFormat:$format $value');
-                        });
-                      },
+                  child: ListStateWheel(
+                      initialItem: 1,
+                      options: WheelOptions(
+                          useMagnifier: true,
+                          magnification: 1.5,
+                          onChanged: (int index) {
+                            var format = BarcodeFormat.values[index];
+                            scanningController.value
+                                ?.setBarcodeFormat([format]).then((value) {
+                              animationReset();
+                              showToast('setBarcodeFormat:$format $value');
+                            });
+                          }),
                       childDelegateType: ListWheelChildDelegateType.builder,
                       itemBuilder: (_, int index) => Align(
                           alignment: Alignment.center,

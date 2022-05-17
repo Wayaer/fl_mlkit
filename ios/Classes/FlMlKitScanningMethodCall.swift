@@ -24,7 +24,7 @@ class FlMlKitScanningMethodCall: FlCameraMethodCall {
                 let currentTime = Date().timeIntervalSince1970 * 1000
                 if currentTime - lastCurrentTime >= frequency, canScan {
                     let buffer = CMSampleBufferGetImageBuffer(sampleBuffer)
-                    self.analysis(buffer!.image, nil)
+                    analysis(buffer!.image, nil)
                     lastCurrentTime = currentTime
                 }
             }, call: call, result)
@@ -177,7 +177,7 @@ extension CVBuffer {
 
 extension CGRect {
     var data: [String: Any?] {
-        return [
+        [
             "x": origin.x,
             "y": origin.y,
             "width": width,
@@ -191,21 +191,21 @@ extension Barcode {
         ["corners": cornerPoints?.map {
             $0.cgPointValue.data
         },
-        "format": format.rawValue,
-        "bytes": rawData,
-        "value": rawValue,
-        "type": valueType.rawValue,
-        "calendarEvent": calendarEvent?.data,
-        "contactInfo": contactInfo?.data,
-        "driverLicense": driverLicense?.data,
-        "email": email?.data,
-        "geoPoint": geoPoint?.data,
-        "phone": phone?.data,
-        "sms": sms?.data,
-        "url": url?.data,
-        "wifi": wifi?.data,
-        "displayValue": displayValue,
-        "boundingBox": frame.data]
+            "format": format.rawValue,
+            "bytes": rawData,
+            "value": rawValue,
+            "type": valueType.rawValue,
+            "calendarEvent": calendarEvent?.data,
+            "contactInfo": contactInfo?.data,
+            "driverLicense": driverLicense?.data,
+            "email": email?.data,
+            "geoPoint": geoPoint?.data,
+            "phone": phone?.data,
+            "sms": sms?.data,
+            "url": url?.data,
+            "wifi": wifi?.data,
+            "displayValue": displayValue,
+            "boundingBox": frame.data]
     }
 }
 
@@ -229,7 +229,7 @@ extension Date {
 
 extension BarcodeContactInfo {
     var data: [String: Any?] {
-        return ["addresses": addresses?.map {
+        ["addresses": addresses?.map {
             $0.data
         }, "emails": emails?.map {
             $0.data

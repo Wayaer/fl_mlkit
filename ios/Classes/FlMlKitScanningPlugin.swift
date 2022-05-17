@@ -8,7 +8,7 @@ public class FlMlKitScanningPlugin: NSObject, FlutterPlugin {
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "fl.mlkit.scanning",
-                                           binaryMessenger: registrar.messenger())
+                binaryMessenger: registrar.messenger())
         let instance = FlMlKitScanningPlugin(registrar, channel)
         registrar.addMethodCallDelegate(instance, channel: channel)
     }

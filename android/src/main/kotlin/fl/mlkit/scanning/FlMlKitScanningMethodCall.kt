@@ -7,10 +7,10 @@ import android.graphics.Point
 import android.graphics.Rect
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
-import com.google.mlkit.vision.barcode.Barcode
 import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
+import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
 import fl.camera.FlCameraMethodCall
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -18,13 +18,11 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 
 class FlMlKitScanningMethodCall(
-    activity: Activity,
-    plugin: FlutterPlugin.FlutterPluginBinding
-) :
-    FlCameraMethodCall(activity, plugin) {
+    activity: Activity, plugin: FlutterPlugin.FlutterPluginBinding
+) : FlCameraMethodCall(activity, plugin) {
 
-    private var options = BarcodeScannerOptions.Builder()
-        .setBarcodeFormats(Barcode.FORMAT_ALL_FORMATS).build()
+    private var options =
+        BarcodeScannerOptions.Builder().setBarcodeFormats(Barcode.FORMAT_ALL_FORMATS).build()
     private var scanner: BarcodeScanner? = null
     private var canScan = false
     private var frequency = 0L
@@ -83,11 +81,9 @@ class FlMlKitScanningMethodCall(
         val mediaImage = imageProxy.image
         val currentTime = System.currentTimeMillis()
         if (currentTime - lastCurrentTime >= frequency && mediaImage != null && canScan) {
-            val inputImage =
-                InputImage.fromMediaImage(
-                    mediaImage,
-                    imageProxy.imageInfo.rotationDegrees
-                )
+            val inputImage = InputImage.fromMediaImage(
+                mediaImage, imageProxy.imageInfo.rotationDegrees
+            )
             analysis(inputImage, null, imageProxy)
             lastCurrentTime = currentTime
         } else {
@@ -98,7 +94,7 @@ class FlMlKitScanningMethodCall(
     private fun setBarcodeFormat(call: MethodCall) {
         val barcodeFormats = call.arguments as List<*>
         val builder = BarcodeScannerOptions.Builder()
-        if (!barcodeFormats.isNullOrEmpty()) {
+        if (barcodeFormats.isNotEmpty()) {
             val formats = barcodeFormats.map { type -> getBarcodeFormat(type as String) }
             builder.setBarcodeFormats(formats.first(), *formats.toIntArray())
         } else {
@@ -130,38 +126,32 @@ class FlMlKitScanningMethodCall(
 
 
     private fun analysis(
-        inputImage: InputImage,
-        result: MethodChannel.Result?,
-        imageProxy: ImageProxy?
+        inputImage: InputImage, result: MethodChannel.Result?, imageProxy: ImageProxy?
     ) {
         val list: ArrayList<Map<String, Any?>> = ArrayList()
-        getBarcodeScanner().process(inputImage)
-            .addOnSuccessListener { barcodes ->
-                for (barcode in barcodes) {
-                    list.add(barcode.data)
-                }
-                var width = inputImage.width
-                var height = inputImage.height
-                if (width > height) {
-                    width -= height
-                    height += width
-                    width = height - width
-                }
-
-                val map = mapOf(
-                    "height" to height.toDouble(),
-                    "width" to width.toDouble(),
-                    "barcodes" to list
-                )
-                if (result == null) {
-                    if (list.isNotEmpty()) {
-                        flCameraEvent?.sendEvent(map)
-                    }
-                } else {
-                    result.success(map)
-                }
+        getBarcodeScanner().process(inputImage).addOnSuccessListener { barcodes ->
+            for (barcode in barcodes) {
+                list.add(barcode.data)
             }
-            .addOnFailureListener { result?.success(null) }
+            var width = inputImage.width
+            var height = inputImage.height
+            if (width > height) {
+                width -= height
+                height += width
+                width = height - width
+            }
+
+            val map = mapOf(
+                "height" to height.toDouble(), "width" to width.toDouble(), "barcodes" to list
+            )
+            if (result == null) {
+                if (list.isNotEmpty()) {
+                    flCameraEvent?.sendEvent(map)
+                }
+            } else {
+                result.success(map)
+            }
+        }.addOnFailureListener { result?.success(null) }
             .addOnCompleteListener { imageProxy?.close() }
     }
 
@@ -194,7 +184,10 @@ class FlMlKitScanningMethodCall(
         )
     private val Rect.data: Map<String, Int>
         get() = mapOf(
-            "top" to top, "bottom" to bottom, "left" to left, "right" to right,
+            "top" to top,
+            "bottom" to bottom,
+            "left" to left,
+            "right" to right,
             "width" to width(),
             "height" to height()
         )
@@ -258,10 +251,7 @@ class FlMlKitScanningMethodCall(
 
     private val Barcode.Email.data: Map<String, Any?>
         get() = mapOf(
-            "address" to address,
-            "body" to body,
-            "subject" to subject,
-            "type" to type
+            "address" to address, "body" to body, "subject" to subject, "type" to type
         )
 
     private val Barcode.GeoPoint.data: Map<String, Any?>
@@ -278,9 +268,7 @@ class FlMlKitScanningMethodCall(
 
     private val Barcode.WiFi.data: Map<String, Any?>
         get() = mapOf(
-            "encryptionType" to encryptionType,
-            "password" to password,
-            "ssid" to ssid
+            "encryptionType" to encryptionType, "password" to password, "ssid" to ssid
         )
 
 }

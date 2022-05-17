@@ -76,7 +76,7 @@ class FlMlKitScanning extends StatefulWidget {
   final FlMlKitScanningCreateCallback? onCreateView;
 
   @override
-  _FlMlKitScanningState createState() => _FlMlKitScanningState();
+  FlCameraState<FlMlKitScanning> createState() => _FlMlKitScanningState();
 }
 
 class _FlMlKitScanningState extends FlCameraState<FlMlKitScanning> {
@@ -88,7 +88,7 @@ class _FlMlKitScanningState extends FlCameraState<FlMlKitScanning> {
     controller = FlMlKitScanningController();
     super.initState();
     uninitialized = widget.uninitialized;
-    WidgetsBinding.instance!.addPostFrameCallback((Duration time) async {
+    WidgetsBinding.instance.addPostFrameCallback((Duration time) async {
       await controller.initialize();
       widget.onCreateView?.call(controller as FlMlKitScanningController);
       initialize();

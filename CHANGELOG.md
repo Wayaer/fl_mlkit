@@ -1,3 +1,7 @@
+## 4.0.0
+
+* Compatible with flutter 3.0.0
+
 ## 3.1.1
 
 * Fix bug [#10](https://github.com/Wayaer/fl_mlkit_scanning/issues/10#issue-1071446534)
@@ -41,10 +45,8 @@
 ## 2.0.0
 
 * Add camera zoom function and add `onZoomChange`
-* Modify the `onListen` callback value and add the width and height of the parsed picture to
-  calculate the bar code rectangle and coordinate points displayed on the screen
-* Remove `useBackCamera`, add `availableCameras` and select the camera you need. The rear camera is
-  used by default
+* Modify the `onListen` callback value and add the width and height of the parsed picture to calculate the bar code rectangle and coordinate points displayed on the screen
+* Remove `useBackCamera`, add `availableCameras` and select the camera you need. The rear camera is used by default
 * Remove `zoomQuality`, add `resolution`, and set the resolution you need,
 * Add `updatereset`. Do you need to reinitialize the camera preview when calling didupdatewidget
 * Update [`fl_camera`](https://pub.dev/packages/fl_camera)

@@ -527,6 +527,7 @@ Rect? _getRect(Map<dynamic, dynamic>? data) {
       return Rect.fromPoints(Offset(x, y), Offset(x + width, y + height));
     }
   }
+  return null;
 }
 
 List<Barcode>? _getBarcodeList(List<dynamic>? data) => data
