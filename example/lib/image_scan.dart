@@ -43,7 +43,8 @@ class _ImageScanPageState extends State<ImageScanPage> {
 
   Future<void> scanByte() async {
     if (path == null || path!.isEmpty) {
-      return showToast('Please select a picture');
+      showToast('Please select a picture');
+      return;
     }
     bool hasPermission = false;
     if (isAndroid) hasPermission = await getPermission(Permission.storage);
