@@ -15,7 +15,7 @@ class FlMlKitScanning extends StatefulWidget {
     this.onZoomChanged,
     this.updateReset = false,
     this.camera,
-    this.resolution = CameraResolution.high,
+    this.resolution = CameraResolution.medium,
     this.fit = BoxFit.fitWidth,
     this.onCreateView,
     this.uninitialized,
@@ -88,12 +88,12 @@ class _FlMlKitScanningState extends FlCameraState<FlMlKitScanning> {
     controller = FlMlKitScanningController();
     super.initState();
     uninitialized = widget.uninitialized;
+    controller.addListener(changedListener);
     WidgetsBinding.instance.addPostFrameCallback((Duration time) async {
-      await controller.initialize();
+      await (controller as FlMlKitScanningController).initialize();
       widget.onCreateView?.call(controller as FlMlKitScanningController);
       initialize();
     });
-    controller.addListener(changedListener);
   }
 
   void changedListener() {
@@ -122,18 +122,15 @@ class _FlMlKitScanningState extends FlCameraState<FlMlKitScanning> {
     }
     if (camera == null) return;
     var scanningController = controller as FlMlKitScanningController;
-    final data = await scanningController.initialize();
-    if (data) {
-      await scanningController.setBarcodeFormat(widget.barcodeFormats);
-      if (widget.onDataChanged != null) {
-        scanningController.onDataChanged = widget.onDataChanged;
-      }
-      final options = await scanningController.startPreview(camera,
-          resolution: widget.resolution, frequency: widget.frequency);
-      if (options != null && mounted) {
-        if (widget.autoScanning) scanningController.startScan();
-        setState(() {});
-      }
+    await scanningController.setBarcodeFormat(widget.barcodeFormats);
+    if (widget.onDataChanged != null) {
+      scanningController.onDataChanged = widget.onDataChanged;
+    }
+    final options = await scanningController.startPreview(camera,
+        resolution: widget.resolution, frequency: widget.frequency);
+    if (options != null && mounted) {
+      if (widget.autoScanning) scanningController.startScan();
+      setState(() {});
     }
   }
 

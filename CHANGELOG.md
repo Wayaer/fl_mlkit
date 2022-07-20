@@ -1,6 +1,7 @@
 ## 4.0.0
 
 * Compatible with flutter 3.0.0
+* Fix known problems and optimize some methods
 
 ## 3.1.1
 

@@ -1,5 +1,6 @@
 import 'package:example/main.dart';
 import 'package:fl_mlkit_scanning/fl_mlkit_scanning.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_waya/flutter_waya.dart';
 
@@ -16,37 +17,35 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
 
   late AnimationController animationController;
   AnalysisImageModel? model;
-  double ratio = 1;
-  double? maxRatio;
-  StateSetter? zoomState;
-  bool flashState = false;
+  ValueNotifier<bool> flashState = ValueNotifier<bool>(false);
+  double maxRatio = 10;
+  ValueNotifier<double> ratio = ValueNotifier<double>(1);
+
   ValueNotifier<FlMlKitScanningController?> scanningController =
       ValueNotifier<FlMlKitScanningController?>(null);
 
   ///  The first rendering is null ，Using the rear camera
   CameraInfo? currentCamera;
-  bool isBcakCamera = true;
 
-  ValueNotifier<bool>? hasPreview;
+  bool isBackCamera = true;
 
-  ValueNotifier<bool>? canScan;
+  ValueNotifier<bool> hasPreview = ValueNotifier<bool>(false);
+
+  ValueNotifier<bool> canScan = ValueNotifier<bool>(false);
 
   @override
   void initState() {
     super.initState();
     animationController = AnimationController(vsync: this);
-    hasPreview = ValueNotifier<bool>(false);
-    canScan = ValueNotifier<bool>(false);
   }
 
   void listener() {
-    if (hasPreview != null &&
-        hasPreview!.value != scanningController.value!.hasPreview) {
-      hasPreview!.value = scanningController.value!.hasPreview;
+    if (!mounted) return;
+    if (hasPreview.value != scanningController.value!.hasPreview) {
+      hasPreview.value = scanningController.value!.hasPreview;
     }
-    if (canScan != null &&
-        canScan!.value != scanningController.value!.canScan) {
-      canScan!.value = scanningController.value!.canScan;
+    if (canScan.value != scanningController.value!.canScan) {
+      canScan.value = scanningController.value!.canScan;
     }
   }
 
@@ -67,13 +66,12 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
               // overlay: const ScannerBox(),
               onFlashChanged: (FlashState state) {
                 showToast('$state');
+                flashState.value = state == FlashState.on;
               },
               onZoomChanged: (CameraZoomState zoom) {
                 showToast('zoom ratio:${zoom.zoomRatio}');
-                if (maxRatio == null && zoomState != null) {
-                  maxRatio = zoom.maxZoomRatio;
-                  zoomState!(() {});
-                }
+                maxRatio = zoom.maxZoomRatio ?? 10;
+                ratio.value = zoom.zoomRatio ?? 1;
               },
               resolution: CameraResolution.veryHigh,
               autoScanning: true,
@@ -95,42 +93,10 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
               animation: animationController,
               builder: (_, __) =>
                   model != null ? _RectBox(model!) : const SizedBox()),
-          Align(
+          Universal(
               alignment: Alignment.bottomCenter,
-              child: StatefulBuilder(builder: (_, StateSetter state) {
-                zoomState = state;
-                return Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Slider(
-                          value: ratio,
-                          min: 1,
-                          max: maxRatio ?? 20,
-                          onChanged: (double value) async {
-                            ratio = value;
-                            zoomState!(() {});
-                            scanningController.value?.setZoomRatio(value);
-                          }),
-                      IconBox(
-                          size: 30,
-                          color: flashState
-                              ? Colors.white
-                              : Colors.white.withOpacity(0.6),
-                          padding: const EdgeInsets.fromLTRB(10, 10, 10, 40),
-                          icon: flashState ? Icons.flash_on : Icons.flash_off,
-                          onTap: () async {
-                            final bool? state = await scanningController.value
-                                ?.setFlashMode(flashState
-                                    ? FlashState.off
-                                    : FlashState.on);
-                            flashState = !flashState;
-                            if (state == true) {
-                              flashState = !flashState;
-                              zoomState!(() {});
-                            }
-                          })
-                    ]);
-              })),
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[buildRatioSlider, buildFlashState]),
           Align(
               alignment: Alignment.centerRight,
               child: SizedBox(
@@ -183,9 +149,40 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
         ]));
   }
 
+  Widget get buildFlashState {
+    return ValueListenableBuilder(
+        valueListenable: flashState,
+        builder: (_, bool state, __) {
+          return IconBox(
+              size: 30,
+              color: state ? Colors.white : Colors.white.withOpacity(0.6),
+              padding: const EdgeInsets.fromLTRB(10, 10, 10, 40),
+              icon: state ? Icons.flash_on : Icons.flash_off,
+              onTap: () {
+                scanningController.value
+                    ?.setFlashMode(state ? FlashState.off : FlashState.on);
+              });
+        });
+  }
+
+  Widget get buildRatioSlider {
+    return ValueListenableBuilder(
+        valueListenable: ratio,
+        builder: (_, double ratio, __) {
+          return CupertinoSlider(
+              value: ratio.floorToDouble(),
+              min: 1,
+              max: maxRatio,
+              divisions: maxRatio.toInt(),
+              onChanged: (double value) {
+                scanningController.value?.setZoomRatio(value.floorToDouble());
+              });
+        });
+  }
+
   Widget canScanButton(FlMlKitScanningController scanningController) {
     return ValueListenableBuilder(
-        valueListenable: canScan!,
+        valueListenable: canScan,
         builder: (_, bool value, __) {
           return ElevatedText(
               text: value ? 'pause' : 'start',
@@ -205,21 +202,20 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
 
   Widget previewButton(FlMlKitScanningController scanningController) {
     return ValueListenableBuilder(
-        valueListenable: hasPreview!,
+        valueListenable: hasPreview,
         builder: (_, bool hasPreview, __) {
           return ElevatedText(
-            text: !hasPreview ? 'start' : 'stop',
-            onPressed: () async {
-              if (!hasPreview) {
-                if (scanningController.previousCamera != null) {
-                  await scanningController
-                      .startPreview(scanningController.previousCamera!);
+              text: !hasPreview ? 'start' : 'stop',
+              onPressed: () async {
+                if (!hasPreview) {
+                  if (scanningController.previousCamera != null) {
+                    await scanningController
+                        .startPreview(scanningController.previousCamera!);
+                  }
+                } else {
+                  await scanningController.stopPreview();
                 }
-              } else {
-                await scanningController.stopPreview();
-              }
-            },
-          );
+              });
         });
   }
 
@@ -227,13 +223,13 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
     if (scanningController.value == null) return;
     for (final CameraInfo cameraInfo in scanningController.value!.cameras!) {
       if (cameraInfo.lensFacing ==
-          (isBcakCamera ? CameraLensFacing.front : CameraLensFacing.back)) {
+          (isBackCamera ? CameraLensFacing.front : CameraLensFacing.back)) {
         currentCamera = cameraInfo;
         break;
       }
     }
     await scanningController.value!.switchCamera(currentCamera!);
-    isBcakCamera = !isBcakCamera;
+    isBackCamera = !isBackCamera;
   }
 
   @override
@@ -241,8 +237,10 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
     super.dispose();
     animationController.dispose();
     scanningController.dispose();
-    hasPreview?.dispose();
-    canScan?.dispose();
+    hasPreview.dispose();
+    canScan.dispose();
+    ratio.dispose();
+    flashState.dispose();
   }
 }
 

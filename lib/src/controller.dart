@@ -40,7 +40,7 @@ class FlMlKitScanningController extends CameraController {
 
   /// 开始预览
   /// start Preview
-  /// [camerId] 需要预览的相机 Camera ID to preview
+  /// [camera] 需要预览的相机 Camera to preview
   /// [frequency] 解析频率 Analytical frequency
   /// [resolution] 预览相机支持的分辨率 Preview the resolution supported by the camera
   @override
@@ -89,14 +89,14 @@ class FlMlKitScanningController extends CameraController {
 
   /// 识别图片字节
   /// Identify picture bytes
-  /// [useEvent] 返回消息使用 FLCameraEvent
-  /// The return message uses flcameraevent
+  /// [useEvent] 返回消息使用 [FlCameraEvent]
+  /// The return message uses [FlCameraEvent]
   /// [rotationDegrees] Only Android is supported
   Future<AnalysisImageModel?> scanImageByte(Uint8List uint8list,
       {int rotationDegrees = 0, bool useEvent = false}) async {
     if (!_supportPlatform) return null;
     if (useEvent) {
-      assert(FlCameraEvent().isPaused, 'Please initialize FLCameraEvent');
+      assert(FlCameraEvent().isPaused, 'Please initialize FlCameraEvent');
     }
     final dynamic map = await channel.invokeMethod<dynamic>(
         'scanImageByte', <String, dynamic>{
@@ -110,14 +110,14 @@ class FlMlKitScanningController extends CameraController {
 
   /// 暂停扫描
   /// Pause scanning
-  Future<bool> pauseScan() => _scanncing(false);
+  Future<bool> pauseScan() => _scanning(false);
 
   /// 开始扫描
-  /// Start scanncing
-  Future<bool> startScan() => _scanncing(true);
+  /// Start scanning
+  Future<bool> startScan() => _scanning(true);
 
   @protected
-  Future<bool> _scanncing(bool scan) async {
+  Future<bool> _scanning(bool scan) async {
     if (!_supportPlatform || _canScan == scan) return false;
     _canScan = scan;
     notifyListeners();
