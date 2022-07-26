@@ -8,7 +8,7 @@ environment:
 
 dependencies:
 
-  camera: ^0.9.5+1
+  camera: ^0.10.0
   fl_mlkit_scanning:
     path: ../
   flutter:
