@@ -64,8 +64,8 @@ class FlMlKitScanningMethodCall: FlCameraMethodCall {
         let barcodeFormats = call.arguments as! [String]
         if !barcodeFormats.isEmpty {
             var formats = BarcodeFormat()
-            for barcodeFomat in barcodeFormats {
-                switch barcodeFomat {
+            for barcodeFormat in barcodeFormats {
+                switch barcodeFormat {
                 case "unknown":
                     formats.insert(.all)
                 case "all":
