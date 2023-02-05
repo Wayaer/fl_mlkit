@@ -142,6 +142,7 @@ class _FlMlKitScanningState extends FlCameraState<FlMlKitScanning> {
         oldWidget.onZoomChanged != widget.onZoomChanged ||
         oldWidget.camera != widget.camera ||
         oldWidget.barcodeFormats != widget.barcodeFormats ||
+        oldWidget.uninitialized != widget.uninitialized ||
         oldWidget.autoScanning != widget.autoScanning) {
       if (widget.updateReset) controller.resetCamera();
     }
