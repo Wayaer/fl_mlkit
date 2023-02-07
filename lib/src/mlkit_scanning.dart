@@ -145,6 +145,7 @@ class _FlMlKitScanningState extends FlCameraState<FlMlKitScanning> {
         oldWidget.uninitialized != widget.uninitialized ||
         oldWidget.autoScanning != widget.autoScanning) {
       if (widget.updateReset) controller.resetCamera();
+      setState(() {});
     }
   }
 
