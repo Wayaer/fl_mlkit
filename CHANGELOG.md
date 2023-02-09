@@ -1,6 +1,6 @@
 ## 4.0.2
 
-* Nothing has changed
+* Update version
 
 ## 4.0.1+1
 
