@@ -1,3 +1,7 @@
+## 4.0.2
+
+* Nothing has changed
+
 ## 4.0.1+1
 
 * Fixed uninitialized not updating

@@ -8,14 +8,14 @@ environment:
 
 dependencies:
 
-  camera: ^0.10.0
   fl_mlkit_scanning:
     path: ../
   flutter:
     sdk: flutter
-  flutter_curiosity: ^4.0.1
-  flutter_waya: ^2.3.1
-  permission_handler: ^10.0.0
+  flutter_curiosity: ^4.2.1
+  flutter_waya: ^4.0.0
+  permission_handler: ^10.2.0
+  camera: ^0.10.3
 
 dev_dependencies:
   flutter_lints: ^2.0.1

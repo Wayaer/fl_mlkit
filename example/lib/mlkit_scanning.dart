@@ -102,7 +102,7 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
               child: SizedBox(
                   width: 150,
                   height: 300,
-                  child: ListStateWheel(
+                  child: ListWheelState(
                       initialItem: 1,
                       options: WheelOptions(
                           useMagnifier: true,
