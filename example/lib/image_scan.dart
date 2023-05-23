@@ -37,7 +37,7 @@ class _ImageScanPageState extends State<ImageScanPage> {
                 child: Image.file(File(path!))),
           if (list != null && list!.isEmpty)
             const ShowText('Unrecognized', 'Unrecognized'),
-          ShowCode(list ?? <Barcode>[], expanded: false)
+          ShowCode(list ?? [], expanded: false)
         ]);
   }
 

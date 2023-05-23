@@ -98,33 +98,36 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[buildRatioSlider, buildFlashState]),
           Align(
-              alignment: Alignment.centerRight,
-              child: SizedBox(
-                  width: 150,
-                  height: 300,
-                  child: ListWheelState(
-                      initialItem: 1,
-                      options: WheelOptions(
-                          useMagnifier: true,
-                          magnification: 1.5,
-                          onChanged: (int index) {
-                            var format = BarcodeFormat.values[index];
-                            scanningController.value
-                                ?.setBarcodeFormat([format]).then((value) {
-                              animationReset();
-                              showToast('setBarcodeFormat:$format $value');
-                            });
-                          }),
-                      childDelegateType: ListWheelChildDelegateType.builder,
-                      itemBuilder: (_, int index) => Align(
-                          alignment: Alignment.center,
-                          child: BText(types[index].split('.')[1],
-                              fontSize: 16, fontWeight: FontWeight.bold)),
-                      itemCount: types.length))),
+            alignment: Alignment.centerRight,
+            child: SizedBox(
+                width: 150,
+                height: 300,
+                child: ListWheelState(
+                    initialItem: 1,
+                    count: types.length,
+                    builder: (FixedExtentScrollController controller) =>
+                        ListWheel.builder(
+                            controller: controller,
+                            onSelectedItemChanged: (int index) {
+                              var format = BarcodeFormat.values[index];
+                              scanningController.value
+                                  ?.setBarcodeFormat([format]).then((value) {
+                                animationReset();
+                                showToast('setBarcodeFormat:$format $value');
+                              });
+                            },
+                            options: const WheelOptions(
+                                useMagnifier: true, magnification: 1.5),
+                            itemBuilder: (_, int index) => Align(
+                                alignment: Alignment.center,
+                                child: BText(types[index].split('.')[1],
+                                    fontSize: 16, fontWeight: FontWeight.bold)),
+                            itemCount: types.length))),
+          ),
           Positioned(
               right: 12,
               left: 12,
-              top: getStatusBarHeight + 12,
+              top: context.statusBarHeight + 12,
               child: ValueListenableBuilder<FlMlKitScanningController?>(
                   valueListenable: scanningController,
                   builder: (_, FlMlKitScanningController? controller, __) {
@@ -253,33 +256,36 @@ class _RectBox extends StatelessWidget {
     final List<Barcode> barcodes = model.barcodes ?? <Barcode>[];
     final List<Widget> children = <Widget>[];
     for (final Barcode barcode in barcodes) {
-      children.add(boundingBox(barcode.boundingBox!));
-      children.add(corners(barcode.corners!));
+      children.add(boundingBox(barcode.boundingBox!, context));
+      children.add(corners(barcode.corners!, context));
     }
     return Universal(expand: true, isStack: true, children: children);
   }
 
-  Widget boundingBox(Rect rect) {
-    final double w = model.width! / getDevicePixelRatio;
-    final double h = model.height! / getDevicePixelRatio;
+  Widget boundingBox(Rect rect, BuildContext context) {
+    final double w = model.width! / context.devicePixelRatio;
+    final double h = model.height! / context.devicePixelRatio;
     return Universal(
         alignment: Alignment.center,
-        child: CustomPaint(size: Size(w, h), painter: _LinePainter(rect)));
+        child: CustomPaint(
+            size: Size(w, h), painter: _LinePainter(rect, context)));
   }
 
-  Widget corners(List<Offset> corners) {
-    final double w = model.width! / getDevicePixelRatio;
-    final double h = model.height! / getDevicePixelRatio;
+  Widget corners(List<Offset> corners, BuildContext context) {
+    final double w = model.width! / context.devicePixelRatio;
+    final double h = model.height! / context.devicePixelRatio;
     return Universal(
         alignment: Alignment.center,
-        child: CustomPaint(size: Size(w, h), painter: _BoxPainter(corners)));
+        child: CustomPaint(
+            size: Size(w, h), painter: _BoxPainter(corners, context)));
   }
 }
 
 class _LinePainter extends CustomPainter {
-  _LinePainter(this.rect);
+  _LinePainter(this.rect, this.context);
 
   final Rect rect;
+  final BuildContext context;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -288,11 +294,11 @@ class _LinePainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2;
     final Path path = Path();
-    final double left = (rect.left) / getDevicePixelRatio;
-    final double top = (rect.top) / getDevicePixelRatio;
+    final double left = (rect.left) / context.devicePixelRatio;
+    final double top = (rect.top) / context.devicePixelRatio;
 
-    final double width = rect.width / getDevicePixelRatio;
-    final double height = rect.height / getDevicePixelRatio;
+    final double width = rect.width / context.devicePixelRatio;
+    final double height = rect.height / context.devicePixelRatio;
 
     path.moveTo(left, top);
     path.lineTo(left + width, top);
@@ -307,20 +313,21 @@ class _LinePainter extends CustomPainter {
 }
 
 class _BoxPainter extends CustomPainter {
-  _BoxPainter(this.corners);
+  _BoxPainter(this.corners, this.context);
 
   final List<Offset> corners;
+  final BuildContext context;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final Offset o0 = Offset(corners[0].dx / getDevicePixelRatio,
-        corners[0].dy / getDevicePixelRatio);
-    final Offset o1 = Offset(corners[1].dx / getDevicePixelRatio,
-        corners[1].dy / getDevicePixelRatio);
-    final Offset o2 = Offset(corners[2].dx / getDevicePixelRatio,
-        corners[2].dy / getDevicePixelRatio);
-    final Offset o3 = Offset(corners[3].dx / getDevicePixelRatio,
-        corners[3].dy / getDevicePixelRatio);
+    final Offset o0 = Offset(corners[0].dx / context.devicePixelRatio,
+        corners[0].dy / context.devicePixelRatio);
+    final Offset o1 = Offset(corners[1].dx / context.devicePixelRatio,
+        corners[1].dy / context.devicePixelRatio);
+    final Offset o2 = Offset(corners[2].dx / context.devicePixelRatio,
+        corners[2].dy / context.devicePixelRatio);
+    final Offset o3 = Offset(corners[3].dx / context.devicePixelRatio,
+        corners[3].dy / context.devicePixelRatio);
 
     final Paint paint = Paint()
       ..color = Colors.blue.withOpacity(0.4)
