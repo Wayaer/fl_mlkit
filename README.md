@@ -126,9 +126,9 @@ void func() {
 
 ```
 
-| android                                                                                                       | ios                                                                                                       |
-|---------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------|
-| <img src="https://raw.githubusercontent.com/Wayaer/fl_mlkit_scanning/main/example/assets/android_image.jpg"/> | <img src="https://raw.githubusercontent.com/Wayaer/fl_mlkit_scanning/main/example/assets/ios_image.png"/> |
-| <img src="https://raw.githubusercontent.com/Wayaer/fl_mlkit_scanning/main/example/assets/android_scan.jpg"/>  | <img src="https://raw.githubusercontent.com/Wayaer/fl_mlkit_scanning/main/example/assets/ios_scan.png"/>  |
+|         | image                                                                                                         | scan                                                                                                         |
+|---------|---------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
+| android | <img src="https://raw.githubusercontent.com/Wayaer/fl_mlkit_scanning/main/example/assets/android_image.jpg"/> | <img src="https://raw.githubusercontent.com/Wayaer/fl_mlkit_scanning/main/example/assets/android_scan.jpg"/> |
+| ios     | <img src="https://raw.githubusercontent.com/Wayaer/fl_mlkit_scanning/main/example/assets/ios_image.png"/>     | <img src="https://raw.githubusercontent.com/Wayaer/fl_mlkit_scanning/main/example/assets/ios_scan.png"/>     |
 
 <img src="https://raw.githubusercontent.com/Wayaer/fl_mlkit_scanning/main/example/assets/test.png"/>
