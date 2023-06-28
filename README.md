@@ -126,9 +126,9 @@ void func() {
 
 ```
 
-| android | ios |
-| --- | --- |
-| <img src="https://raw.githubusercontent.com/Wayaer/fl_mlkit_scanning/main/example/assets/android_image.jpg" width="100%"/> |  <img src="https://raw.githubusercontent.com/Wayaer/fl_mlkit_scanning/main/example/assets/ios_image.png" width="48%"/> |
-| <img src="https://raw.githubusercontent.com/Wayaer/fl_mlkit_scanning/main/example/assets/android_scan.jpg" width="100%"/> |  <img src="https://raw.githubusercontent.com/Wayaer/fl_mlkit_scanning/main/example/assets/ios_scan.png" width="48%"/> |
+| android                                                                                                                    | ios                                                                                                                   |
+|----------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------|
+| <img src="https://raw.githubusercontent.com/Wayaer/fl_mlkit_scanning/main/example/assets/android_image.jpg" width="100%"/> | <img src="https://raw.githubusercontent.com/Wayaer/fl_mlkit_scanning/main/example/assets/ios_image.png" width="48%"/> |
+| <img src="https://raw.githubusercontent.com/Wayaer/fl_mlkit_scanning/main/example/assets/android_scan.jpg" width="100%"/>  | <img src="https://raw.githubusercontent.com/Wayaer/fl_mlkit_scanning/main/example/assets/ios_scan.png" width="48%"/>  |
 
 <img src="https://raw.githubusercontent.com/Wayaer/fl_mlkit_scanning/main/example/assets/test.png" width="50%"/>
