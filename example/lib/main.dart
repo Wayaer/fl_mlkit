@@ -8,7 +8,15 @@ import 'package:flutter_waya/flutter_waya.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 void main() {
-  runApp(ExtendedWidgetsApp(home: _App()));
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(MaterialApp(
+      navigatorKey: GlobalOptions().navigatorKey,
+      scaffoldMessengerKey: GlobalOptions().scaffoldMessengerKey,
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData.light(useMaterial3: true),
+      darkTheme: ThemeData.dark(useMaterial3: true),
+      home: _App(),
+      title: 'FlMlKitScanning'));
 }
 
 class _App extends StatefulWidget {
@@ -21,18 +29,16 @@ class _AppState extends State<_App> {
 
   @override
   Widget build(BuildContext context) {
-    return ExtendedScaffold(
+    return Scaffold(
         appBar: AppBarText('Fl MlKit Scanning'),
-        mainAxisAlignment: MainAxisAlignment.center,
-        padding: const EdgeInsets.all(30),
-        children: <Widget>[
+        body: Universal(width: double.infinity, children: [
           ElevatedText(
               onPressed: openCamera, text: 'Turn on camera recognition'),
           const SizedBox(height: 10),
           ElevatedText(onPressed: scanImage, text: 'Image recognition'),
           const SizedBox(height: 30),
-          ShowCode(list)
-        ]);
+          CodeBox(list)
+        ]));
   }
 
   void scanImage() {
@@ -59,8 +65,8 @@ class _AppState extends State<_App> {
   }
 }
 
-class ShowCode extends StatelessWidget {
-  const ShowCode(this.list, {Key? key, this.expanded = true}) : super(key: key);
+class CodeBox extends StatelessWidget {
+  const CodeBox(this.list, {Key? key, this.expanded = true}) : super(key: key);
   final List<Barcode> list;
   final bool expanded;
 
@@ -92,16 +98,17 @@ class AppBarText extends AppBar {
       : super(
             key: key,
             elevation: 0,
-            title: BText(text,
-                color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+            title: Text(text,
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             centerTitle: true);
 }
 
-class ShowText extends StatelessWidget {
+class TextBox extends StatelessWidget {
   final dynamic keyName;
   final dynamic value;
 
-  const ShowText(this.keyName, this.value, {Key? key}) : super(key: key);
+  const TextBox(this.keyName, this.value, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

@@ -51,105 +51,107 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
 
   @override
   Widget build(BuildContext context) {
-    return ExtendedScaffold(
-        onWillPop: () async {
-          return false;
-        },
-        body: Stack(children: <Widget>[
-          FlMlKitScanning(
-              frequency: 800,
-              camera: currentCamera,
-              onCreateView: (FlMlKitScanningController controller) {
-                scanningController.value = controller;
-                scanningController.value!.addListener(listener);
-              },
-              // overlay: const ScannerBox(),
-              onFlashChanged: (FlashState state) {
-                showToast('$state');
-                flashState.value = state == FlashState.on;
-              },
-              onZoomChanged: (CameraZoomState zoom) {
-                showToast('zoom ratio:${zoom.zoomRatio}');
-                maxRatio = zoom.maxZoomRatio ?? 10;
-                ratio.value = zoom.zoomRatio ?? 1;
-              },
-              resolution: CameraResolution.veryHigh,
-              autoScanning: true,
-              barcodeFormats: const [BarcodeFormat.all],
-              fit: BoxFit.fitWidth,
-              uninitialized: Container(
-                  color: Colors.black,
-                  alignment: Alignment.center,
-                  child: const Text('Camera not initialized',
-                      style: TextStyle(color: Colors.blueAccent))),
-              onDataChanged: (AnalysisImageModel data) {
-                final List<Barcode>? barcodes = data.barcodes;
-                if (barcodes != null && barcodes.isNotEmpty) {
-                  model = data;
-                  animationController.reset();
-                }
-              }),
-          AnimatedBuilder(
-              animation: animationController,
-              builder: (_, __) =>
-                  model != null ? _RectBox(model!) : const SizedBox()),
-          Universal(
-              alignment: Alignment.bottomCenter,
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[buildRatioSlider, buildFlashState]),
-          Align(
-            alignment: Alignment.centerRight,
-            child: SizedBox(
-                width: 150,
-                height: 300,
-                child: ListWheelState(
-                    initialItem: 1,
-                    count: types.length,
-                    builder: (FixedExtentScrollController controller) =>
-                        ListWheel.builder(
-                            controller: controller,
-                            onSelectedItemChanged: (int index) {
-                              var format = BarcodeFormat.values[index];
-                              scanningController.value
-                                  ?.setBarcodeFormat([format]).then((value) {
-                                animationReset();
-                                showToast('setBarcodeFormat:$format $value');
-                              });
-                            },
-                            options: const WheelOptions(
-                                useMagnifier: true, magnification: 1.5),
-                            itemBuilder: (_, int index) => Align(
-                                alignment: Alignment.center,
-                                child: BText(types[index].split('.')[1],
-                                    fontSize: 16, fontWeight: FontWeight.bold)),
-                            itemCount: types.length))),
-          ),
-          Positioned(
-              right: 12,
-              left: 12,
-              top: context.statusBarHeight + 12,
-              child: ValueListenableBuilder<FlMlKitScanningController?>(
-                  valueListenable: scanningController,
-                  builder: (_, FlMlKitScanningController? controller, __) {
-                    return controller == null
-                        ? const SizedBox()
-                        : Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                                const BackButton(
-                                    color: Colors.white, onPressed: pop),
-                                Row(children: [
-                                  ElevatedIcon(
-                                      icon: Icons.flip_camera_ios,
-                                      onPressed: switchCamera),
-                                  const SizedBox(width: 12),
-                                  previewButton(controller),
-                                  const SizedBox(width: 12),
-                                  canScanButton(controller),
-                                ])
-                              ]);
-                  })),
-        ]));
+    return WillPopScope(
+      onWillPop: () async {
+        return false;
+      },
+      child: Scaffold(
+          body: Stack(children: <Widget>[
+        FlMlKitScanning(
+            frequency: 800,
+            camera: currentCamera,
+            onCreateView: (FlMlKitScanningController controller) {
+              scanningController.value = controller;
+              scanningController.value!.addListener(listener);
+            },
+            // overlay: const ScannerBox(),
+            onFlashChanged: (FlashState state) {
+              showToast('$state');
+              flashState.value = state == FlashState.on;
+            },
+            onZoomChanged: (CameraZoomState zoom) {
+              showToast('zoom ratio:${zoom.zoomRatio}');
+              maxRatio = zoom.maxZoomRatio ?? 10;
+              ratio.value = zoom.zoomRatio ?? 1;
+            },
+            resolution: CameraResolution.veryHigh,
+            autoScanning: true,
+            barcodeFormats: const [BarcodeFormat.all],
+            fit: BoxFit.fitWidth,
+            uninitialized: Container(
+                color: Colors.black,
+                alignment: Alignment.center,
+                child: const Text('Camera not initialized',
+                    style: TextStyle(color: Colors.blueAccent))),
+            onDataChanged: (AnalysisImageModel data) {
+              final List<Barcode>? barcodes = data.barcodes;
+              if (barcodes != null && barcodes.isNotEmpty) {
+                model = data;
+                animationController.reset();
+              }
+            }),
+        AnimatedBuilder(
+            animation: animationController,
+            builder: (_, __) =>
+                model != null ? _RectBox(model!) : const SizedBox()),
+        Universal(
+            alignment: Alignment.bottomCenter,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[buildRatioSlider, buildFlashState]),
+        Align(
+          alignment: Alignment.centerRight,
+          child: SizedBox(
+              width: 150,
+              height: 300,
+              child: ListWheelState(
+                  initialItem: 1,
+                  count: types.length,
+                  builder: (FixedExtentScrollController controller) =>
+                      ListWheel.builder(
+                          controller: controller,
+                          onSelectedItemChanged: (int index) {
+                            var format = BarcodeFormat.values[index];
+                            scanningController.value
+                                ?.setBarcodeFormat([format]).then((value) {
+                              animationReset();
+                              showToast('setBarcodeFormat:$format $value');
+                            });
+                          },
+                          options: const WheelOptions(
+                              useMagnifier: true, magnification: 1.5),
+                          itemBuilder: (_, int index) => Align(
+                              alignment: Alignment.center,
+                              child: BText(types[index].split('.')[1],
+                                  fontSize: 16, fontWeight: FontWeight.bold)),
+                          itemCount: types.length))),
+        ),
+        Positioned(
+            right: 12,
+            left: 12,
+            top: context.statusBarHeight + 12,
+            child: ValueListenableBuilder<FlMlKitScanningController?>(
+                valueListenable: scanningController,
+                builder: (_, FlMlKitScanningController? controller, __) {
+                  return controller == null
+                      ? const SizedBox()
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                              const BackButton(
+                                  color: Colors.white, onPressed: pop),
+                              Row(children: [
+                                ElevatedIcon(
+                                    icon: Icons.flip_camera_ios,
+                                    onPressed: switchCamera),
+                                const SizedBox(width: 12),
+                                previewButton(controller),
+                                const SizedBox(width: 12),
+                                canScanButton(controller),
+                              ])
+                            ]);
+                })),
+      ])),
+    );
   }
 
   Widget get buildFlashState {

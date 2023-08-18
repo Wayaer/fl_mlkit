@@ -81,8 +81,7 @@ class _CameraScanPageState extends State<CameraScanPage> {
   Widget build(BuildContext context) {
     Widget child = Container();
     if (controller != null) child = CameraPreview(controller!);
-    return ExtendedScaffold(
-        backgroundColor: Colors.black, body: Center(child: child));
+    return Scaffold(backgroundColor: Colors.black, body: Center(child: child));
   }
 
   @override

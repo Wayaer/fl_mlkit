@@ -20,14 +20,12 @@ class _ImageScanPageState extends State<ImageScanPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ExtendedScaffold(
+    return Scaffold(
         appBar: AppBarText('San file image'),
-        padding: const EdgeInsets.all(20),
-        isScroll: true,
-        children: <Widget>[
+        body: Universal(width: double.infinity, children: [
           ElevatedText(onPressed: openGallery, text: 'Select Picture'),
           ElevatedText(onPressed: scanByte, text: 'Scanning'),
-          ShowText('path', path),
+          TextBox('path', path),
           if (path != null && path!.isNotEmpty)
             Container(
                 width: double.infinity,
@@ -36,9 +34,9 @@ class _ImageScanPageState extends State<ImageScanPage> {
                     const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
                 child: Image.file(File(path!))),
           if (list != null && list!.isEmpty)
-            const ShowText('Unrecognized', 'Unrecognized'),
-          ShowCode(list ?? [], expanded: false)
-        ]);
+            const TextBox('Unrecognized', 'Unrecognized'),
+          CodeBox(list ?? [], expanded: false)
+        ]));
   }
 
   Future<void> scanByte() async {
