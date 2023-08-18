@@ -117,8 +117,7 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
                               showToast('setBarcodeFormat:$format $value');
                             });
                           },
-                          options: const WheelOptions(
-                              useMagnifier: true, magnification: 1.5),
+                          options: const WheelOptions.cupertino(),
                           itemBuilder: (_, int index) => Align(
                               alignment: Alignment.center,
                               child: BText(types[index].split('.')[1],

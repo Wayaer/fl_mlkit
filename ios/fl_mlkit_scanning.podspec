@@ -16,6 +16,7 @@ Pod::Spec.new do |s|
   s.source_files = 'Classes/*.swift'
   s.dependency 'Flutter'
   s.dependency 'fl_camera'
+  s.dependency 'fl_channel'
   s.dependency 'GoogleMLKit/BarcodeScanning'
   s.static_framework = true
   s.platform = :ios, '10.0'

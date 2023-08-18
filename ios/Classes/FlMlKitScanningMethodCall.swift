@@ -1,5 +1,6 @@
 import AVFoundation
 import fl_camera
+import fl_channel
 import Flutter
 import Foundation
 import MLKitBarcodeScanning
@@ -118,7 +119,7 @@ class FlMlKitScanningMethodCall: FlCameraMethodCall {
         } else {
             visionImage.orientation = flCamera!.imageOrientation()
         }
-        getBarcodeScanner().process(visionImage) { [self] barcodes, error in
+        getBarcodeScanner().process(visionImage) { barcodes, error in
             if error == nil, barcodes != nil {
                 var list = [[String: Any?]]()
                 for barcode in barcodes! {
@@ -132,7 +133,7 @@ class FlMlKitScanningMethodCall: FlCameraMethodCall {
 
                 if result == nil {
                     if !list.isEmpty {
-                        flCameraEvent?.sendEvent(map)
+                        FlEvent.shared.send(map)
                     }
                 } else {
                     result!(map)

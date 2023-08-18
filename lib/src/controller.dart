@@ -6,7 +6,6 @@ class FlMlKitScanningController extends CameraController {
 
   FlMlKitScanningController._() {
     channel = _flMlKitScanningChannel;
-    cameraEvent.setMethodChannel(channel);
   }
 
   static FlMlKitScanningController? _singleton;
@@ -35,8 +34,8 @@ class FlMlKitScanningController extends CameraController {
   /// 初始化消息通道和基础配置
   /// Initialize the message channel and basic configuration
   @override
-  Future<bool> initialize({CameraEventListen? listen}) =>
-      super.initialize(listen: _eventListen);
+  Future<bool> initialize([FlEventListenData? onData]) =>
+      super.initialize(onData ?? _onData);
 
   /// 开始预览
   /// start Preview
@@ -75,8 +74,8 @@ class FlMlKitScanningController extends CameraController {
   }
 
   @protected
-  void _eventListen(dynamic data) {
-    super.eventListen(data);
+  void _onData(dynamic data) {
+    super.onData(data);
     if (!_canScan) return;
     if (data is Map) {
       final List<dynamic>? barcodes = data['barcodes'] as List<dynamic>?;
@@ -95,9 +94,6 @@ class FlMlKitScanningController extends CameraController {
   Future<AnalysisImageModel?> scanImageByte(Uint8List uint8list,
       {int rotationDegrees = 0, bool useEvent = false}) async {
     if (!_supportPlatform) return null;
-    if (useEvent) {
-      assert(FlCameraEvent().isPaused, 'Please initialize FlCameraEvent');
-    }
     final dynamic map = await channel.invokeMethod<dynamic>(
         'scanImageByte', <String, dynamic>{
       'byte': uint8list,
