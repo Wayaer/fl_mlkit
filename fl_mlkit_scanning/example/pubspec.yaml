@@ -1,0 +1,24 @@
+name: example
+description: Demonstrates how to use the fl_mlkit_scanning plugin.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.17.0 <4.0.0"
+
+dependencies:
+
+  fl_mlkit_scanning:
+    path: ../
+  flutter:
+    sdk: flutter
+  flutter_curiosity: ^4.5.0
+  flutter_waya: ^8.0.3
+  permission_handler: ^10.4.3
+  camera: ^0.10.5+3
+
+dev_dependencies:
+  flutter_lints: ^2.0.2
+
+flutter:
+  uses-material-design: true
