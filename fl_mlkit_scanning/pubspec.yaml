@@ -1,7 +1,7 @@
 name: fl_mlkit_scanning
 description: Google mlkit scanning for flutter plugin , supports Android and IOS.
 version: 4.0.6
-repository: https://github.com/Wayaer/fl_mlkit_scanning.git
+repository: https://github.com/Wayaer/fl_mlkit/tree/main/fl_mlkit_scanning
 
 environment:
   sdk: '>=2.18.0 <4.0.0'
