@@ -35,23 +35,13 @@ enum CameraLensFacing { back, front, external }
 class FlCameraController extends CameraController {
   factory FlCameraController() => _singleton ??= FlCameraController._();
 
-  FlCameraController._() {
-    channel = _flCameraChannel;
-    _cameraEvent.setMethodChannel(channel);
-  }
+  FlCameraController._();
 
   static FlCameraController? _singleton;
 }
 
 class CameraController with ChangeNotifier {
-  /// 相机消息通道
-  /// Camera message channel
-  late final FlCameraEvent _cameraEvent = FlCameraEvent();
-
-  FlCameraEvent get cameraEvent => _cameraEvent;
-
-  @protected
-  MethodChannel channel = _flCameraChannel;
+  final MethodChannel _channel = const MethodChannel('fl.camera');
 
   /// 所有可用的摄像头
   /// all available Cameras
@@ -88,6 +78,14 @@ class CameraController with ChangeNotifier {
 
   CameraResolution cameraResolution = CameraResolution.high;
 
+  /// 闪光灯变化
+  /// Flash change
+  FlCameraFlashStateChanged? onFlashChanged;
+
+  /// 缩放变化
+  /// zoom ratio
+  FlCameraCameraZoomStateChanged? onZoomChanged;
+
   /// 获取可用摄像机
   /// 通常在第一次加载 Camera 后自动获取设备的可用相机，并且赋值给了[cameras]，所以后续可以不用再调用这个方法，可直接使用[cameras]
   ///
@@ -98,7 +96,7 @@ class CameraController with ChangeNotifier {
   /// instead of calling the method.
   Future<List<CameraInfo>?> availableCameras() async {
     try {
-      final List<Map<dynamic, dynamic>>? cameras = await channel
+      final List<Map<dynamic, dynamic>>? cameras = await _channel
           .invokeListMethod<Map<dynamic, dynamic>>('availableCameras');
       if (cameras == null) return <CameraInfo>[];
       _cameras = cameras
@@ -115,36 +113,41 @@ class CameraController with ChangeNotifier {
 
   /// 初始化所有相机 camera 和 event
   /// initialize all Including camera and event
-  Future<bool> initialize({CameraEventListen? listen}) async {
+  Future<bool> initialize([FlEventListenData? onData]) async {
     if (!_supportPlatform) return false;
-    bool? state = await cameraEvent.initialize();
+    bool? state = await FlEvent().initialize();
     if (state == true) {
-      cameraEvent.addListener(listen ?? eventListen);
-      state = await channel.invokeMethod<bool?>('initialize');
+      FlEvent().addListener(onData ?? this.onData);
+      state = await _channel.invokeMethod<bool?>('initialize');
     }
     await availableCameras();
     return state ?? false;
   }
 
   /// 消息回调监听
-  void eventListen(dynamic data) {
+  void onData(dynamic data) {
     if (data is Map) {
-      /// zoom ratio state
-      final double? zoomRatio = data['zoomRatio'] as double?;
-      final double? maxZoomRatio = data['maxZoomRatio'] as double?;
-      if (zoomRatio != null && maxZoomRatio != null) {
-        _cameraZoom =
-            CameraZoomState(maxZoomRatio: maxZoomRatio, zoomRatio: zoomRatio);
-        notifyListeners();
-        return;
-      }
-
-      /// flash state
-      final int? flashState = data['flash'] as int?;
-      if (flashState != null) {
-        _cameraFlash = FlashState.values[flashState];
-        notifyListeners();
-        return;
+      if (data.containsKey('flash')) {
+        /// flash state
+        final int? flashState = data['flash'] as int?;
+        if (flashState != null) {
+          _cameraFlash = FlashState.values[flashState];
+          onFlashChanged?.call(_cameraFlash!);
+          notifyListeners();
+          return;
+        }
+      } else if (data.containsKey('zoomRatio') &&
+          data.containsKey('maxZoomRatio')) {
+        /// zoom ratio state
+        final double? zoomRatio = data['zoomRatio'] as double?;
+        final double? maxZoomRatio = data['maxZoomRatio'] as double?;
+        if (zoomRatio != null && maxZoomRatio != null) {
+          _cameraZoom =
+              CameraZoomState(maxZoomRatio: maxZoomRatio, zoomRatio: zoomRatio);
+          onZoomChanged?.call(_cameraZoom!);
+          notifyListeners();
+          return;
+        }
       }
     }
   }
@@ -154,15 +157,14 @@ class CameraController with ChangeNotifier {
   /// [camera] 需要预览的相机 Camera to preview
   /// [resolution] 预览相机支持的分辨率 Preview the resolution supported by the camera
   Future<FlCameraOptions?> startPreview(CameraInfo camera,
-      {CameraResolution? resolution, Map<String, dynamic>? options}) async {
+      {CameraResolution? resolution}) async {
     if (!_supportPlatform) return null;
     if (resolution != null) cameraResolution = resolution;
     final arguments = <String, dynamic>{
       'cameraId': camera.name,
-      'resolution': cameraResolution.toString().split('.')[1]
+      'resolution': cameraResolution.name
     };
-    if (options != null) arguments.addAll(options);
-    final Map<dynamic, dynamic>? map = await channel
+    final Map<dynamic, dynamic>? map = await _channel
         .invokeMethod<Map<dynamic, dynamic>?>('startPreview', arguments);
     if (map != null) {
       _cameraOptions = FlCameraOptions.fromMap(map);
@@ -177,7 +179,7 @@ class CameraController with ChangeNotifier {
   /// stop Preview
   Future<bool> stopPreview() async {
     if (_cameraOptions == null) return false;
-    final bool? state = await channel.invokeMethod<bool?>('stopPreview');
+    final bool? state = await _channel.invokeMethod<bool?>('stopPreview');
     if (state == true) {
       _cameraOptions = null;
       notifyListeners();
@@ -207,7 +209,7 @@ class CameraController with ChangeNotifier {
   Future<bool> setFlashMode(FlashState status) async {
     if (!_supportPlatform || !hasPreview) return false;
     final bool? state =
-        await channel.invokeMethod<bool?>('setFlashMode', status.index);
+        await _channel.invokeMethod<bool?>('setFlashMode', status.index);
     return state ?? false;
   }
 
@@ -217,7 +219,7 @@ class CameraController with ChangeNotifier {
     if (!_supportPlatform || !hasPreview) return false;
     assert(ratio >= 1, 'ratio must be greater than or equal to 1');
     final bool? state =
-        await channel.invokeMethod<bool?>('setZoomRatio', ratio);
+        await _channel.invokeMethod<bool?>('setZoomRatio', ratio);
     return state ?? false;
   }
 
@@ -225,8 +227,7 @@ class CameraController with ChangeNotifier {
   @override
   Future<bool> dispose() async {
     if (!_supportPlatform) return false;
-    await cameraEvent.dispose();
-    bool? state = await channel.invokeMethod<bool?>('dispose');
+    bool? state = await _channel.invokeMethod<bool?>('dispose');
     _cameraOptions = null;
     _cameraFlash = null;
     _cameraZoom = null;

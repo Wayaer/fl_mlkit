@@ -15,7 +15,6 @@ class _CameraScanPageState extends State<CameraScanPage> {
   CameraController? controller;
   int time = 0;
   bool hasImageStream = false;
-  FlCameraEvent? event;
   int currentTime = 0;
 
   @override
@@ -28,10 +27,9 @@ class _CameraScanPageState extends State<CameraScanPage> {
   }
 
   Future<void> initEvent() async {
-    event = FlCameraEvent();
-    final bool state = await event!.initialize();
+    final bool state = await FlEvent().initialize();
     if (!state) return;
-    event!.addListener((dynamic value) {
+    FlEvent().addListener((dynamic value) {
       log('Received a message from native== $value');
       if (value != null && hasImageStream) {
         // final Barcode scanResult =
@@ -86,7 +84,7 @@ class _CameraScanPageState extends State<CameraScanPage> {
 
   @override
   void deactivate() {
-    event?.dispose();
+    FlEvent().dispose();
     super.deactivate();
   }
 

@@ -13,10 +13,6 @@ part 'src/mlkit_scanning.dart';
 
 part 'src/model.dart';
 
-const MethodChannel _flMlKitScanningChannel = MethodChannel(_flMlKitScanning);
-
-const String _flMlKitScanning = 'fl.mlkit.scanning';
-
 bool get _supportPlatform {
   if (!kIsWeb && (_isAndroid || _isIOS)) return true;
   debugPrint('Not support platform for $defaultTargetPlatform');

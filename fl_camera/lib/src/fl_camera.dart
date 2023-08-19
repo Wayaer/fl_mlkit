@@ -2,6 +2,10 @@ part of '../fl_camera.dart';
 
 typedef FlCameraCreateCallback = void Function(FlCameraController controller);
 
+typedef FlCameraFlashStateChanged = void Function(FlashState state);
+
+typedef FlCameraCameraZoomStateChanged = void Function(CameraZoomState state);
+
 class FlCamera extends StatefulWidget {
   const FlCamera(
       {Key? key,
@@ -26,11 +30,11 @@ class FlCamera extends StatefulWidget {
 
   /// 闪光灯变化
   /// Flash change
-  final ValueChanged<FlashState>? onFlashChanged;
+  final FlCameraFlashStateChanged? onFlashChanged;
 
   /// 缩放变化
   /// zoom ratio
-  final ValueChanged<CameraZoomState>? onZoomChanged;
+  final FlCameraCameraZoomStateChanged? onZoomChanged;
 
   /// 更新组件时是否重置相机
   /// Reset camera when updating components
@@ -65,16 +69,8 @@ class _FlCameraStateWidget extends FlCameraState<FlCamera> {
       widget.onCreateView?.call(controller as FlCameraController);
       initialize();
     });
-    controller.addListener(changedListener);
-  }
-
-  void changedListener() {
-    if (controller.cameraFlash != null) {
-      widget.onFlashChanged?.call(controller.cameraFlash!);
-    }
-    if (controller.cameraZoom != null) {
-      widget.onZoomChanged?.call(controller.cameraZoom!);
-    }
+    controller.onFlashChanged = widget.onFlashChanged;
+    controller.onZoomChanged = widget.onZoomChanged;
   }
 
   Future<void> initialize() async {
@@ -123,7 +119,6 @@ class _FlCameraStateWidget extends FlCameraState<FlCamera> {
   @override
   void dispose() {
     super.dispose();
-    controller.removeListener(changedListener);
     controller.dispose();
   }
 }

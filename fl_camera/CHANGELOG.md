@@ -1,3 +1,7 @@
+## 4.0.0
+
+* Use [fl_channel](https://pub.dev/packages/fl_channel)
+
 ## 3.1.3
 
 * Nothing updated
@@ -63,7 +67,8 @@
 ## 1.1.0
 
 * Add camera zoom function and add onzoomchange
-* Remove usebackcamera, add availablecameras and select the camera you need. The rear camera is used by default
+* Remove usebackcamera, add availablecameras and select the camera you need. The rear camera is used
+  by default
 * Remove zoomquality, add resolution, and set the resolution you need,
 * Add updatereset. Do you need to reinitialize the camera preview when calling didupdatewidget
 * Modify FLCameraEvent to FlCameraEvent

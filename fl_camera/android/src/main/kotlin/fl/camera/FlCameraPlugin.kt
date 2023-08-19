@@ -10,15 +10,13 @@ class FlCameraPlugin : FlutterPlugin, ActivityAware {
     private lateinit var channel: MethodChannel
     private var plugin: FlutterPlugin.FlutterPluginBinding? = null
 
-
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-        channel = MethodChannel(flutterPluginBinding.binaryMessenger, "fl.camera")
         plugin = flutterPluginBinding
     }
 
 
     override fun onAttachedToActivity(pluginBinding: ActivityPluginBinding) {
-        channel.setMethodCallHandler(FlCameraMethodCall(pluginBinding.activity, plugin!!))
+        channel = FlCamera.binding(pluginBinding.activity, plugin!!)
     }
 
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
@@ -29,13 +27,11 @@ class FlCameraPlugin : FlutterPlugin, ActivityAware {
         onDetachedFromActivity()
     }
 
-
     override fun onDetachedFromActivity() {
 
     }
 
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         channel.setMethodCallHandler(null)
-        plugin = null
     }
 }

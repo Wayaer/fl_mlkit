@@ -3,27 +3,25 @@ import UIKit
 
 public class FlCameraPlugin: NSObject, FlutterPlugin {
     var channel: FlutterMethodChannel?
-    var methodCall: FlCameraMethodCall?
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "fl.camera", binaryMessenger: registrar.messenger())
-        let instance = FlCameraPlugin(registrar, channel)
+        let instance = FlCameraPlugin(channel)
+        FlCamera.shared.binding(registrar)
         registrar.addMethodCallDelegate(instance, channel: channel)
     }
 
-    init(_ _registrar: FlutterPluginRegistrar, _ _channel: FlutterMethodChannel) {
-        channel = _channel
-        methodCall = FlCameraMethodCall(_registrar)
+    init(_ channel: FlutterMethodChannel) {
+        self.channel = channel
         super.init()
     }
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-        methodCall?.handle(call: call, result: result)
+        FlCamera.shared.handle(call, result)
     }
 
     public func detachFromEngine(for registrar: FlutterPluginRegistrar) {
         channel?.setMethodCallHandler(nil)
         channel = nil
-        methodCall?.dispose()
     }
 }

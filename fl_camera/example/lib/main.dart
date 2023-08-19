@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:example/camera_page.dart';
-import 'package:example/event_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_waya/flutter_waya.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -25,11 +24,8 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(title: const Text('FlCamera Example')),
-        body: Column(children: [
+        body: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
           const SizedBox(width: double.infinity),
-          ElevatedText(
-              onPressed: () => push(const FlCameraEventPage()),
-              text: 'Message channel'),
           ElevatedText(
               onPressed: () async {
                 final bool permission = await getPermission(Permission.camera);

@@ -1,4 +1,4 @@
-part of '../../fl_camera.dart';
+part of '../fl_camera.dart';
 
 class ScannerLine extends StatefulWidget {
   const ScannerLine({Key? key, Color? color})

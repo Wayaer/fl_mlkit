@@ -1,4 +1,4 @@
-part of '../../fl_camera.dart';
+part of '../fl_camera.dart';
 
 /// 扫码框动画
 /// Scan frame animation
@@ -21,7 +21,7 @@ class ScannerBox extends StatefulWidget {
   /// 扫描区域的大小
   /// Size of scan area
   /// [scannerSize]==null 时 扫描框大小等于父组件
-  /// When [scannersize] = null, the scan box size is equal to the parent component
+  /// When [scannerSize] = null, the scan box size is equal to the parent component
   final Size? scannerSize;
 
   /// 四角线宽度
