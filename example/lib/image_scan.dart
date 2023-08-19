@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:example/main.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:fl_mlkit_scanning/fl_mlkit_scanning.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
@@ -66,10 +67,10 @@ class _ImageScanPageState extends State<ImageScanPage> {
     bool hasPermission = false;
     if (isAndroid) hasPermission = await getPermission(Permission.storage);
     if (isIOS) hasPermission = true;
-    if (hasPermission) {
-      final String? data = await Curiosity().gallery.openSystemGallery();
-      path = data;
-      setState(() {});
-    }
+    if (!hasPermission) return;
+    final result = await FilePicker.platform.pickFiles(type: FileType.image);
+    if (result == null || result.files.isEmpty) return;
+    path = result.files.first.path;
+    setState(() {});
   }
 }
