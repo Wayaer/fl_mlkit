@@ -1,3 +1,5 @@
+library fl_mlkit_translate_text;
+
 import 'dart:async';
 
 import 'package:flutter/services.dart';
@@ -7,10 +9,9 @@ class FlMlKitTranslateText {
 
   FlMlKitTranslateText._();
 
-  static const MethodChannel _channel =
-      MethodChannel('fl_mlkit_translate_text');
-
   static FlMlKitTranslateText? _singleton;
+
+  final MethodChannel _channel = const MethodChannel('fl_mlkit_translate_text');
 
   TranslateLanguage _sourceLanguage = TranslateLanguage.english;
 

@@ -162,8 +162,7 @@ class AppBarText extends AppBar {
       : super(
             key: key,
             elevation: 0,
-            title: BText(text,
-                color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+            title: BText(text, fontSize: 18, fontWeight: FontWeight.bold),
             centerTitle: true);
 }
 

@@ -3,7 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_waya/flutter_waya.dart';
 
 void main() {
-  runApp(ExtendedWidgetsApp(home: _App()));
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(MaterialApp(
+      navigatorKey: GlobalOptions().navigatorKey,
+      scaffoldMessengerKey: GlobalOptions().scaffoldMessengerKey,
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData.light(useMaterial3: true),
+      darkTheme: ThemeData.dark(useMaterial3: true),
+      title: 'FlMlKitTranslate',
+      home: Scaffold(
+          appBar: AppBarText('Fl MlKit Translate Text'),
+          body: SingleChildScrollView(
+              child: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: _App(),
+          )))));
 }
 
 class _App extends StatefulWidget {
@@ -43,107 +57,88 @@ class _AppState extends State<_App> {
 
   @override
   Widget build(BuildContext context) {
-    return ExtendedScaffold(
-        appBar: AppBarText('Fl MlKit Translate Text'),
-        mainAxisAlignment: MainAxisAlignment.center,
-        padding: const EdgeInsets.all(30),
-        isScroll: true,
-        children: <Widget>[
-          ElevatedText(
-              text: 'TranslateRemoteModel Manager',
-              onPressed: () {
-                context.requestFocus();
-                push(const TranslateRemoteModelManagerPage());
-              }),
-          const SizedBox(height: 20),
-          TextField(
-              controller: controller,
-              maxLength: 500,
-              maxLines: 4,
-              onSubmitted: (value) {
-                context.requestFocus();
-              },
-              decoration: const InputDecoration(
-                  border: OutlineInputBorder(), hintText: 'Please enter text')),
-          StatefulBuilder(builder: (_, state) {
-            return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Universal(
-                  onTap: () async {
-                    context.requestFocus();
-                    final language = await selectLanguage();
-                    if (language != null &&
-                        language != translateText.sourceLanguage &&
-                        language != translateText.targetLanguage) {
-                      translateText
-                          .switchLanguage(
-                              language, translateText.targetLanguage)
-                          .then((value) {
-                        state(() {});
-                      });
-                    }
-                  },
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(4)),
-                  child: Text(
-                      translateText.sourceLanguage.toString().split('.')[1])),
-              IconButton(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  onPressed: () {
-                    translateText
-                        .switchLanguage(translateText.targetLanguage,
-                            translateText.sourceLanguage)
-                        .then((value) {
-                      state(() {});
-                    });
-                  },
-                  icon: const Icon(Icons.swap_horizontal_circle)),
-              Universal(
-                  onTap: () async {
-                    context.requestFocus();
-                    final language = await selectLanguage();
-                    if (language != null &&
-                        language != translateText.sourceLanguage &&
-                        language != translateText.targetLanguage) {
-                      translateText
-                          .switchLanguage(
-                              translateText.sourceLanguage, language)
-                          .then((value) {
-                        state(() {});
-                      });
-                    }
-                  },
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(4)),
-                  child: Text(
-                      translateText.targetLanguage.toString().split('.')[1])),
-            ]);
+    return Column(children: [
+      ElevatedText(
+          text: 'TranslateRemoteModel Manager',
+          onPressed: () {
+            context.requestFocus();
+            push(const TranslateRemoteModelManagerPage());
           }),
-          ElevatedText(text: 'Translation', onPressed: translation),
-          const SizedBox(height: 20),
-          ValueListenableBuilder(
-              valueListenable: text,
-              builder: (_, String value, __) {
-                return Universal(
-                    onLongPress: () {
-                      value.toClipboard;
-                      showToast('Has been copied');
-                    },
-                    alignment: Alignment.center,
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10)),
-                    child: Text(value, textAlign: TextAlign.center));
-              })
+      const SizedBox(height: 20),
+      TextField(
+          controller: controller,
+          maxLength: 500,
+          maxLines: 4,
+          onSubmitted: (value) {
+            context.requestFocus();
+          },
+          decoration: const InputDecoration(
+              border: OutlineInputBorder(), hintText: 'Please enter text')),
+      StatefulBuilder(builder: (_, state) {
+        return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+          ElevatedText(
+              onPressed: () async {
+                context.requestFocus();
+                final language = await selectLanguage();
+                if (language != null &&
+                    language != translateText.sourceLanguage &&
+                    language != translateText.targetLanguage) {
+                  translateText
+                      .switchLanguage(language, translateText.targetLanguage)
+                      .then((value) {
+                    state(() {});
+                  });
+                }
+              },
+              text: translateText.sourceLanguage.name),
+          IconButton(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              onPressed: () {
+                translateText
+                    .switchLanguage(translateText.targetLanguage,
+                        translateText.sourceLanguage)
+                    .then((value) {
+                  state(() {});
+                });
+              },
+              icon: const Icon(Icons.swap_horizontal_circle)),
+          ElevatedText(
+              onPressed: () async {
+                context.requestFocus();
+                final language = await selectLanguage();
+                if (language != null &&
+                    language != translateText.sourceLanguage &&
+                    language != translateText.targetLanguage) {
+                  translateText
+                      .switchLanguage(translateText.sourceLanguage, language)
+                      .then((value) {
+                    state(() {});
+                  });
+                }
+              },
+              text: translateText.targetLanguage.name),
         ]);
+      }),
+      ElevatedText(text: 'Translation', onPressed: translation),
+      const SizedBox(height: 20),
+      ValueListenableBuilder(
+          valueListenable: text,
+          builder: (_, String value, __) {
+            return Universal(
+                onLongPress: () {
+                  value.toClipboard;
+                  showToast('Has been copied');
+                },
+                alignment: Alignment.center,
+                width: double.infinity,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10)),
+                child: BText(value,
+                    color: Colors.black, textAlign: TextAlign.center));
+          })
+    ]);
   }
 
   Future<void> translation() async {
@@ -181,11 +176,12 @@ class _AppState extends State<_App> {
                         pop(value[index].language);
                       },
                       padding: const EdgeInsets.symmetric(vertical: 5),
-                      child: Text(value[index].language.toString()));
+                      child: BText(value[index].language.toString(),
+                          color: Colors.black));
                 },
                 itemCount: value.length,
                 separatorBuilder: (BuildContext context, int index) =>
-                    const Divider());
+                    const Divider(thickness: 0.3));
           })).popupBottomSheet(
       options: const BottomSheetOptions(isScrollControlled: false));
 
@@ -224,7 +220,7 @@ class _TranslateRemoteModelManagerPageState
 
   @override
   Widget build(BuildContext context) {
-    return ExtendedScaffold(
+    return Scaffold(
         appBar: AppBarText('TranslateRemoteModel Manager'),
         body: ScrollList.builder(
           padding: const EdgeInsets.symmetric(vertical: 10),
@@ -242,11 +238,8 @@ class _TranslateRemoteModelManagerPageState
                     '${abb.toUpperCase()}  ',
                     item.toString().split('.')[1]
                   ], styles: const [
-                    TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black),
-                    TextStyle(color: Colors.black),
+                    TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    TextStyle(),
                   ]),
                   ValueBuilder<bool>(builder: (_, bool? isLoading, updater) {
                     isLoading ??= false;
@@ -285,29 +278,11 @@ class AppBarText extends AppBar {
       : super(
             key: key,
             elevation: 0,
-            title: BText(text,
-                color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+            title: BText(text, fontSize: 18, fontWeight: FontWeight.bold),
             centerTitle: true);
 }
 
-class ElevatedText extends StatelessWidget {
-  const ElevatedText({Key? key, this.onPressed, required this.text})
-      : super(key: key);
-  final VoidCallback? onPressed;
-  final String text;
-
-  @override
-  Widget build(BuildContext context) =>
-      ElevatedButton(onPressed: onPressed, child: Text(text));
-}
-
-class ElevatedIcon extends StatelessWidget {
-  const ElevatedIcon({Key? key, this.onPressed, required this.icon})
-      : super(key: key);
-  final VoidCallback? onPressed;
-  final IconData icon;
-
-  @override
-  Widget build(BuildContext context) => ElevatedButton(
-      onPressed: onPressed, child: Icon(icon, color: Colors.white));
+class ElevatedText extends ElevatedButton {
+  ElevatedText({super.key, required String text, required super.onPressed})
+      : super(child: Text(text));
 }

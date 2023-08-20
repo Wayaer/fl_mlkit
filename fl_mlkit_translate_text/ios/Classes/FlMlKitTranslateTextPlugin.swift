@@ -12,7 +12,7 @@ public class FlMlKitTranslateTextPlugin: NSObject, FlutterPlugin {
 
     let fractionCompletedKeyPath: String = "fractionCompleted"
     var downloadProgress: Progress?
-    var _result: FlutterResult?
+    var result: FlutterResult?
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "fl_mlkit_translate_text", binaryMessenger: registrar.messenger())
@@ -21,6 +21,7 @@ public class FlMlKitTranslateTextPlugin: NSObject, FlutterPlugin {
     }
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        self.result = result
         switch call.method {
         case "translate":
             let arguments = call.arguments as! [String: Any?]
@@ -64,7 +65,6 @@ public class FlMlKitTranslateTextPlugin: NSObject, FlutterPlugin {
                 result(error == nil)
             }
         case "downloadedModel":
-            _result = result
             downloadProgress?.removeObserver(self, forKeyPath: fractionCompletedKeyPath)
             downloadProgress = getModelManager().download(getTranslateRemoteModel(call), conditions: getConditions())
             downloadProgress!.addObserver(self, forKeyPath: fractionCompletedKeyPath, options: .new, context: nil)
@@ -80,14 +80,14 @@ public class FlMlKitTranslateTextPlugin: NSObject, FlutterPlugin {
 
     override public func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {
         if keyPath == fractionCompletedKeyPath, change?[NSKeyValueChangeKey.newKey] as! Int == 1 {
-            _result?(true)
+            result?(true)
         }
     }
 
     private func dispose() {
         downloadProgress?.removeObserver(self, forKeyPath: fractionCompletedKeyPath)
         downloadProgress = nil
-        _result = nil
+        result = nil
         options = nil
         conditions = nil
         modelManager = nil
@@ -97,8 +97,8 @@ public class FlMlKitTranslateTextPlugin: NSObject, FlutterPlugin {
     private func getConditions() -> ModelDownloadConditions {
         if conditions == nil {
             conditions = ModelDownloadConditions(
-                    allowsCellularAccess: false,
-                    allowsBackgroundDownloading: true
+                allowsCellularAccess: false,
+                allowsBackgroundDownloading: true
             )
         }
         return conditions!
