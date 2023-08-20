@@ -1,3 +1,5 @@
+library fl_mlkit_identify_language;
+
 import 'dart:async';
 
 import 'package:flutter/services.dart';

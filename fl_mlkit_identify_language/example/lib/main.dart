@@ -3,7 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_waya/flutter_waya.dart';
 
 void main() {
-  runApp(const ExtendedWidgetsApp(home: _App()));
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(MaterialApp(
+      navigatorKey: GlobalOptions().navigatorKey,
+      scaffoldMessengerKey: GlobalOptions().scaffoldMessengerKey,
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData.light(useMaterial3: true),
+      darkTheme: ThemeData.dark(useMaterial3: true),
+      title: 'FlMlKitIdentifyLanguage',
+      home: Scaffold(
+          appBar: AppBarText('Fl MlKit Identify Language'),
+          body: const SingleChildScrollView(
+              child: Padding(
+            padding: EdgeInsets.all(10.0),
+            child: _App(),
+          )))));
 }
 
 class _App extends StatefulWidget {
@@ -17,88 +31,81 @@ class _AppState extends State<_App> {
   ValueNotifier<List<IdentifiedLanguageModel>> identifiedLanguageModel =
       ValueNotifier<List<IdentifiedLanguageModel>>([]);
   TextEditingController controller = TextEditingController();
+  FocusNode focusNode = FocusNode();
   FlMlKitIdentifyLanguage mlKitIdentifyLanguage = FlMlKitIdentifyLanguage();
 
   @override
   Widget build(BuildContext context) {
-    return ExtendedScaffold(
-        isScroll: true,
-        appBar: AppBarText('Fl MlKit Identify Language'),
-        mainAxisAlignment: MainAxisAlignment.center,
-        padding: const EdgeInsets.all(30),
-        children: [
-          TextField(
-              controller: controller,
-              maxLength: 500,
-              maxLines: 4,
-              onSubmitted: (value) {
-                context.requestFocus();
-              },
-              decoration: const InputDecoration(
-                  border: OutlineInputBorder(), hintText: 'Please enter text')),
-          CustomFutureBuilder<double>(
-              future: () async => mlKitIdentifyLanguage.confidence,
-              onWaiting: (_) => const CircularProgressIndicator(),
-              onDone: (_, double value, reset) {
-                return ElevatedText(
-                    onPressed: () async {
-                      context.requestFocus();
-                      final confidence = await selectConfidence();
-                      if (confidence != null) {
-                        final state = await mlKitIdentifyLanguage
-                            .setConfidence(confidence);
-                        if (state) reset();
-                      }
-                    },
-                    text: 'Click Modify Confidence : $value');
-              }),
-          ElevatedText(text: 'Identify Language', onPressed: identifyLanguage),
-          ElevatedText(
-              text: 'Get Native Confidence',
-              onPressed: () {
-                mlKitIdentifyLanguage.getCurrentConfidence().then((value) {
-                  showToast(value.toString());
-                });
-              }),
-          ElevatedText(
-              text: 'Identify Possible Language',
-              onPressed: identifyPossibleLanguages),
-          const SizedBox(height: 20),
-          ValueListenableBuilder(
-              valueListenable: identifiedLanguageModel,
-              builder: (_, List<IdentifiedLanguageModel> value, __) {
-                return Column(
-                    children: value.builder((item) => Container(
-                        margin: const EdgeInsets.symmetric(vertical: 10),
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(6)),
-                        child: RText(
-                            texts: [
-                              'confidence：',
-                              item.confidence.toString(),
-                              '      languageTag：',
-                              item.languageTag,
-                            ],
-                            textAlign: TextAlign.start,
-                            styles: const [
-                              BTextStyle(
-                                  color: Colors.black87,
-                                  fontWeight: FontWeight.w500),
-                              BTextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold),
-                              BTextStyle(
-                                  color: Colors.black87,
-                                  fontWeight: FontWeight.w500),
-                              BTextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold),
-                            ]))));
-              })
-        ]);
+    return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+      TextField(
+          controller: controller,
+          focusNode: focusNode,
+          maxLength: 500,
+          maxLines: 4,
+          onSubmitted: (value) {
+            focusNode.unfocus();
+          },
+          decoration: const InputDecoration(
+              border: OutlineInputBorder(), hintText: 'Please enter text')),
+      CustomFutureBuilder<double>(
+          future: () async => mlKitIdentifyLanguage.confidence,
+          onWaiting: (_) => const CircularProgressIndicator(),
+          onDone: (_, double value, reset) {
+            return ElevatedText(
+                onPressed: () async {
+                  focusNode.unfocus();
+                  final confidence = await selectConfidence();
+                  if (confidence != null) {
+                    final state =
+                        await mlKitIdentifyLanguage.setConfidence(confidence);
+                    if (state) reset();
+                  }
+                },
+                text: 'Click Modify Confidence : $value');
+          }),
+      ElevatedText(text: 'Identify Language', onPressed: identifyLanguage),
+      ElevatedText(
+          text: 'Get Native Confidence',
+          onPressed: () {
+            mlKitIdentifyLanguage.getCurrentConfidence().then((value) {
+              showToast(value.toString());
+            });
+          }),
+      ElevatedText(
+          text: 'Identify Possible Language',
+          onPressed: identifyPossibleLanguages),
+      const SizedBox(height: 20),
+      ValueListenableBuilder(
+          valueListenable: identifiedLanguageModel,
+          builder: (_, List<IdentifiedLanguageModel> value, __) {
+            return Column(
+                children: value.builder((item) => Container(
+                    margin: const EdgeInsets.symmetric(vertical: 10),
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(6)),
+                    child: RText(
+                        texts: [
+                          'confidence：',
+                          item.confidence.toString(),
+                          '      languageTag：',
+                          item.languageTag,
+                        ],
+                        textAlign: TextAlign.start,
+                        styles: const [
+                          TextStyle(
+                              color: Colors.black, fontWeight: FontWeight.w500),
+                          TextStyle(
+                              color: Colors.black, fontWeight: FontWeight.bold),
+                          TextStyle(
+                              color: Colors.black, fontWeight: FontWeight.w500),
+                          TextStyle(
+                              color: Colors.black, fontWeight: FontWeight.bold),
+                        ]))));
+          })
+    ]);
   }
 
   Future<void> identifyLanguage() async {
@@ -106,7 +113,7 @@ class _AppState extends State<_App> {
       showToast('Please enter the text');
       return;
     }
-    context.requestFocus();
+    focusNode.unfocus();
     final data = await mlKitIdentifyLanguage.identifyLanguage(controller.text);
     if (data != null) {
       identifiedLanguageModel.value = [data];
@@ -143,7 +150,8 @@ class _AppState extends State<_App> {
             pop(item);
           },
           padding: const EdgeInsets.symmetric(vertical: 10),
-          child: Text(item.toString(), textAlign: TextAlign.center))),
+          child: BText(item.toString(),
+              color: Colors.black, textAlign: TextAlign.center))),
     ).popupBottomSheet(
         options: const BottomSheetOptions(isScrollControlled: false));
   }
@@ -159,24 +167,7 @@ class AppBarText extends AppBar {
             centerTitle: true);
 }
 
-class ElevatedText extends StatelessWidget {
-  const ElevatedText({Key? key, this.onPressed, required this.text})
-      : super(key: key);
-  final VoidCallback? onPressed;
-  final String text;
-
-  @override
-  Widget build(BuildContext context) =>
-      ElevatedButton(onPressed: onPressed, child: Text(text));
-}
-
-class ElevatedIcon extends StatelessWidget {
-  const ElevatedIcon({Key? key, this.onPressed, required this.icon})
-      : super(key: key);
-  final VoidCallback? onPressed;
-  final IconData icon;
-
-  @override
-  Widget build(BuildContext context) => ElevatedButton(
-      onPressed: onPressed, child: Icon(icon, color: Colors.white));
+class ElevatedText extends ElevatedButton {
+  ElevatedText({super.key, required String text, required super.onPressed})
+      : super(child: Text(text));
 }
