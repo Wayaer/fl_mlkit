@@ -11,15 +11,11 @@ import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
 import fl.camera.FlCamera
+import fl.channel.FlDataStreamHandlerCancel
 import fl.channel.FlEvent
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 
 class FlMlKitScanningPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
 
@@ -27,9 +23,9 @@ class FlMlKitScanningPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
     private var options = BarcodeScannerOptions.Builder().setBarcodeFormats(Barcode.FORMAT_ALL_FORMATS).build()
     private var scanner: BarcodeScanner? = null
     private var lastCurrentTime = 0L
-    private var frequency: Long = 10L
-    private var canScanning: Boolean = true
-    private var job: Job? = null
+
+    private var imageProxyHandler: FlDataStreamHandlerCancel? = null
+
     override fun onAttachedToEngine(pluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(pluginBinding.binaryMessenger, "fl.mlkit.scanning")
         channel.setMethodCallHandler(this)
@@ -39,26 +35,23 @@ class FlMlKitScanningPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
         channel.setMethodCallHandler(null)
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     @SuppressLint("UnsafeOptInUsageError")
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {
             "setParams" -> {
-                frequency = call.argument<Int>("frequency")!!.toLong()
-                canScanning = call.argument<Boolean>("canScanning")!!
-                if (job == null) {
-                    job = GlobalScope.launch {
-                        FlCamera.flow?.collect { imageProxy ->
-                            val mediaImage = imageProxy?.image
-                            val currentTime = System.currentTimeMillis()
-                            if (currentTime - lastCurrentTime >= frequency && mediaImage != null && canScanning) {
-                                val inputImage = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
-                                analysis(inputImage, null, imageProxy)
-                                lastCurrentTime = currentTime
-                            } else {
-                                imageProxy?.close()
-                            }
-                        }
+                val frequency = call.argument<Int>("frequency")!!.toLong()
+                val canScanning = call.argument<Boolean>("canScanning")!!
+                imageProxyHandler?.invoke()
+                imageProxyHandler = null
+                imageProxyHandler = FlCamera.flDataStream.listen { imageProxy ->
+                    val mediaImage = imageProxy.image
+                    val currentTime = System.currentTimeMillis()
+                    if (currentTime - lastCurrentTime >= frequency && mediaImage != null && canScanning) {
+                        val inputImage = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+                        analysis(inputImage, null, imageProxy)
+                        lastCurrentTime = currentTime
+                    } else {
+                        imageProxy.close()
                     }
                 }
                 result.success(true)
@@ -73,8 +66,8 @@ class FlMlKitScanningPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
 
             "scanningImageByte" -> scanningImageByte(call, result)
             "dispose" -> {
-                job?.cancel()
-                job = null
+                imageProxyHandler?.invoke()
+                imageProxyHandler = null
                 scanner?.close()
                 scanner = null
                 result.success(true)

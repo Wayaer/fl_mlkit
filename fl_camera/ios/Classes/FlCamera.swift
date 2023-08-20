@@ -1,4 +1,5 @@
 import AVFoundation
+import fl_channel
 import Flutter
 import Foundation
 
@@ -6,7 +7,7 @@ public class FlCamera: NSObject {
     public var registrar: FlutterPluginRegistrar?
     public var cameraTexture: FlCameraTexture?
 
-    public var captureOutputCallBack: ((_ buffer: CMSampleBuffer) -> Void)?
+    public var flDataStream = FlDataStream<CMSampleBuffer>()
 
     public static let shared = FlCamera()
 
@@ -24,7 +25,16 @@ public class FlCamera: NSObject {
             }
             result(cameraTexture != nil)
         case "startPreview":
-            startPreview(call: call, result)
+            let arguments = call.arguments as! [String: Any?]
+            let cameraId = arguments["cameraId"] as! String
+            let resolution = arguments["resolution"] as! String
+            if cameraTexture == nil || AVCaptureDevice.authorizationStatus(for: .video) != AVAuthorizationStatus.authorized {
+                result(nil)
+                return
+            }
+            cameraTexture!.initCamera(resolution, cameraId, result) { [self] buffer in
+                flDataStream.send(buffer)
+            }
         case "stopPreview":
             cameraTexture?.dispose()
             result(cameraTexture != nil)
@@ -41,22 +51,6 @@ public class FlCamera: NSObject {
         default:
             result(FlutterMethodNotImplemented)
         }
-    }
-
-    func startPreview(call: FlutterMethodCall, _ result: @escaping FlutterResult) {
-        let arguments = call.arguments as! [String: Any?]
-        let cameraId = arguments["cameraId"] as! String
-        let resolution = arguments["resolution"] as! String
-        if cameraTexture == nil || AVCaptureDevice.authorizationStatus(for: .video) != AVAuthorizationStatus.authorized {
-            result(nil)
-            return
-        }
-        cameraTexture!.initCamera(resolution, cameraId, result, captureOutputCallBack)
-    }
-
-    func dispose() {
-        cameraTexture?.dispose()
-        cameraTexture = nil
     }
 
     func availableCameras(_ result: @escaping FlutterResult) {

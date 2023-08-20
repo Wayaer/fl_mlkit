@@ -13,6 +13,7 @@ public class FlMlKitScanningPlugin: NSObject, FlutterPlugin {
     private var options = BarcodeScannerOptions(formats: .all)
     private var lastCurrentTime: TimeInterval = 0
     private var scanner: BarcodeScanner?
+    private var bufferHandler: FlDataStreamHandlerCancel?
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "fl.mlkit.scanning",
@@ -32,10 +33,12 @@ public class FlMlKitScanningPlugin: NSObject, FlutterPlugin {
             let arguments = call.arguments as! [AnyHashable: Any?]
             let frequency = arguments["frequency"] as! Double
             let canScanning = arguments["canScanning"] as! Bool
-            FlCamera.shared.captureOutputCallBack = { [self] sampleBuffer in
+            bufferHandler?()
+            bufferHandler = nil
+            bufferHandler = FlCamera.shared.flDataStream.listen { [self] buffer in
                 let currentTime = Date().timeIntervalSince1970 * 1000
                 if currentTime - lastCurrentTime >= frequency, canScanning {
-                    let buffer = CMSampleBufferGetImageBuffer(sampleBuffer)
+                    let buffer = CMSampleBufferGetImageBuffer(buffer)
                     analysis(buffer!.image, nil)
                     lastCurrentTime = currentTime
                 }
@@ -59,6 +62,8 @@ public class FlMlKitScanningPlugin: NSObject, FlutterPlugin {
             result(nil)
         case "dispose":
             scanner = nil
+            bufferHandler?()
+            bufferHandler = nil
             result(true)
         default:
             result(FlutterMethodNotImplemented)

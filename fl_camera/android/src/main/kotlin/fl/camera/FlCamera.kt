@@ -11,13 +11,12 @@ import android.util.Size
 import androidx.camera.camera2.interop.Camera2CameraInfo
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageProxy
+import fl.channel.FlDataStream
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodChannel
-import kotlinx.coroutines.flow.MutableStateFlow
 
 object FlCamera {
-    var flow: MutableStateFlow<ImageProxy?>? = null
-
+    var flDataStream = FlDataStream<ImageProxy>()
     fun binding(activity: Activity, pluginBinding: FlutterPlugin.FlutterPluginBinding): MethodChannel {
         val channel = MethodChannel(pluginBinding.binaryMessenger, "fl.camera")
         var flCamera: FlCameraX? = null
@@ -28,7 +27,6 @@ object FlCamera {
                     if (flCamera == null) {
                         flCamera = FlCameraX(activity, pluginBinding.textureRegistry)
                     }
-                    flow = MutableStateFlow(null)
                     result.success(true)
                 }
 
@@ -38,7 +36,7 @@ object FlCamera {
                     val previewSize = computeBestPreviewSize(cameraId!!, resolution!!)
                     val cameraSelector = getCameraSelector(cameraId)
                     flCamera?.initCameraX(previewSize, cameraSelector, result) { imageProxy ->
-                        flow?.value = imageProxy
+                        flDataStream.send(imageProxy)
                     }
                 }
 
@@ -59,7 +57,6 @@ object FlCamera {
                 }
 
                 "dispose" -> {
-                    flow = null
                     flCamera?.dispose()
                     flCamera = null
                     result.success(true)

@@ -50,10 +50,8 @@ class _AppState extends State<_App> {
   }
 
   Future<void> openCamera() async {
-    bool hasPermission = false;
-    if (isAndroid) hasPermission = await getPermission(Permission.camera);
-    if (isIOS) hasPermission = true;
-    if (hasPermission) {
+    bool permission = await getPermission(Permission.camera);
+    if (permission) {
       final List<Barcode>? data = await push(const FlMlKitScanningPage());
       if (data != null) {
         list = data;
