@@ -39,9 +39,9 @@ Widget build(BuildContext context) {
       /// Preview the resolution supported by the camera
       resolution: CameraResolution.high,
 
-      /// 是否自动扫描 默认为[true]
-      /// Auto scan defaults to [true]
-      autoScanning: false,
+      /// 是否自动识别 默认为[true]
+      /// Auto recognize defaults to [true]
+      autoRecognize: false,
 
       /// 显示在预览上层
       /// Display above preview box
@@ -110,11 +110,11 @@ void func() {
 
   /// 暂停识别
   /// Pause recognition
-  controller.pause();
+  controller.pauseRecognize();
 
   /// 开始识别
   /// Start recognition
-  controller.start();
+  controller.startRecognize();
 }
 
 ```

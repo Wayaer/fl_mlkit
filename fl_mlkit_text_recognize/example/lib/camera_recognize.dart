@@ -4,18 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:flutter_waya/flutter_waya.dart';
 
-class CameraScanPage extends StatefulWidget {
-  const CameraScanPage({Key? key}) : super(key: key);
+class CameraRecognizePage extends StatefulWidget {
+  const CameraRecognizePage({Key? key}) : super(key: key);
 
   @override
-  State<CameraScanPage> createState() => _CameraScanPageState();
+  State<CameraRecognizePage> createState() => _CameraRecognizePageState();
 }
 
-class _CameraScanPageState extends State<CameraScanPage> {
+class _CameraRecognizePageState extends State<CameraRecognizePage> {
   CameraController? controller;
   int time = 0;
   bool hasImageStream = false;
-  FlCameraEvent? event;
   int currentTime = 0;
 
   @override
@@ -28,10 +27,9 @@ class _CameraScanPageState extends State<CameraScanPage> {
   }
 
   Future<void> initEvent() async {
-    event = FlCameraEvent();
-    final bool state = await event!.initialize();
+    final bool state = await FlEvent().initialize();
     if (!state) return;
-    event!.addListener((dynamic value) {
+    FlEvent().addListener((dynamic value) {
       log('Received a message from native== $value');
       if (value != null && hasImageStream) {
         // final Barcode scanResult =
@@ -81,14 +79,7 @@ class _CameraScanPageState extends State<CameraScanPage> {
   Widget build(BuildContext context) {
     Widget child = Container();
     if (controller != null) child = CameraPreview(controller!);
-    return ExtendedScaffold(
-        backgroundColor: Colors.black, body: Center(child: child));
-  }
-
-  @override
-  void deactivate() {
-    event?.dispose();
-    super.deactivate();
+    return Scaffold(backgroundColor: Colors.black, body: Center(child: child));
   }
 
   @override

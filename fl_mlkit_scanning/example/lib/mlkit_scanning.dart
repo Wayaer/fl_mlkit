@@ -13,40 +13,23 @@ class FlMlKitScanningPage extends StatefulWidget {
 
 class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
     with TickerProviderStateMixin {
-  List<String> types = BarcodeFormat.values.builder((item) => item.toString());
-
   late AnimationController animationController;
   AnalysisImageModel? model;
   ValueNotifier<bool> flashState = ValueNotifier<bool>(false);
   double maxRatio = 10;
   ValueNotifier<double> ratio = ValueNotifier<double>(1);
 
-  ValueNotifier<FlMlKitScanningController?> scanningController =
-      ValueNotifier<FlMlKitScanningController?>(null);
-
   ///  The first rendering is null ，Using the rear camera
   CameraInfo? currentCamera;
 
   bool isBackCamera = true;
 
-  ValueNotifier<bool> hasPreview = ValueNotifier<bool>(false);
-
-  ValueNotifier<bool> canScan = ValueNotifier<bool>(false);
+  ValueNotifier<bool> canScanning = ValueNotifier<bool>(true);
 
   @override
   void initState() {
     super.initState();
     animationController = AnimationController(vsync: this);
-  }
-
-  void listener() {
-    if (!mounted) return;
-    if (hasPreview.value != scanningController.value!.hasPreview) {
-      hasPreview.value = scanningController.value!.hasPreview;
-    }
-    if (canScan.value != scanningController.value!.canScan) {
-      canScan.value = scanningController.value!.canScan;
-    }
   }
 
   @override
@@ -60,10 +43,6 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
         FlMlKitScanning(
             frequency: 800,
             camera: currentCamera,
-            onCreateView: (FlMlKitScanningController controller) {
-              scanningController.value = controller;
-              scanningController.value!.addListener(listener);
-            },
             // overlay: const ScannerBox(),
             onFlashChanged: (FlashState state) {
               showToast('$state');
@@ -97,7 +76,7 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
         Universal(
             alignment: Alignment.bottomCenter,
             mainAxisSize: MainAxisSize.min,
-            children: <Widget>[buildRatioSlider, buildFlashState]),
+            children: [buildRatioSlider, buildFlashState]),
         Align(
           alignment: Alignment.centerRight,
           child: SizedBox(
@@ -105,14 +84,14 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
               height: 300,
               child: ListWheelState(
                   initialItem: 1,
-                  count: types.length,
+                  count: BarcodeFormat.values.length,
                   builder: (FixedExtentScrollController controller) =>
                       ListWheel.builder(
                           controller: controller,
                           onSelectedItemChanged: (int index) {
                             var format = BarcodeFormat.values[index];
-                            scanningController.value
-                                ?.setBarcodeFormat([format]).then((value) {
+                            FlMlKitScanningController()
+                                .setBarcodeFormat([format]).then((value) {
                               animationReset();
                               showToast('setBarcodeFormat:$format $value');
                             });
@@ -120,35 +99,27 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
                           options: const WheelOptions.cupertino(),
                           itemBuilder: (_, int index) => Align(
                               alignment: Alignment.center,
-                              child: BText(types[index].split('.')[1],
+                              child: BText(BarcodeFormat.values[index].name,
                                   fontSize: 16, fontWeight: FontWeight.bold)),
-                          itemCount: types.length))),
+                          itemCount: BarcodeFormat.values.length))),
         ),
         Positioned(
             right: 12,
             left: 12,
             top: context.statusBarHeight + 12,
-            child: ValueListenableBuilder<FlMlKitScanningController?>(
-                valueListenable: scanningController,
-                builder: (_, FlMlKitScanningController? controller, __) {
-                  return controller == null
-                      ? const SizedBox()
-                      : Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                              const BackButton(
-                                  color: Colors.white, onPressed: pop),
-                              Row(children: [
-                                ElevatedIcon(
-                                    icon: Icons.flip_camera_ios,
-                                    onPressed: switchCamera),
-                                const SizedBox(width: 12),
-                                previewButton(controller),
-                                const SizedBox(width: 12),
-                                canScanButton(controller),
-                              ])
-                            ]);
-                })),
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  const BackButton(color: Colors.white, onPressed: pop),
+                  Row(children: [
+                    ElevatedIcon(
+                        icon: Icons.flip_camera_ios, onPressed: switchCamera),
+                    const SizedBox(width: 12),
+                    previewButton,
+                    const SizedBox(width: 12),
+                    canScanningButton,
+                  ])
+                ])),
       ])),
     );
   }
@@ -163,8 +134,8 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
               padding: const EdgeInsets.fromLTRB(10, 10, 10, 40),
               icon: state ? Icons.flash_on : Icons.flash_off,
               onTap: () {
-                scanningController.value
-                    ?.setFlashMode(state ? FlashState.off : FlashState.on);
+                FlMlKitScanningController()
+                    .setFlashMode(state ? FlashState.off : FlashState.on);
               });
         });
   }
@@ -179,60 +150,56 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
               max: maxRatio,
               divisions: maxRatio.toInt(),
               onChanged: (double value) {
-                scanningController.value?.setZoomRatio(value.floorToDouble());
+                FlMlKitScanningController().setZoomRatio(value.floorToDouble());
               });
         });
   }
 
-  Widget canScanButton(FlMlKitScanningController scanningController) {
-    return ValueListenableBuilder(
-        valueListenable: canScan,
-        builder: (_, bool value, __) {
-          return ElevatedText(
-              text: value ? 'pause' : 'start',
-              onPressed: () async {
-                value
-                    ? await scanningController.pauseScan()
-                    : await scanningController.startScan();
-                animationReset();
-              });
-        });
-  }
+  Widget get canScanningButton => ValueListenableBuilder(
+      valueListenable: canScanning,
+      builder: (_, bool value, __) {
+        return ElevatedText(
+            text: value ? 'pause' : 'start',
+            onPressed: () async {
+              value
+                  ? await FlMlKitScanningController().pauseScanning()
+                  : await FlMlKitScanningController().startScanning();
+              canScanning.value = !canScanning.value;
+              animationReset();
+            });
+      });
 
   void animationReset() {
     model = null;
     animationController.reset();
   }
 
-  Widget previewButton(FlMlKitScanningController scanningController) {
-    return ValueListenableBuilder(
-        valueListenable: hasPreview,
-        builder: (_, bool hasPreview, __) {
-          return ElevatedText(
-              text: !hasPreview ? 'start' : 'stop',
-              onPressed: () async {
-                if (!hasPreview) {
-                  if (scanningController.previousCamera != null) {
-                    await scanningController
-                        .startPreview(scanningController.previousCamera!);
-                  }
-                } else {
-                  await scanningController.stopPreview();
+  Widget get previewButton => ValueListenableBuilder<FlCameraOptions?>(
+      valueListenable: FlMlKitScanningController().cameraOptions,
+      builder: (_, FlCameraOptions? options, __) {
+        return ElevatedText(
+            text: options == null ? 'start' : 'stop',
+            onPressed: () async {
+              if (options == null) {
+                if (FlMlKitScanningController().previousCamera != null) {
+                  await FlMlKitScanningController().startPreview(
+                      FlMlKitScanningController().previousCamera!);
                 }
-              });
-        });
-  }
+              } else {
+                await FlMlKitScanningController().stopPreview();
+              }
+            });
+      });
 
   Future<void> switchCamera() async {
-    if (scanningController.value == null) return;
-    for (final CameraInfo cameraInfo in scanningController.value!.cameras!) {
+    for (final CameraInfo cameraInfo in FlMlKitScanningController().cameras!) {
       if (cameraInfo.lensFacing ==
           (isBackCamera ? CameraLensFacing.front : CameraLensFacing.back)) {
         currentCamera = cameraInfo;
         break;
       }
     }
-    await scanningController.value!.switchCamera(currentCamera!);
+    await FlMlKitScanningController().switchCamera(currentCamera!);
     isBackCamera = !isBackCamera;
   }
 
@@ -240,9 +207,7 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
   void dispose() {
     super.dispose();
     animationController.dispose();
-    scanningController.dispose();
-    hasPreview.dispose();
-    canScan.dispose();
+    canScanning.dispose();
     ratio.dispose();
     flashState.dispose();
   }

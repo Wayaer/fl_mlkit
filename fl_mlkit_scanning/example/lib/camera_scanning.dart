@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:flutter_waya/flutter_waya.dart';
 
-class CameraScanPage extends StatefulWidget {
-  const CameraScanPage({Key? key}) : super(key: key);
+class CameraScanningPage extends StatefulWidget {
+  const CameraScanningPage({Key? key}) : super(key: key);
 
   @override
-  State<CameraScanPage> createState() => _CameraScanPageState();
+  State<CameraScanningPage> createState() => _CameraScanningPageState();
 }
 
-class _CameraScanPageState extends State<CameraScanPage> {
+class _CameraScanningPageState extends State<CameraScanningPage> {
   CameraController? controller;
   int time = 0;
   bool hasImageStream = false;
@@ -80,12 +80,6 @@ class _CameraScanPageState extends State<CameraScanPage> {
     Widget child = Container();
     if (controller != null) child = CameraPreview(controller!);
     return Scaffold(backgroundColor: Colors.black, body: Center(child: child));
-  }
-
-  @override
-  void deactivate() {
-    FlEvent().dispose();
-    super.deactivate();
   }
 
   @override

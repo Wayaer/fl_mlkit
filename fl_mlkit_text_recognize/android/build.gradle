@@ -2,14 +2,14 @@ group 'fl.mlkit.text.recognize'
 version '1.0'
 
 buildscript {
-    ext.kotlin_version = '1.7.0'
+    ext.kotlin_version = '1.8.0'
     repositories {
         google()
         mavenCentral()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.2.1'
+        classpath 'com.android.tools.build:gradle:7.2.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -37,19 +37,20 @@ android {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
     // To recognize Latin script
-    implementation 'com.google.mlkit:text-recognition:16.0.0-beta6'
+    implementation 'com.google.mlkit:text-recognition:16.0.0'
 
     // To recognize Chinese script
-    implementation 'com.google.mlkit:text-recognition-chinese:16.0.0-beta6'
+    implementation 'com.google.mlkit:text-recognition-chinese:16.0.0'
 
     // To recognize Devanagari script
-    implementation 'com.google.mlkit:text-recognition-devanagari:16.0.0-beta6'
+    implementation 'com.google.mlkit:text-recognition-devanagari:16.0.0'
 
     // To recognize Japanese script
-    implementation 'com.google.mlkit:text-recognition-japanese:16.0.0-beta6'
+    implementation 'com.google.mlkit:text-recognition-japanese:16.0.0'
 
     // To recognize Korean script
-    implementation 'com.google.mlkit:text-recognition-korean:16.0.0-beta6'
+    implementation 'com.google.mlkit:text-recognition-korean:16.0.0'
 
 }

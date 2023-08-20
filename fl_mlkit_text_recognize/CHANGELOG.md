@@ -1,4 +1,4 @@
-## 2.1.1
+## 3.0.0
 
 * Update version
 

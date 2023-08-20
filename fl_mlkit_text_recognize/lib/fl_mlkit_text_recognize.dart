@@ -11,9 +11,6 @@ part 'src/mlkit_text_recognize.dart';
 
 part 'src/model.dart';
 
-const MethodChannel _flMlKitTextRecognizeChannel =
-    MethodChannel('fl.mlkit.text.recognize');
-
 bool get _supportPlatform {
   if (!kIsWeb && (_isAndroid || _isIOS)) return true;
   debugPrint('Not support platform for $defaultTargetPlatform');

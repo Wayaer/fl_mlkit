@@ -1,6 +1,7 @@
 # fl_mlkit_scanning
 
-基于[Google ML Kit](https://developers.google.com/ml-kit/vision/barcode-scanning)实现快速稳定扫码功能，支持Android\IOS
+基于[Google ML Kit](https://developers.google.com/ml-kit/vision/barcode-scanning)
+实现快速稳定扫码功能，支持Android\IOS
 
 Realize fast and stable code scanning function based
 on [Google ML Kit](https://developers.google.com/ml-kit/vision/barcode-scanning), and support
@@ -105,7 +106,7 @@ void func() {
 
   /// 识别图片字节
   /// Identify picture bytes
-  controller.scanImageByte();
+  controller.scanningImageByte();
 
   /// 打开\关闭 闪光灯 
   /// Turn flash on / off
@@ -117,11 +118,11 @@ void func() {
 
   /// 暂停扫描
   /// Pause scanning
-  controller.pause();
+  controller.pauseScanning();
 
   /// 开始扫描
-  /// Start scanncing
-  controller.start();
+  /// Start scanning
+  controller.startScanning();
 }
 
 ```

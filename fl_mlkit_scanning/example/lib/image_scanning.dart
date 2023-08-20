@@ -8,14 +8,14 @@ import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:flutter_waya/flutter_waya.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-class ImageScanPage extends StatefulWidget {
-  const ImageScanPage({Key? key}) : super(key: key);
+class ImageScanningPage extends StatefulWidget {
+  const ImageScanningPage({Key? key}) : super(key: key);
 
   @override
-  State<ImageScanPage> createState() => _ImageScanPageState();
+  State<ImageScanningPage> createState() => _ImageScanningPageState();
 }
 
-class _ImageScanPageState extends State<ImageScanPage> {
+class _ImageScanningPageState extends State<ImageScanningPage> {
   String? path;
   List<Barcode>? list;
 
@@ -23,7 +23,7 @@ class _ImageScanPageState extends State<ImageScanPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBarText('San file image'),
-        body: Universal(width: double.infinity, children: [
+        body: Universal(isScroll: true, width: double.infinity, children: [
           ElevatedText(onPressed: openGallery, text: 'Select Picture'),
           ElevatedText(onPressed: scanByte, text: 'Scanning'),
           TextBox('path', path),
@@ -53,7 +53,7 @@ class _ImageScanPageState extends State<ImageScanPage> {
       final call = FlMlKitScanningController();
       await call.setBarcodeFormat([BarcodeFormat.all]);
       final AnalysisImageModel? data =
-          await call.scanImageByte(file.readAsBytesSync());
+          await call.scanningImageByte(file.readAsBytesSync());
       if (data != null && data.barcodes != null && data.barcodes!.isNotEmpty) {
         list = data.barcodes;
         setState(() {});
@@ -72,5 +72,11 @@ class _ImageScanPageState extends State<ImageScanPage> {
     if (result == null || result.files.isEmpty) return;
     path = result.files.first.path;
     setState(() {});
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    FlMlKitScanningController().dispose();
   }
 }

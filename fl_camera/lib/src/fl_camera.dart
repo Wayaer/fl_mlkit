@@ -16,7 +16,6 @@ class FlCamera extends StatefulWidget {
       this.camera,
       this.resolution = CameraResolution.high,
       this.fit = BoxFit.fitWidth,
-      this.onCreateView,
       this.uninitialized})
       : super(key: key);
 
@@ -51,9 +50,6 @@ class FlCamera extends StatefulWidget {
   /// How a camera box should be inscribed into another box.
   final BoxFit fit;
 
-  /// get Controller
-  final FlCameraCreateCallback? onCreateView;
-
   @override
   FlCameraState<FlCamera> createState() => _FlCameraStateWidget();
 }
@@ -66,7 +62,6 @@ class _FlCameraStateWidget extends FlCameraState<FlCamera> {
     uninitialized = widget.uninitialized;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await controller.initialize();
-      widget.onCreateView?.call(controller as FlCameraController);
       initialize();
     });
     controller.onFlashChanged = widget.onFlashChanged;
@@ -132,8 +127,6 @@ abstract class FlCameraState<T extends StatefulWidget> extends State<T>
   Widget? uninitialized;
   BoxFit? boxFit;
 
-  ValueNotifier<FlCameraOptions?> cameraOptions = ValueNotifier(null);
-
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
@@ -147,7 +140,6 @@ abstract class FlCameraState<T extends StatefulWidget> extends State<T>
   void initState() {
     WidgetsBinding.instance.addObserver(this);
     super.initState();
-    controller.addListener(cameraOptionsListener);
     WidgetsBinding.instance.addPostFrameCallback((Duration duration) async {
       await SystemChrome.setPreferredOrientations(
           <DeviceOrientation>[DeviceOrientation.portraitUp]);
@@ -156,16 +148,10 @@ abstract class FlCameraState<T extends StatefulWidget> extends State<T>
     });
   }
 
-  void cameraOptionsListener() {
-    if (cameraOptions.value != controller.cameraOptions) {
-      cameraOptions.value = controller.cameraOptions;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
-        valueListenable: cameraOptions,
+        valueListenable: controller.cameraOptions,
         builder: (_, FlCameraOptions? options, __) {
           late Widget current;
           if (options != null && options.textureId != null) {
@@ -186,7 +172,6 @@ abstract class FlCameraState<T extends StatefulWidget> extends State<T>
   @override
   void dispose() {
     super.dispose();
-    controller.removeListener(cameraOptionsListener);
     WidgetsBinding.instance.removeObserver(this);
   }
 }

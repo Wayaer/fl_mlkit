@@ -8,7 +8,7 @@ import MLKitVision
 import UIKit
 
 public class FlMlKitScanningPlugin: NSObject, FlutterPlugin {
-    var channel: FlutterMethodChannel?
+    private var channel: FlutterMethodChannel?
 
     private var options = BarcodeScannerOptions(formats: .all)
     private var lastCurrentTime: TimeInterval = 0
@@ -31,10 +31,10 @@ public class FlMlKitScanningPlugin: NSObject, FlutterPlugin {
         case "setParams":
             let arguments = call.arguments as! [AnyHashable: Any?]
             let frequency = arguments["frequency"] as! Double
-            let canScan = arguments["canScan"] as! Bool
+            let canScanning = arguments["canScanning"] as! Bool
             FlCamera.shared.captureOutputCallBack = { [self] sampleBuffer in
                 let currentTime = Date().timeIntervalSince1970 * 1000
-                if currentTime - lastCurrentTime >= frequency, canScan {
+                if currentTime - lastCurrentTime >= frequency, canScanning {
                     let buffer = CMSampleBufferGetImageBuffer(sampleBuffer)
                     analysis(buffer!.image, nil)
                     lastCurrentTime = currentTime
@@ -45,7 +45,7 @@ public class FlMlKitScanningPlugin: NSObject, FlutterPlugin {
             setBarcodeFormat(call)
             scanner = nil
             result(true)
-        case "scanImageByte":
+        case "scanningImageByte":
             let arguments = call.arguments as! [AnyHashable: Any?]
             let useEvent = arguments["useEvent"] as! Bool
             let uint8list = arguments["byte"] as! FlutterStandardTypedData?
@@ -139,7 +139,6 @@ public class FlMlKitScanningPlugin: NSObject, FlutterPlugin {
                     "width": image.size.width,
                     "barcodes": list
                 ] as [String: Any?]
-
                 if result == nil {
                     if !list.isEmpty {
                         FlEvent.shared.send(map)

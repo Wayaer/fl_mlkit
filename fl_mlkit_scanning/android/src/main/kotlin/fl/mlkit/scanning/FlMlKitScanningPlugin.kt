@@ -37,11 +37,11 @@ class FlMlKitScanningPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
         when (call.method) {
             "setParams" -> {
                 val frequency = call.argument<Int>("frequency")!!.toLong()
-                val canScan = call.argument<Boolean>("canScan")!!
+                val canScanning = call.argument<Boolean>("canScanning")!!
                 FlCamera.imageAnalyzer = ImageAnalysis.Analyzer { imageProxy ->
                     val mediaImage = imageProxy.image
                     val currentTime = System.currentTimeMillis()
-                    if (currentTime - lastCurrentTime >= frequency && mediaImage != null && canScan) {
+                    if (currentTime - lastCurrentTime >= frequency && mediaImage != null && canScanning) {
                         val inputImage = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
                         analysis(inputImage, null, imageProxy)
                         lastCurrentTime = currentTime
@@ -59,7 +59,7 @@ class FlMlKitScanningPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
                 result.success(true)
             }
 
-            "scanImageByte" -> scanImageByte(call, result)
+            "scanningImageByte" -> scanningImageByte(call, result)
             "dispose" -> {
                 FlCamera.imageAnalyzer = null
                 scanner?.close()
@@ -71,7 +71,7 @@ class FlMlKitScanningPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
         }
     }
 
-    private fun scanImageByte(call: MethodCall, result: MethodChannel.Result) {
+    private fun scanningImageByte(call: MethodCall, result: MethodChannel.Result) {
         val useEvent = call.argument<Boolean>("useEvent")!!
         val byteArray = call.argument<ByteArray>("byte")!!
         var rotationDegrees = call.argument<Int>("rotationDegrees")

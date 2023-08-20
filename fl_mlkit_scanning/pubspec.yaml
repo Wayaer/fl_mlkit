@@ -11,7 +11,7 @@ dependencies:
   fl_camera:
     path: ../fl_camera
   fl_channel:
-    path: ../fl_channel
+    path: ../../fl_channel
   flutter:
     sdk: flutter
 

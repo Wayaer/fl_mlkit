@@ -16,30 +16,16 @@ class _CameraPageState extends State<CameraPage> {
   CameraInfo? currentCamera;
   bool isBackCamera = true;
 
-  ValueNotifier<FlCameraController?> controller =
-      ValueNotifier<FlCameraController?>(null);
-
-  ValueNotifier<bool> hasPreview = ValueNotifier<bool>(false);
   ValueNotifier<bool> flashState = ValueNotifier<bool>(false);
 
   double maxRatio = 10;
   ValueNotifier<double> ratio = ValueNotifier<double>(1);
-
-  void listener() {
-    if (mounted && hasPreview.value != controller.value!.hasPreview) {
-      hasPreview.value = controller.value!.hasPreview;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: Stack(children: <Widget>[
       FlCamera(
-          onCreateView: (FlCameraController controller) {
-            this.controller.value = controller;
-            this.controller.value!.addListener(listener);
-          },
           uninitialized: Container(
               color: Colors.black,
               alignment: Alignment.center,
@@ -63,30 +49,21 @@ class _CameraPageState extends State<CameraPage> {
           right: 12,
           left: 12,
           top: context.statusBarHeight + 12,
-          child: ValueListenableBuilder<FlCameraController?>(
-              valueListenable: controller,
-              builder: (_, FlCameraController? flCameraController, __) {
-                return flCameraController == null
-                    ? const SizedBox()
-                    : Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                            const BackButton(
-                                color: Colors.white, onPressed: pop),
-                            Row(children: [
-                              ElevatedIcon(
-                                  icon: Icons.flip_camera_ios,
-                                  onPressed: switchCamera),
-                              const SizedBox(width: 12),
-                              ElevatedText(
-                                  text: 'reset',
-                                  onPressed: () =>
-                                      controller.value?.resetCamera()),
-                              const SizedBox(width: 12),
-                              previewButton(flCameraController),
-                            ])
-                          ]);
-              })),
+          child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                const BackButton(color: Colors.white, onPressed: pop),
+                Row(children: [
+                  ElevatedIcon(
+                      icon: Icons.flip_camera_ios, onPressed: switchCamera),
+                  const SizedBox(width: 12),
+                  ElevatedText(
+                      text: 'reset',
+                      onPressed: () => FlCameraController().resetCamera()),
+                  const SizedBox(width: 12),
+                  previewButton(),
+                ])
+              ])),
     ]));
   }
 
@@ -100,8 +77,8 @@ class _CameraPageState extends State<CameraPage> {
               padding: const EdgeInsets.fromLTRB(10, 10, 10, 40),
               icon: state ? Icons.flash_on : Icons.flash_off,
               onTap: () {
-                controller.value
-                    ?.setFlashMode(state ? FlashState.off : FlashState.on);
+                FlCameraController()
+                    .setFlashMode(state ? FlashState.off : FlashState.on);
               });
         });
   }
@@ -116,48 +93,45 @@ class _CameraPageState extends State<CameraPage> {
               max: maxRatio,
               divisions: maxRatio.toInt(),
               onChanged: (double value) {
-                controller.value?.setZoomRatio(value.floorToDouble());
+                FlCameraController().setZoomRatio(value.floorToDouble());
               });
         });
   }
 
-  Widget previewButton(FlCameraController flCameraController) {
-    return ValueListenableBuilder(
-        valueListenable: hasPreview,
-        builder: (_, bool hasPreview, __) {
+  Widget previewButton() {
+    return ValueListenableBuilder<FlCameraOptions?>(
+        valueListenable: FlCameraController().cameraOptions,
+        builder: (_, FlCameraOptions? options, __) {
           return ElevatedText(
-              text: !hasPreview ? 'start' : 'stop',
+              text: options == null ? 'start' : 'stop',
               onPressed: () async {
-                if (!hasPreview) {
-                  if (flCameraController.previousCamera != null) {
-                    await flCameraController
-                        .startPreview(flCameraController.previousCamera!);
+                if (options == null) {
+                  if (FlCameraController().previousCamera != null) {
+                    await FlCameraController()
+                        .startPreview(FlCameraController().previousCamera!);
                   }
                 } else {
-                  await flCameraController.stopPreview();
+                  await FlCameraController().stopPreview();
                 }
               });
         });
   }
 
   Future<void> switchCamera() async {
-    if (controller.value == null) return;
-    for (final CameraInfo cameraInfo in controller.value!.cameras!) {
+    for (final CameraInfo cameraInfo in FlCameraController().cameras!) {
       if (cameraInfo.lensFacing ==
           (isBackCamera ? CameraLensFacing.front : CameraLensFacing.back)) {
         currentCamera = cameraInfo;
         break;
       }
     }
-    await controller.value!.switchCamera(currentCamera!);
+    await FlCameraController().switchCamera(currentCamera!);
     isBackCamera = !isBackCamera;
   }
 
   @override
   void dispose() {
     super.dispose();
-    controller.dispose();
-    hasPreview.dispose();
     ratio.dispose();
     flashState.dispose();
   }

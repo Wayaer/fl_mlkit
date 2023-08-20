@@ -16,6 +16,7 @@ Google mlkit text recognize plugin, supports Android and IOS.
   s.source_files = 'Classes/*.swift'
   s.dependency 'Flutter'
   s.dependency 'fl_camera'
+  s.dependency 'fl_channel'
   s.dependency 'GoogleMLKit/TextRecognition'
   s.dependency 'GoogleMLKit/TextRecognitionChinese'
   s.dependency 'GoogleMLKit/TextRecognitionDevanagari'

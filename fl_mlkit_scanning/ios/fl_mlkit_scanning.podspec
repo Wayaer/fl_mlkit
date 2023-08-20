@@ -19,8 +19,8 @@ Pod::Spec.new do |s|
   s.dependency 'fl_channel'
   s.dependency 'GoogleMLKit/BarcodeScanning'
   s.static_framework = true
-  s.platform = :ios, '10.0'
-  s.ios.deployment_target = '10.0'
+  s.platform = :ios, '11.0'
+  s.ios.deployment_target = '11.0'
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
   s.swift_version = '5.0'
 end

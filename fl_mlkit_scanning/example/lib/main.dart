@@ -1,5 +1,5 @@
-import 'package:example/camera_scan.dart';
-import 'package:example/image_scan.dart';
+import 'package:example/camera_scanning.dart';
+import 'package:example/image_scanning.dart';
 import 'package:example/mlkit_scanning.dart';
 import 'package:fl_mlkit_scanning/fl_mlkit_scanning.dart';
 import 'package:flutter/material.dart';
@@ -32,23 +32,21 @@ class _AppState extends State<_App> {
     return Scaffold(
         appBar: AppBarText('Fl MlKit Scanning'),
         body: Universal(width: double.infinity, children: [
-          ElevatedText(
-              onPressed: openCamera, text: 'Turn on camera recognition'),
-          const SizedBox(height: 10),
-          ElevatedText(onPressed: scanImage, text: 'Image recognition'),
+          ElevatedText(onPressed: openCamera, text: 'Turn on camera scanning'),
+          ElevatedText(onPressed: scanImage, text: 'Image scanning'),
           const SizedBox(height: 30),
           CodeBox(list)
         ]));
   }
 
   void scanImage() {
-    push(const ImageScanPage());
+    push(const ImageScanningPage());
   }
 
   Future<void> scanCamera() async {
     if (!isMobile) return;
     final bool permission = await getPermission(Permission.camera);
-    if (permission) push(const CameraScanPage());
+    if (permission) push(const CameraScanningPage());
   }
 
   Future<void> openCamera() async {
@@ -98,10 +96,7 @@ class AppBarText extends AppBar {
       : super(
             key: key,
             elevation: 0,
-            title: Text(text,
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            centerTitle: true);
+            title: BText(text, fontSize: 18, fontWeight: FontWeight.bold));
 }
 
 class TextBox extends StatelessWidget {

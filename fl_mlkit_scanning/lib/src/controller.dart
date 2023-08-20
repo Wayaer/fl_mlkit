@@ -21,14 +21,14 @@ class FlMlKitScanningController extends CameraController {
   /// 当前间隔时间
   double _frequency = 500;
 
-  bool _canScan = true;
+  bool _canScanning = true;
 
-  bool get canScan => _canScan;
+  bool get canScanning => _canScanning;
 
   List<BarcodeFormat> _barcodeFormats = <BarcodeFormat>[BarcodeFormat.all];
 
   /// The currently BarcodeFormat
-  List<BarcodeFormat> get currentBarcodeFormats => _barcodeFormats;
+  List<BarcodeFormat> get barcodeFormats => _barcodeFormats;
 
   /// 初始化消息通道和基础配置
   /// Initialize the message channel and basic configuration
@@ -36,28 +36,16 @@ class FlMlKitScanningController extends CameraController {
   Future<bool> initialize([FlEventListenData? onData]) =>
       super.initialize(onData ?? _onData);
 
-  /// 开始预览
-  /// start Preview
-  /// [camera] 需要预览的相机 Camera to preview
-  /// [frequency] 解析频率 Analytical frequency
-  /// [resolution] 预览相机支持的分辨率 Preview the resolution supported by the camera
-  @override
-  Future<FlCameraOptions?> startPreview(CameraInfo camera,
-      {CameraResolution? resolution}) {
-    return super.startPreview(camera, resolution: resolution);
-  }
-
-  /// 设置 frequency
+  /// 设置 params
   /// Set params
-  Future<bool> setParams({double? frequency, bool? canScan}) async {
+  Future<bool> setParams({double? frequency, bool? canScanning}) async {
     if (!_supportPlatform) return false;
     if (frequency != null) _frequency = frequency;
-    if (canScan != null) _canScan = canScan;
+    if (canScanning != null) _canScanning = canScanning;
     final bool? state = await _channel.invokeMethod<bool?>('setParams', {
       'frequency': _frequency,
-      'canScan': _canScan,
+      'canScanning': _canScanning,
     });
-    if (state == true) notifyListeners();
     return state ?? false;
   }
 
@@ -83,7 +71,7 @@ class FlMlKitScanningController extends CameraController {
   @protected
   void _onData(dynamic data) {
     super.onData(data);
-    if (!_canScan) return;
+    if (!_canScanning) return;
     if (data is Map) {
       final List<dynamic>? barcodes = data['barcodes'] as List<dynamic>?;
       if (barcodes != null) {
@@ -95,27 +83,34 @@ class FlMlKitScanningController extends CameraController {
 
   /// 识别图片字节
   /// Identify picture bytes
-  /// [useEvent] 返回消息使用 [FlCameraEvent]
-  /// The return message uses [FlCameraEvent]
+  /// [useEvent] 返回消息使用 [FlEvent]
+  /// The return message uses [FlEvent]
   /// [rotationDegrees] Only Android is supported
-  Future<AnalysisImageModel?> scanImageByte(Uint8List uint8list,
+  Future<AnalysisImageModel?> scanningImageByte(Uint8List uint8list,
       {int rotationDegrees = 0, bool useEvent = false}) async {
     if (!_supportPlatform) return null;
-    final dynamic map = await _channel.invokeMethod<dynamic>(
-        'scanImageByte', <String, dynamic>{
+    final map = await _channel.invokeMethod<Map<dynamic, dynamic>?>(
+        'scanningImageByte', {
       'byte': uint8list,
       'useEvent': useEvent,
       'rotationDegrees': rotationDegrees
     });
-    if (map != null && map is Map) return AnalysisImageModel.fromMap(map);
+    if (map != null) return AnalysisImageModel.fromMap(map);
     return null;
   }
 
   /// 暂停扫描
   /// Pause scanning
-  Future<bool> pauseScan() => setParams(canScan: false);
+  Future<bool> pauseScanning() => setParams(canScanning: false);
 
   /// 开始扫描
   /// Start scanning
-  Future<bool> startScan() => setParams(canScan: true);
+  Future<bool> startScanning() => setParams(canScanning: true);
+
+  @override
+  Future<bool> dispose() async {
+    await super.dispose();
+    final state = await _channel.invokeMethod<bool?>('dispose');
+    return state ?? false;
+  }
 }

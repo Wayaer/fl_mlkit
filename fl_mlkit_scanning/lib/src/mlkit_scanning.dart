@@ -18,7 +18,6 @@ class FlMlKitScanning extends StatefulWidget {
     this.camera,
     this.resolution = CameraResolution.medium,
     this.fit = BoxFit.fitWidth,
-    this.onCreateView,
     this.uninitialized,
     this.frequency = 500,
   })  : barcodeFormats =
@@ -73,46 +72,31 @@ class FlMlKitScanning extends StatefulWidget {
   /// How a camera box should be inscribed into another box.
   final BoxFit fit;
 
-  /// get Controller
-  final FlMlKitScanningCreateCallback? onCreateView;
-
   @override
   FlCameraState<FlMlKitScanning> createState() => _FlMlKitScanningState();
 }
 
 class _FlMlKitScanningState extends FlCameraState<FlMlKitScanning> {
-  FlashState? _flashState;
-  CameraZoomState? _zoomState;
+  late FlMlKitScanningController _controller;
 
   @override
   void initState() {
-    controller = FlMlKitScanningController();
+    _controller = FlMlKitScanningController();
+    controller = _controller;
     super.initState();
     uninitialized = widget.uninitialized;
-    controller.addListener(changedListener);
     WidgetsBinding.instance.addPostFrameCallback((Duration time) async {
-      await (controller as FlMlKitScanningController).initialize();
-      widget.onCreateView?.call(controller as FlMlKitScanningController);
+      await _controller.initialize();
       initialize();
     });
-  }
-
-  void changedListener() {
-    if (controller.cameraFlash != null &&
-        controller.cameraFlash != _flashState) {
-      _flashState = controller.cameraFlash!;
-      widget.onFlashChanged?.call(_flashState!);
-    }
-    if (controller.cameraZoom != null && controller.cameraZoom != _zoomState) {
-      _zoomState = controller.cameraZoom!;
-      widget.onZoomChanged?.call(_zoomState!);
-    }
+    _controller.onFlashChanged = widget.onFlashChanged;
+    _controller.onZoomChanged = widget.onZoomChanged;
   }
 
   Future<void> initialize() async {
     var camera = widget.camera;
     if (camera == null) {
-      final List<CameraInfo>? cameras = controller.cameras;
+      final List<CameraInfo>? cameras = _controller.cameras;
       if (cameras == null) return;
       for (final CameraInfo cameraInfo in cameras) {
         if (cameraInfo.lensFacing == CameraLensFacing.back) {
@@ -122,16 +106,15 @@ class _FlMlKitScanningState extends FlCameraState<FlMlKitScanning> {
       }
     }
     if (camera == null) return;
-    var scanningController = controller as FlMlKitScanningController;
-    await scanningController.setBarcodeFormat(widget.barcodeFormats);
-    await scanningController.setParams(frequency: widget.frequency);
+    await _controller.setBarcodeFormat(widget.barcodeFormats);
+    await _controller.setParams(frequency: widget.frequency);
     if (widget.onDataChanged != null) {
-      scanningController.onDataChanged = widget.onDataChanged;
+      _controller.onDataChanged = widget.onDataChanged;
     }
-    final options = await scanningController.startPreview(camera,
-        resolution: widget.resolution);
+    final options =
+        await _controller.startPreview(camera, resolution: widget.resolution);
     if (options != null && mounted) {
-      if (widget.autoScanning) scanningController.startScan();
+      if (widget.autoScanning) _controller.startScanning();
       setState(() {});
     }
   }
@@ -146,7 +129,7 @@ class _FlMlKitScanningState extends FlCameraState<FlMlKitScanning> {
         oldWidget.barcodeFormats != widget.barcodeFormats ||
         oldWidget.uninitialized != widget.uninitialized ||
         oldWidget.autoScanning != widget.autoScanning) {
-      if (widget.updateReset) controller.resetCamera();
+      if (widget.updateReset) _controller.resetCamera();
       setState(() {});
     }
   }
@@ -154,20 +137,19 @@ class _FlMlKitScanningState extends FlCameraState<FlMlKitScanning> {
   @override
   Widget build(BuildContext context) {
     boxFit = widget.fit;
-    Widget camera = super.build(context);
+    Widget current = super.build(context);
     if (widget.overlay != null) {
-      camera = Stack(children: <Widget>[
-        camera,
+      current = Stack(children: [
+        current,
         SizedBox.expand(child: widget.overlay),
       ]);
     }
-    return camera;
+    return current;
   }
 
   @override
   void dispose() {
     super.dispose();
-    controller.removeListener(changedListener);
-    controller.dispose();
+    _controller.dispose();
   }
 }

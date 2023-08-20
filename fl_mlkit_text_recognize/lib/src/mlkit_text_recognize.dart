@@ -11,14 +11,13 @@ class FlMlKitTextRecognize extends StatefulWidget {
     this.overlay,
     this.uninitialized,
     this.onFlashChanged,
-    this.autoScanning = true,
+    this.autoRecognize = true,
     this.onZoomChanged,
     this.camera,
     this.resolution = CameraResolution.high,
     this.updateReset = false,
     this.fit = BoxFit.fitWidth,
     this.recognizedLanguage = RecognizedLanguage.latin,
-    this.onCreateView,
     this.frequency = 500,
   }) : super(key: key);
 
@@ -45,9 +44,9 @@ class FlMlKitTextRecognize extends StatefulWidget {
   /// Reset camera when updating components
   final bool updateReset;
 
-  /// 是否自动扫描 默认为[true]
-  /// Auto scan defaults to [true]
-  final bool autoScanning;
+  /// 是否自动识别 默认为[true]
+  /// Auto recognize defaults to [true]
+  final bool autoRecognize;
 
   /// 需要预览的相机
   /// Camera ID to preview
@@ -70,35 +69,32 @@ class FlMlKitTextRecognize extends StatefulWidget {
   /// Therefore, the recommended setting range is 500 to 1500
   final double frequency;
 
-  /// get Controller
-  final FlMlKitTextRecognizeCreateCallback? onCreateView;
-
   @override
   FlCameraState<FlMlKitTextRecognize> createState() =>
       _FlMlKitTextRecognizeState();
 }
 
 class _FlMlKitTextRecognizeState extends FlCameraState<FlMlKitTextRecognize> {
-  FlashState? _flashState;
-  CameraZoomState? _zoomState;
+  late FlMlKitTextRecognizeController _controller;
 
   @override
   void initState() {
-    controller = FlMlKitTextRecognizeController();
+    _controller = FlMlKitTextRecognizeController();
+    controller = _controller;
     super.initState();
     uninitialized = widget.uninitialized;
-    controller.addListener(changedListener);
     WidgetsBinding.instance.addPostFrameCallback((Duration time) async {
-      await (controller as FlMlKitTextRecognizeController).initialize();
-      widget.onCreateView?.call(controller as FlMlKitTextRecognizeController);
+      await _controller.initialize();
       initialize();
     });
+    _controller.onFlashChanged = widget.onFlashChanged;
+    _controller.onZoomChanged = widget.onZoomChanged;
   }
 
   Future<void> initialize() async {
     var camera = widget.camera;
     if (camera == null) {
-      final List<CameraInfo>? cameras = controller.cameras;
+      final List<CameraInfo>? cameras = _controller.cameras;
       if (cameras == null) return;
       for (final CameraInfo cameraInfo in cameras) {
         if (cameraInfo.lensFacing == CameraLensFacing.back) {
@@ -108,28 +104,17 @@ class _FlMlKitTextRecognizeState extends FlCameraState<FlMlKitTextRecognize> {
       }
     }
     if (camera == null) return;
-    var textController = controller as FlMlKitTextRecognizeController;
-    await textController.setRecognizedLanguage(widget.recognizedLanguage);
-    if (widget.onDataChanged != null) {
-      textController.onDataChanged = widget.onDataChanged;
-    }
-    final options = await textController.startPreview(camera,
-        resolution: widget.resolution, frequency: widget.frequency);
-    if (options != null && mounted) {
-      if (widget.autoScanning) textController.startScan();
-      setState(() {});
-    }
-  }
 
-  void changedListener() {
-    if (controller.cameraFlash != null &&
-        controller.cameraFlash != _flashState) {
-      _flashState = controller.cameraFlash!;
-      widget.onFlashChanged?.call(_flashState!);
+    await _controller.setRecognizedLanguage(widget.recognizedLanguage);
+    await _controller.setParams(frequency: widget.frequency);
+    if (widget.onDataChanged != null) {
+      _controller.onDataChanged = widget.onDataChanged;
     }
-    if (controller.cameraZoom != null && controller.cameraZoom != _zoomState) {
-      _zoomState = controller.cameraZoom!;
-      widget.onZoomChanged?.call(_zoomState!);
+    final options =
+        await _controller.startPreview(camera, resolution: widget.resolution);
+    if (options != null && mounted) {
+      if (widget.autoRecognize) _controller.startRecognize();
+      setState(() {});
     }
   }
 
@@ -140,28 +125,27 @@ class _FlMlKitTextRecognizeState extends FlCameraState<FlMlKitTextRecognize> {
         oldWidget.onFlashChanged != widget.onFlashChanged ||
         oldWidget.onZoomChanged != widget.onZoomChanged ||
         oldWidget.camera != widget.camera ||
-        oldWidget.autoScanning != widget.autoScanning) {
-      if (widget.updateReset) controller.resetCamera();
+        oldWidget.autoRecognize != widget.autoRecognize) {
+      if (widget.updateReset) _controller.resetCamera();
     }
   }
 
   @override
   Widget build(BuildContext context) {
     boxFit = widget.fit;
-    Widget camera = super.build(context);
+    Widget current = super.build(context);
     if (widget.overlay != null) {
-      camera = Stack(children: <Widget>[
-        camera,
+      current = Stack(children: <Widget>[
+        current,
         SizedBox.expand(child: widget.overlay),
       ]);
     }
-    return camera;
+    return current;
   }
 
   @override
   void dispose() {
     super.dispose();
-    controller.removeListener(changedListener);
-    controller.dispose();
+    _controller.dispose();
   }
 }

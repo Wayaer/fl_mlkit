@@ -40,8 +40,10 @@ class FlCameraController extends CameraController {
   static FlCameraController? _singleton;
 }
 
-class CameraController with ChangeNotifier {
+abstract class CameraController {
   final MethodChannel _channel = const MethodChannel('fl.camera');
+
+  bool _isInitialize = false;
 
   /// 所有可用的摄像头
   /// all available Cameras
@@ -52,11 +54,7 @@ class CameraController with ChangeNotifier {
   /// 相机配置信息
   /// Camera configuration information
   /// FlCameraOptions? cameraOptions;
-  FlCameraOptions? _cameraOptions;
-
-  FlCameraOptions? get cameraOptions => _cameraOptions;
-
-  bool get hasPreview => _cameraOptions != null;
+  final ValueNotifier<FlCameraOptions?> cameraOptions = ValueNotifier(null);
 
   /// 上一次初始化的Camera
   /// Last initialized Camera
@@ -119,6 +117,7 @@ class CameraController with ChangeNotifier {
     if (state == true) {
       FlEvent().addListener(onData ?? this.onData);
       state = await _channel.invokeMethod<bool?>('initialize');
+      _isInitialize = state == true;
     }
     await availableCameras();
     return state ?? false;
@@ -133,7 +132,6 @@ class CameraController with ChangeNotifier {
         if (flashState != null) {
           _cameraFlash = FlashState.values[flashState];
           onFlashChanged?.call(_cameraFlash!);
-          notifyListeners();
           return;
         }
       } else if (data.containsKey('zoomRatio') &&
@@ -145,7 +143,6 @@ class CameraController with ChangeNotifier {
           _cameraZoom =
               CameraZoomState(maxZoomRatio: maxZoomRatio, zoomRatio: zoomRatio);
           onZoomChanged?.call(_cameraZoom!);
-          notifyListeners();
           return;
         }
       }
@@ -159,6 +156,7 @@ class CameraController with ChangeNotifier {
   Future<FlCameraOptions?> startPreview(CameraInfo camera,
       {CameraResolution? resolution}) async {
     if (!_supportPlatform) return null;
+    assert(_isInitialize, 'Call initialize first');
     if (resolution != null) cameraResolution = resolution;
     final arguments = <String, dynamic>{
       'cameraId': camera.name,
@@ -167,10 +165,9 @@ class CameraController with ChangeNotifier {
     final Map<dynamic, dynamic>? map = await _channel
         .invokeMethod<Map<dynamic, dynamic>?>('startPreview', arguments);
     if (map != null) {
-      _cameraOptions = FlCameraOptions.fromMap(map);
+      cameraOptions.value = FlCameraOptions.fromMap(map);
       if (_previousCamera != camera) _previousCamera = camera;
-      notifyListeners();
-      return _cameraOptions;
+      return cameraOptions.value!;
     }
     return null;
   }
@@ -178,11 +175,11 @@ class CameraController with ChangeNotifier {
   /// 暂停预览
   /// stop Preview
   Future<bool> stopPreview() async {
-    if (_cameraOptions == null) return false;
+    assert(_isInitialize, 'Call initialize first');
+    if (cameraOptions.value == null) return false;
     final bool? state = await _channel.invokeMethod<bool?>('stopPreview');
     if (state == true) {
-      _cameraOptions = null;
-      notifyListeners();
+      cameraOptions.value = null;
     }
     return state ?? false;
   }
@@ -190,6 +187,7 @@ class CameraController with ChangeNotifier {
   /// 重新预览相机
   /// Reset the camera
   Future<bool> resetCamera() async {
+    assert(_isInitialize, 'Call initialize first');
     if (previousCamera == null) return false;
     await stopPreview();
     final options = await startPreview(previousCamera!);
@@ -199,6 +197,7 @@ class CameraController with ChangeNotifier {
   /// 切换摄像头
   /// Switch Camera
   Future<bool> switchCamera(CameraInfo camera) async {
+    assert(_isInitialize, 'Call initialize first');
     await stopPreview();
     final options = await startPreview(camera);
     return options != null;
@@ -207,7 +206,8 @@ class CameraController with ChangeNotifier {
   /// 打开/关闭 闪光灯
   /// Turn flash on / off
   Future<bool> setFlashMode(FlashState status) async {
-    if (!_supportPlatform || !hasPreview) return false;
+    if (!_supportPlatform || cameraOptions.value == null) return false;
+    assert(_isInitialize, 'Call initialize first');
     final bool? state =
         await _channel.invokeMethod<bool?>('setFlashMode', status.index);
     return state ?? false;
@@ -216,7 +216,8 @@ class CameraController with ChangeNotifier {
   /// 相机缩放
   /// Camera zoom
   Future<bool> setZoomRatio(double ratio) async {
-    if (!_supportPlatform || !hasPreview) return false;
+    if (!_supportPlatform || cameraOptions.value == null) return false;
+    assert(_isInitialize, 'Call initialize first');
     assert(ratio >= 1, 'ratio must be greater than or equal to 1');
     final bool? state =
         await _channel.invokeMethod<bool?>('setZoomRatio', ratio);
@@ -224,14 +225,12 @@ class CameraController with ChangeNotifier {
   }
 
   /// dispose  all
-  @override
   Future<bool> dispose() async {
     if (!_supportPlatform) return false;
     bool? state = await _channel.invokeMethod<bool?>('dispose');
-    _cameraOptions = null;
+    cameraOptions.value = null;
     _cameraFlash = null;
     _cameraZoom = null;
-    if (_cameraZoom != null) super.dispose();
     return state ?? false;
   }
 

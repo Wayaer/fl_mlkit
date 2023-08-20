@@ -19,7 +19,7 @@ class AnalysisTextModel {
   /// The position of the barcode is converted to the screen by width
   double? width;
 
-  //// Retrieves all the recognized text in the image.
+  /// Retrieves all the recognized text in the image.
   String? text;
 
   /// Gets an unmodifiable list of Text.TextBlock, which is a block of text and can be further decomposed to a list of Text.Line.

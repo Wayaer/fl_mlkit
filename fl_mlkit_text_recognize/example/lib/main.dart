@@ -1,5 +1,5 @@
-import 'package:example/camera_scan.dart';
-import 'package:example/image_scan.dart';
+import 'package:example/camera_recognize.dart';
+import 'package:example/image_recognize.dart';
 import 'package:example/mlkit_text_recognize.dart';
 import 'package:fl_mlkit_text_recognize/fl_mlkit_text_recognize.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +8,15 @@ import 'package:flutter_waya/flutter_waya.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 void main() {
-  runApp(ExtendedWidgetsApp(home: _App()));
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(MaterialApp(
+      navigatorKey: GlobalOptions().navigatorKey,
+      scaffoldMessengerKey: GlobalOptions().scaffoldMessengerKey,
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData.light(useMaterial3: true),
+      darkTheme: ThemeData.dark(useMaterial3: true),
+      home: _App(),
+      title: 'FlMlKitTextRecognize'));
 }
 
 class _App extends StatefulWidget {
@@ -19,27 +27,23 @@ class _App extends StatefulWidget {
 class _AppState extends State<_App> {
   @override
   Widget build(BuildContext context) {
-    return ExtendedScaffold(
+    return Scaffold(
         appBar: AppBarText('Fl MlKit Text Recognize'),
-        padding: const EdgeInsets.all(30),
-        children: <Widget>[
-          const SizedBox(height: 10),
+        body: Universal(width: double.infinity, children: [
           ElevatedText(
-              onPressed: () => openCamera(), text: 'Camera recognition'),
-          const SizedBox(height: 10),
-          ElevatedText(onPressed: scanImage, text: 'Image recognition'),
-          const SizedBox(height: 10),
-        ]);
+              onPressed: () => openCamera(), text: 'Turn on camera  recognize'),
+          ElevatedText(onPressed: scanImage, text: 'Image recognize'),
+        ]));
   }
 
   void scanImage() {
-    push(const ImageScanPage());
+    push(const ImageRecognizePage());
   }
 
   Future<void> scanCamera() async {
     if (!isMobile) return;
     final bool permission = await getPermission(Permission.camera);
-    if (permission) push(const CameraScanPage());
+    if (permission) push(const CameraRecognizePage());
   }
 
   Future<void> openCamera() async {
@@ -50,22 +54,21 @@ class _AppState extends State<_App> {
   }
 }
 
-class ShowCode extends StatelessWidget {
-  const ShowCode(this.model, {Key? key, this.expanded = true})
-      : super(key: key);
+class CodeBox extends StatelessWidget {
+  const CodeBox(this.model, {Key? key, this.expanded = true}) : super(key: key);
   final AnalysisTextModel? model;
   final bool expanded;
 
   @override
   Widget build(BuildContext context) {
     return Universal(expanded: expanded, isScroll: expanded, children: <Widget>[
-      ShowText('height=', model?.height),
-      ShowText('width=', model?.width),
-      ShowText('value=', model?.text),
+      TextBox('height=', model?.height),
+      TextBox('width=', model?.width),
+      TextBox('value=', model?.text),
       const Divider(),
       ...model?.textBlocks
               ?.map((TextBlock b) => SizedBox(
-                  width: double.infinity, child: ShowText('TextBlock', b.text)))
+                  width: double.infinity, child: TextBox('TextBlock', b.text)))
               .toList() ??
           <Widget>[]
     ]);
@@ -77,16 +80,15 @@ class AppBarText extends AppBar {
       : super(
             key: key,
             elevation: 0,
-            title: BText(text,
-                color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+            title: BText(text, fontSize: 18, fontWeight: FontWeight.bold),
             centerTitle: true);
 }
 
-class ShowText extends StatelessWidget {
+class TextBox extends StatelessWidget {
   final dynamic keyName;
   final dynamic value;
 
-  const ShowText(this.keyName, this.value, {Key? key}) : super(key: key);
+  const TextBox(this.keyName, this.value, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -100,12 +102,8 @@ class ShowText extends StatelessWidget {
               '$keyName: ',
               value.toString()
             ], styles: const <TextStyle>[
-              TextStyle(
-                  color: Colors.blue,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                  height: 1.3),
-              TextStyle(color: Colors.black, height: 1.3),
+              TextStyle(fontWeight: FontWeight.bold, fontSize: 18, height: 1.3),
+              TextStyle(height: 1.3),
             ])));
   }
 }
