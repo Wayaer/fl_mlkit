@@ -16,6 +16,7 @@ import com.google.mlkit.vision.text.japanese.JapaneseTextRecognizerOptions
 import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import fl.camera.FlCamera
+import fl.channel.FlDataStreamHandlerCancel
 import fl.channel.FlEvent
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
@@ -32,9 +33,9 @@ class FlMlKitTextRecognizePlugin : FlutterPlugin, MethodChannel.MethodCallHandle
     private var options: TextRecognizerOptionsInterface = TextRecognizerOptions.DEFAULT_OPTIONS
     private var recognizer: TextRecognizer? = null
     private var lastCurrentTime = 0L
-    private var frequency: Long = 10L
-    private var canRecognize: Boolean = true
-    private var job: Job? = null
+
+    private var imageProxyHandler: FlDataStreamHandlerCancel? = null
+
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "fl.mlkit.text.recognize")
         channel.setMethodCallHandler(this)
@@ -49,21 +50,19 @@ class FlMlKitTextRecognizePlugin : FlutterPlugin, MethodChannel.MethodCallHandle
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {
             "setParams" -> {
-                frequency = call.argument<Int>("frequency")!!.toLong()
-                canRecognize = call.argument<Boolean>("canRecognize")!!
-                if (job == null) {
-                    job = GlobalScope.launch {
-                        FlCamera.flow?.collect { imageProxy ->
-                            val mediaImage = imageProxy?.image
-                            val currentTime = System.currentTimeMillis()
-                            if (currentTime - lastCurrentTime >= frequency && mediaImage != null && canRecognize) {
-                                val inputImage = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
-                                analysis(inputImage, null, imageProxy)
-                                lastCurrentTime = currentTime
-                            } else {
-                                imageProxy?.close()
-                            }
-                        }
+                val frequency = call.argument<Int>("frequency")!!.toLong()
+                val canRecognize = call.argument<Boolean>("canRecognize")!!
+                imageProxyHandler?.invoke()
+                imageProxyHandler = null
+                imageProxyHandler = FlCamera.flDataStream.listen { imageProxy ->
+                    val mediaImage = imageProxy.image
+                    val currentTime = System.currentTimeMillis()
+                    if (currentTime - lastCurrentTime >= frequency && mediaImage != null && canRecognize) {
+                        val inputImage = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+                        analysis(inputImage, null, imageProxy)
+                        lastCurrentTime = currentTime
+                    } else {
+                        imageProxy.close()
                     }
                 }
                 result.success(true)
@@ -78,8 +77,8 @@ class FlMlKitTextRecognizePlugin : FlutterPlugin, MethodChannel.MethodCallHandle
             }
 
             "dispose" -> {
-                job?.cancel()
-                job = null;
+                imageProxyHandler?.invoke()
+                imageProxyHandler = null
                 recognizer?.close()
                 recognizer = null
                 result.success(true)

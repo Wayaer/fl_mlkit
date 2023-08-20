@@ -15,6 +15,7 @@ public class FlMlKitTextRecognizePlugin: NSObject, FlutterPlugin {
     private var options: CommonTextRecognizerOptions = TextRecognizerOptions()
     private var lastCurrentTime: TimeInterval = 0
     private var recognizer: TextRecognizer?
+    private var bufferHandler: FlDataStreamHandlerCancel?
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "fl.mlkit.text.recognize",
@@ -34,10 +35,12 @@ public class FlMlKitTextRecognizePlugin: NSObject, FlutterPlugin {
             let arguments = call.arguments as! [AnyHashable: Any?]
             let frequency = arguments["frequency"] as! Double
             let canRecognize = arguments["canRecognize"] as! Bool
-            FlCamera.shared.captureOutputCallBack = { [self] sampleBuffer in
+            bufferHandler?()
+            bufferHandler = nil
+            bufferHandler = FlCamera.shared.flDataStream.listen { [self] buffer in
                 let currentTime = Date().timeIntervalSince1970 * 1000
                 if currentTime - lastCurrentTime >= frequency, canRecognize {
-                    let buffer = CMSampleBufferGetImageBuffer(sampleBuffer)
+                    let buffer = CMSampleBufferGetImageBuffer(buffer)
                     analysis(buffer!.image, nil)
                     lastCurrentTime = currentTime
                 }
@@ -61,6 +64,8 @@ public class FlMlKitTextRecognizePlugin: NSObject, FlutterPlugin {
             result(nil)
         case "dispose":
             recognizer = nil
+            bufferHandler?()
+            bufferHandler = nil
             result(true)
         default:
             result(FlutterMethodNotImplemented)
