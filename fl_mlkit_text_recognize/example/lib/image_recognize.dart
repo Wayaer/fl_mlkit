@@ -18,8 +18,6 @@ class ImageRecognizePage extends StatefulWidget {
 class _ImageRecognizePageState extends State<ImageRecognizePage> {
   String? path;
   AnalysisTextModel? model;
-  List<String> types =
-      RecognizedLanguage.values.builder((item) => item.toString());
 
   int? selectIndex;
 
@@ -31,12 +29,12 @@ class _ImageRecognizePageState extends State<ImageRecognizePage> {
             padding: const EdgeInsets.all(20),
             isScroll: true,
             width: double.infinity,
-            children: <Widget>[
+            children: [
               ElevatedText(onPressed: openGallery, text: 'Select Picture'),
               ElevatedButton(
                   onPressed: () {},
                   child: DropdownMenuButton.material(
-                      itemCount: types.length,
+                      itemCount: RecognizedLanguage.values.length,
                       iconColor: Colors.white,
                       onChanged: (int index) {
                         selectIndex = index;
@@ -45,13 +43,13 @@ class _ImageRecognizePageState extends State<ImageRecognizePage> {
                       },
                       builder: (int? index) => BText(index == null
                           ? 'Select Recognized Language'
-                          : types[index]),
+                          : RecognizedLanguage.values[index].name),
                       itemBuilder: (int index) => Container(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 4),
-                          child: BText(types[index],
-                              fontSize: 14, color: Colors.black)))),
-              ElevatedText(onPressed: scanByte, text: 'Scanning'),
+                          child: BText(RecognizedLanguage.values[index].name,
+                              fontSize: 14)))),
+              ElevatedText(onPressed: scanByte, text: 'Recognize'),
               TextBox('path', path),
               if (path != null && path!.isNotEmpty)
                 Container(
