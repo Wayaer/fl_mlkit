@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.graphics.BitmapFactory
 import android.graphics.Point
 import android.graphics.Rect
-import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
@@ -16,6 +15,11 @@ import fl.channel.FlEvent
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class FlMlKitScanningPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
 
@@ -23,6 +27,9 @@ class FlMlKitScanningPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
     private var options = BarcodeScannerOptions.Builder().setBarcodeFormats(Barcode.FORMAT_ALL_FORMATS).build()
     private var scanner: BarcodeScanner? = null
     private var lastCurrentTime = 0L
+    private var frequency: Long = 10L
+    private var canScanning: Boolean = true
+    private var job: Job? = null
     override fun onAttachedToEngine(pluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(pluginBinding.binaryMessenger, "fl.mlkit.scanning")
         channel.setMethodCallHandler(this)
@@ -32,21 +39,26 @@ class FlMlKitScanningPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
         channel.setMethodCallHandler(null)
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     @SuppressLint("UnsafeOptInUsageError")
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {
             "setParams" -> {
-                val frequency = call.argument<Int>("frequency")!!.toLong()
-                val canScanning = call.argument<Boolean>("canScanning")!!
-                FlCamera.imageAnalyzer = ImageAnalysis.Analyzer { imageProxy ->
-                    val mediaImage = imageProxy.image
-                    val currentTime = System.currentTimeMillis()
-                    if (currentTime - lastCurrentTime >= frequency && mediaImage != null && canScanning) {
-                        val inputImage = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
-                        analysis(inputImage, null, imageProxy)
-                        lastCurrentTime = currentTime
-                    } else {
-                        imageProxy.close()
+                frequency = call.argument<Int>("frequency")!!.toLong()
+                canScanning = call.argument<Boolean>("canScanning")!!
+                if (job == null) {
+                    job = GlobalScope.launch {
+                        FlCamera.flow?.collect { imageProxy ->
+                            val mediaImage = imageProxy?.image
+                            val currentTime = System.currentTimeMillis()
+                            if (currentTime - lastCurrentTime >= frequency && mediaImage != null && canScanning) {
+                                val inputImage = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+                                analysis(inputImage, null, imageProxy)
+                                lastCurrentTime = currentTime
+                            } else {
+                                imageProxy?.close()
+                            }
+                        }
                     }
                 }
                 result.success(true)
@@ -61,7 +73,8 @@ class FlMlKitScanningPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
 
             "scanningImageByte" -> scanningImageByte(call, result)
             "dispose" -> {
-                FlCamera.imageAnalyzer = null
+                job?.cancel()
+                job = null
                 scanner?.close()
                 scanner = null
                 result.success(true)

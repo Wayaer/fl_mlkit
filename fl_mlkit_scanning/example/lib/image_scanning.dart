@@ -22,7 +22,7 @@ class _ImageScanningPageState extends State<ImageScanningPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBarText('San file image'),
+        appBar: AppBarText('Scanning file image'),
         body: Universal(isScroll: true, width: double.infinity, children: [
           ElevatedText(onPressed: openGallery, text: 'Select Picture'),
           ElevatedText(onPressed: scanByte, text: 'Scanning'),

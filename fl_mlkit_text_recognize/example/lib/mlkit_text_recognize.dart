@@ -25,7 +25,7 @@ class _FlMlKitTextRecognizePageState extends State<FlMlKitTextRecognizePage>
   CameraInfo? currentCamera;
   bool isBackCamera = true;
 
-  ValueNotifier<bool> canScan = ValueNotifier<bool>(false);
+  ValueNotifier<bool> canRecognize = ValueNotifier<bool>(true);
 
   @override
   void initState() {
@@ -150,7 +150,7 @@ class _FlMlKitTextRecognizePageState extends State<FlMlKitTextRecognizePage>
   }
 
   Widget get recognizeButton => ValueListenableBuilder(
-      valueListenable: canScan,
+      valueListenable: canRecognize,
       builder: (_, bool value, __) {
         return ElevatedText(
             text: value ? 'pause' : 'start',
@@ -158,7 +158,7 @@ class _FlMlKitTextRecognizePageState extends State<FlMlKitTextRecognizePage>
               value
                   ? await FlMlKitTextRecognizeController().pauseRecognize()
                   : await FlMlKitTextRecognizeController().startRecognize();
-              canScan.value = !canScan.value;
+              canRecognize.value = !canRecognize.value;
               model = null;
               animationController.reset();
             });
@@ -198,7 +198,7 @@ class _FlMlKitTextRecognizePageState extends State<FlMlKitTextRecognizePage>
   void dispose() {
     super.dispose();
     animationController.dispose();
-    canScan.dispose();
+    canRecognize.dispose();
     ratio.dispose();
     flashState.dispose();
   }

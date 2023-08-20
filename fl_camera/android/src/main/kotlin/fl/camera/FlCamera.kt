@@ -7,16 +7,16 @@ import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
 import android.hardware.camera2.CameraMetadata
 import android.media.CamcorderProfile
-import android.util.Log
 import android.util.Size
 import androidx.camera.camera2.interop.Camera2CameraInfo
 import androidx.camera.core.CameraSelector
-import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.ImageProxy
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodChannel
+import kotlinx.coroutines.flow.MutableStateFlow
 
 object FlCamera {
-    var imageAnalyzer: ImageAnalysis.Analyzer? = null
+    var flow: MutableStateFlow<ImageProxy?>? = null
 
     fun binding(activity: Activity, pluginBinding: FlutterPlugin.FlutterPluginBinding): MethodChannel {
         val channel = MethodChannel(pluginBinding.binaryMessenger, "fl.camera")
@@ -28,6 +28,7 @@ object FlCamera {
                     if (flCamera == null) {
                         flCamera = FlCameraX(activity, pluginBinding.textureRegistry)
                     }
+                    flow = MutableStateFlow(null)
                     result.success(true)
                 }
 
@@ -36,7 +37,9 @@ object FlCamera {
                     val cameraId = call.argument<String>("cameraId")
                     val previewSize = computeBestPreviewSize(cameraId!!, resolution!!)
                     val cameraSelector = getCameraSelector(cameraId)
-                    flCamera?.initCameraX(previewSize, cameraSelector, result, imageAnalyzer)
+                    flCamera?.initCameraX(previewSize, cameraSelector, result) { imageProxy ->
+                        flow?.value = imageProxy
+                    }
                 }
 
                 "stopPreview" -> {
@@ -56,6 +59,7 @@ object FlCamera {
                 }
 
                 "dispose" -> {
+                    flow = null
                     flCamera?.dispose()
                     flCamera = null
                     result.success(true)
