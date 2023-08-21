@@ -35,7 +35,6 @@ class _ImageRecognizePageState extends State<ImageRecognizePage> {
                   onPressed: () {},
                   child: DropdownMenuButton.material(
                       itemCount: RecognizedLanguage.values.length,
-                      iconColor: Colors.white,
                       onChanged: (int index) {
                         selectIndex = index;
                         FlMlKitTextRecognizeController().setRecognizedLanguage(
@@ -72,9 +71,8 @@ class _ImageRecognizePageState extends State<ImageRecognizePage> {
       showToast('Please select recognized language');
       return;
     }
-    bool hasPermission = false;
+    bool hasPermission = true;
     if (isAndroid) hasPermission = await getPermission(Permission.storage);
-    if (isIOS) hasPermission = true;
     if (hasPermission) {
       final File file = File(path!);
       final AnalysisTextModel? data = await FlMlKitTextRecognizeController()

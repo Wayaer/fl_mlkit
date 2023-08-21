@@ -65,7 +65,7 @@ class _FlMlKitTextRecognizePageState extends State<FlMlKitTextRecognizePage>
             onDataChanged: (AnalysisTextModel data) {
               if (data.text != null && data.text!.isNotEmpty) {
                 model = data;
-                animationController.reset();
+              if(mounted)  animationController.reset();
               }
             }),
         AnimatedBuilder(

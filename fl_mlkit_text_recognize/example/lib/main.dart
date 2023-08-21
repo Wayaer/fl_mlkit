@@ -47,9 +47,7 @@ class _AppState extends State<_App> {
   }
 
   Future<void> openCamera() async {
-    bool hasPermission = false;
-    if (isAndroid) hasPermission = await getPermission(Permission.camera);
-    if (isIOS) hasPermission = true;
+    final hasPermission = await getPermission(Permission.camera);
     if (hasPermission) push(const FlMlKitTextRecognizePage());
   }
 }
@@ -70,7 +68,7 @@ class CodeBox extends StatelessWidget {
               ?.map((TextBlock b) => SizedBox(
                   width: double.infinity, child: TextBox('TextBlock', b.text)))
               .toList() ??
-          <Widget>[]
+          []
     ]);
   }
 }
@@ -96,15 +94,15 @@ class TextBox extends StatelessWidget {
         visible: value != null &&
             value.toString().isNotEmpty &&
             value.toString() != 'null',
-        child: Padding(
+        child: Universal(
             padding: const EdgeInsets.all(10),
-            child: RText(textAlign: TextAlign.start, texts: <String>[
-              '$keyName: ',
-              value.toString()
-            ], styles: const <TextStyle>[
-              TextStyle(fontWeight: FontWeight.bold, fontSize: 18, height: 1.3),
-              TextStyle(height: 1.3),
-            ])));
+            direction: Axis.horizontal,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('$keyName: ',
+                  style: const TextStyle(fontWeight: FontWeight.bold)),
+              Text(value.toString()).expandedNull,
+            ]));
   }
 }
 
