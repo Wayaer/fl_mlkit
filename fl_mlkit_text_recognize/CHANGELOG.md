@@ -1,6 +1,6 @@
 ## 3.0.0
 
-* Update version
+* Update `fl_camera`
 
 ## 2.0.0
 

@@ -8,8 +8,7 @@ environment:
   flutter: '>=3.0.0'
 
 dependencies:
-  fl_camera:
-    path: ../fl_camera
+  fl_camera: ^4.0.0
   fl_channel: ^0.0.1
   flutter:
     sdk: flutter
