@@ -30,12 +30,6 @@ class FlMlKitScanningController extends CameraController {
   /// The currently BarcodeFormat
   List<BarcodeFormat> get barcodeFormats => _barcodeFormats;
 
-  /// 初始化消息通道和基础配置
-  /// Initialize the message channel and basic configuration
-  @override
-  Future<bool> initialize([FlEventListenData? onData]) =>
-      super.initialize(onData ?? _onData);
-
   /// 设置 params
   /// Set params
   Future<bool> setParams({double? frequency, bool? canScanning}) async {
@@ -68,33 +62,29 @@ class FlMlKitScanningController extends CameraController {
     return state ?? false;
   }
 
-  @protected
-  void _onData(dynamic data) {
-    super.onData(data);
-    if (!_canScanning) return;
-    if (data is Map) {
-      final List<dynamic>? barcodes = data['barcodes'] as List<dynamic>?;
-      if (barcodes != null) {
-        data = AnalysisImageModel.fromMap(data);
-        onDataChanged?.call(data);
-      }
-    }
-  }
+  @override
+  FlEventListenData get onDataListen => (dynamic data) {
+        super.onDataListen(data);
+        if (!_canScanning) return;
+        if (data is Map) {
+          final List<dynamic>? barcodes = data['barcodes'] as List<dynamic>?;
+          if (barcodes != null) {
+            data = AnalysisImageModel.fromMap(data);
+            onDataChanged?.call(data);
+          }
+        }
+      };
 
   /// 识别图片字节
   /// Identify picture bytes
-  /// [useEvent] 返回消息使用 [FlEvent]
   /// The return message uses [FlEvent]
   /// [rotationDegrees] Only Android is supported
   Future<AnalysisImageModel?> scanningImageByte(Uint8List uint8list,
-      {int rotationDegrees = 0, bool useEvent = false}) async {
+      {int rotationDegrees = 0}) async {
     if (!_supportPlatform) return null;
     final map = await _channel.invokeMethod<Map<dynamic, dynamic>?>(
-        'scanningImageByte', {
-      'byte': uint8list,
-      'useEvent': useEvent,
-      'rotationDegrees': rotationDegrees
-    });
+        'scanningImageByte',
+        {'byte': uint8list, 'rotationDegrees': rotationDegrees});
     if (map != null) return AnalysisImageModel.fromMap(map);
     return null;
   }

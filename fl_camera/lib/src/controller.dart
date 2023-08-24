@@ -84,6 +84,8 @@ abstract class CameraController {
   /// zoom ratio
   FlCameraCameraZoomStateChanged? onZoomChanged;
 
+  FlEvent? _flEvent;
+
   /// 获取可用摄像机
   /// 通常在第一次加载 Camera 后自动获取设备的可用相机，并且赋值给了[cameras]，所以后续可以不用再调用这个方法，可直接使用[cameras]
   ///
@@ -111,43 +113,41 @@ abstract class CameraController {
 
   /// 初始化所有相机 camera 和 event
   /// initialize all Including camera and event
-  Future<bool> initialize([FlEventListenData? onData]) async {
+  Future<bool> initialize() async {
     if (!_supportPlatform) return false;
-    bool? state = await FlEvent().initialize();
-    if (state == true) {
-      FlEvent().addListener(onData ?? this.onData);
-      state = await _channel.invokeMethod<bool?>('initialize');
-      _isInitialize = state == true;
-    }
+    _flEvent ??= FlEvent('fl.camera.event');
+    bool? result = await _channel.invokeMethod<bool?>('initialize');
+    if (result == true) result = _flEvent!.listen(onDataListen);
+    _isInitialize = result == true;
     await availableCameras();
-    return state ?? false;
+    return result ?? false;
   }
 
   /// 消息回调监听
-  void onData(dynamic data) {
-    if (data is Map) {
-      if (data.containsKey('flash')) {
-        /// flash state
-        final int? flashState = data['flash'] as int?;
-        if (flashState != null) {
-          _cameraFlash = FlashState.values[flashState];
-          onFlashChanged?.call(_cameraFlash!);
-          return;
+  FlEventListenData get onDataListen => (dynamic data) {
+        if (data is Map) {
+          if (data.containsKey('flash')) {
+            /// flash state
+            final int? flashState = data['flash'] as int?;
+            if (flashState != null) {
+              _cameraFlash = FlashState.values[flashState];
+              onFlashChanged?.call(_cameraFlash!);
+              return;
+            }
+          } else if (data.containsKey('zoomRatio') &&
+              data.containsKey('maxZoomRatio')) {
+            /// zoom ratio state
+            final double? zoomRatio = data['zoomRatio'] as double?;
+            final double? maxZoomRatio = data['maxZoomRatio'] as double?;
+            if (zoomRatio != null && maxZoomRatio != null) {
+              _cameraZoom = CameraZoomState(
+                  maxZoomRatio: maxZoomRatio, zoomRatio: zoomRatio);
+              onZoomChanged?.call(_cameraZoom!);
+              return;
+            }
+          }
         }
-      } else if (data.containsKey('zoomRatio') &&
-          data.containsKey('maxZoomRatio')) {
-        /// zoom ratio state
-        final double? zoomRatio = data['zoomRatio'] as double?;
-        final double? maxZoomRatio = data['maxZoomRatio'] as double?;
-        if (zoomRatio != null && maxZoomRatio != null) {
-          _cameraZoom =
-              CameraZoomState(maxZoomRatio: maxZoomRatio, zoomRatio: zoomRatio);
-          onZoomChanged?.call(_cameraZoom!);
-          return;
-        }
-      }
-    }
-  }
+      };
 
   /// 开始预览
   /// start Preview
@@ -178,9 +178,7 @@ abstract class CameraController {
     assert(_isInitialize, 'Call initialize first');
     if (cameraOptions.value == null) return false;
     final bool? state = await _channel.invokeMethod<bool?>('stopPreview');
-    if (state == true) {
-      cameraOptions.value = null;
-    }
+    if (state == true) cameraOptions.value = null;
     return state ?? false;
   }
 
@@ -227,6 +225,8 @@ abstract class CameraController {
   /// dispose  all
   Future<bool> dispose() async {
     if (!_supportPlatform) return false;
+    await _flEvent?.dispose();
+    _flEvent = null;
     bool? state = await _channel.invokeMethod<bool?>('dispose');
     cameraOptions.value = null;
     _cameraFlash = null;

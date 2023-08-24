@@ -12,7 +12,6 @@ import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
 import fl.camera.FlCamera
 import fl.channel.FlDataStreamHandlerCancel
-import fl.channel.FlEvent
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -20,7 +19,8 @@ import io.flutter.plugin.common.MethodChannel
 class FlMlKitScanningPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
 
     private lateinit var channel: MethodChannel
-    private var options = BarcodeScannerOptions.Builder().setBarcodeFormats(Barcode.FORMAT_ALL_FORMATS).build()
+    private var options =
+        BarcodeScannerOptions.Builder().setBarcodeFormats(Barcode.FORMAT_ALL_FORMATS).build()
     private var scanner: BarcodeScanner? = null
     private var lastCurrentTime = 0L
 
@@ -47,7 +47,9 @@ class FlMlKitScanningPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
                     val mediaImage = imageProxy.image
                     val currentTime = System.currentTimeMillis()
                     if (currentTime - lastCurrentTime >= frequency && mediaImage != null && canScanning) {
-                        val inputImage = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+                        val inputImage = InputImage.fromMediaImage(
+                            mediaImage, imageProxy.imageInfo.rotationDegrees
+                        )
                         analysis(inputImage, null, imageProxy)
                         lastCurrentTime = currentTime
                     } else {
@@ -78,7 +80,6 @@ class FlMlKitScanningPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
     }
 
     private fun scanningImageByte(call: MethodCall, result: MethodChannel.Result) {
-        val useEvent = call.argument<Boolean>("useEvent")!!
         val byteArray = call.argument<ByteArray>("byte")!!
         var rotationDegrees = call.argument<Int>("rotationDegrees")
         val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
@@ -88,7 +89,7 @@ class FlMlKitScanningPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
         }
         if (rotationDegrees == null) rotationDegrees = 0
         val inputImage = InputImage.fromBitmap(bitmap, rotationDegrees)
-        analysis(inputImage, if (useEvent) null else result, null)
+        analysis(inputImage, result)
     }
 
     private fun setBarcodeFormat(call: MethodCall) {
@@ -125,7 +126,9 @@ class FlMlKitScanningPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
     }
 
 
-    private fun analysis(inputImage: InputImage, result: MethodChannel.Result?, imageProxy: ImageProxy?) {
+    private fun analysis(
+        inputImage: InputImage, result: MethodChannel.Result? = null, imageProxy: ImageProxy? = null
+    ) {
         val list: ArrayList<Map<String, Any?>> = ArrayList()
         getBarcodeScanner().process(inputImage).addOnSuccessListener { barcodes ->
             for (barcode in barcodes) {
@@ -139,15 +142,18 @@ class FlMlKitScanningPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
                 width = height - width
             }
 
-            val map = mapOf("height" to height.toDouble(), "width" to width.toDouble(), "barcodes" to list)
+            val map = mapOf(
+                "height" to height.toDouble(), "width" to width.toDouble(), "barcodes" to list
+            )
             if (result == null) {
                 if (list.isNotEmpty()) {
-                    FlEvent.send(map)
+                    FlCamera.flEvent?.send(map)
                 }
             } else {
                 result.success(map)
             }
-        }.addOnFailureListener { result?.success(null) }.addOnCompleteListener { imageProxy?.close() }
+        }.addOnFailureListener { result?.success(null) }
+            .addOnCompleteListener { imageProxy?.close() }
     }
 
     private fun getBarcodeScanner(): BarcodeScanner {
@@ -160,43 +166,89 @@ class FlMlKitScanningPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
 
     private val Barcode.data: Map<String, Any?>
         get() = mapOf(
-                "value" to rawValue,
-                "type" to valueType,
-                "corners" to cornerPoints?.map { corner -> corner.data },
-                "boundingBox" to boundingBox?.data,
-                "displayValue" to displayValue,
-                "format" to format,
-                "calendarEvent" to calendarEvent?.data,
-                "contactInfo" to contactInfo?.data,
-                "driverLicense" to driverLicense?.data,
-                "email" to email?.data,
-                "geoPoint" to geoPoint?.data,
-                "phone" to phone?.data,
-                "sms" to sms?.data,
-                "url" to url?.data,
-                "wifi" to wifi?.data,
-                "bytes" to rawBytes,
+            "value" to rawValue,
+            "type" to valueType,
+            "corners" to cornerPoints?.map { corner -> corner.data },
+            "boundingBox" to boundingBox?.data,
+            "displayValue" to displayValue,
+            "format" to format,
+            "calendarEvent" to calendarEvent?.data,
+            "contactInfo" to contactInfo?.data,
+            "driverLicense" to driverLicense?.data,
+            "email" to email?.data,
+            "geoPoint" to geoPoint?.data,
+            "phone" to phone?.data,
+            "sms" to sms?.data,
+            "url" to url?.data,
+            "wifi" to wifi?.data,
+            "bytes" to rawBytes,
         )
     private val Rect.data: Map<String, Int>
-        get() = mapOf("top" to top, "bottom" to bottom, "left" to left, "right" to right, "width" to width(), "height" to height())
+        get() = mapOf(
+            "top" to top,
+            "bottom" to bottom,
+            "left" to left,
+            "right" to right,
+            "width" to width(),
+            "height" to height()
+        )
 
     private val Point.data: Map<String, Double>
         get() = mapOf("x" to x.toDouble(), "y" to y.toDouble())
 
     private val Barcode.CalendarEvent.data: Map<String, Any?>
-        get() = mapOf("description" to description, "end" to end?.rawValue, "location" to location, "organizer" to organizer, "start" to start?.rawValue, "status" to status, "summary" to summary)
+        get() = mapOf(
+            "description" to description,
+            "end" to end?.rawValue,
+            "location" to location,
+            "organizer" to organizer,
+            "start" to start?.rawValue,
+            "status" to status,
+            "summary" to summary
+        )
 
     private val Barcode.ContactInfo.data: Map<String, Any?>
-        get() = mapOf("addresses" to addresses.map { address -> address.data }, "emails" to emails.map { email -> email.data }, "name" to name?.data, "organization" to organization, "phones" to phones.map { phone -> phone.data }, "title" to title, "urls" to urls)
+        get() = mapOf(
+            "addresses" to addresses.map { address -> address.data },
+            "emails" to emails.map { email -> email.data },
+            "name" to name?.data,
+            "organization" to organization,
+            "phones" to phones.map { phone -> phone.data },
+            "title" to title,
+            "urls" to urls
+        )
 
     private val Barcode.Address.data: Map<String, Any?>
         get() = mapOf("addressLines" to addressLines, "type" to type)
 
     private val Barcode.PersonName.data: Map<String, Any?>
-        get() = mapOf("first" to first, "formattedName" to formattedName, "last" to last, "middle" to middle, "prefix" to prefix, "pronunciation" to pronunciation, "suffix" to suffix)
+        get() = mapOf(
+            "first" to first,
+            "formattedName" to formattedName,
+            "last" to last,
+            "middle" to middle,
+            "prefix" to prefix,
+            "pronunciation" to pronunciation,
+            "suffix" to suffix
+        )
 
     private val Barcode.DriverLicense.data: Map<String, Any?>
-        get() = mapOf("addressCity" to addressCity, "addressState" to addressState, "addressStreet" to addressStreet, "addressZip" to addressZip, "birthDate" to birthDate, "documentType" to documentType, "expiryDate" to expiryDate, "firstName" to firstName, "gender" to gender, "issueDate" to issueDate, "issuingCountry" to issuingCountry, "lastName" to lastName, "licenseNumber" to licenseNumber, "middleName" to middleName)
+        get() = mapOf(
+            "addressCity" to addressCity,
+            "addressState" to addressState,
+            "addressStreet" to addressStreet,
+            "addressZip" to addressZip,
+            "birthDate" to birthDate,
+            "documentType" to documentType,
+            "expiryDate" to expiryDate,
+            "firstName" to firstName,
+            "gender" to gender,
+            "issueDate" to issueDate,
+            "issuingCountry" to issuingCountry,
+            "lastName" to lastName,
+            "licenseNumber" to licenseNumber,
+            "middleName" to middleName
+        )
 
     private val Barcode.Email.data: Map<String, Any?>
         get() = mapOf("address" to address, "body" to body, "subject" to subject, "type" to type)

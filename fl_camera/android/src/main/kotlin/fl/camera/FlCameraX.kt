@@ -13,13 +13,12 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
-import fl.channel.FlEvent
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.view.TextureRegistry
 
 class FlCameraX(
-        private val activity: Activity,
-        private val textureRegistry: TextureRegistry,
+    private val activity: Activity,
+    private val textureRegistry: TextureRegistry,
 ) {
     private val executor = ContextCompat.getMainExecutor(activity)
     private var cameraProvider: ProcessCameraProvider? = null
@@ -27,11 +26,18 @@ class FlCameraX(
     private var camera: Camera? = null
 
     private fun checkPermission(): Boolean {
-        return ContextCompat.checkSelfPermission(activity, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+        return ContextCompat.checkSelfPermission(
+            activity, Manifest.permission.CAMERA
+        ) == PackageManager.PERMISSION_GRANTED
     }
 
     @SuppressLint("RestrictedApi")
-    fun initCameraX(previewSize: Size, cameraSelector: CameraSelector, result: MethodChannel.Result, imageAnalyzer: ImageAnalysis.Analyzer? = null) {
+    fun initCameraX(
+        previewSize: Size,
+        cameraSelector: CameraSelector,
+        result: MethodChannel.Result,
+        imageAnalyzer: ImageAnalysis.Analyzer? = null
+    ) {
         if (!checkPermission()) {
             result.success(null)
             return
@@ -47,22 +53,29 @@ class FlCameraX(
                 val surface = Surface(texture)
                 request.provideSurface(surface, executor) { }
             }
-            val preview = Preview.Builder().setTargetResolution(previewSize).build().apply { setSurfaceProvider(surfaceProvider) }
-            val analysis = ImageAnalysis.Builder().setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST).setTargetResolution(previewSize).build().apply {
-                if (imageAnalyzer != null) {
-                    setAnalyzer(executor, imageAnalyzer)
+            val preview = Preview.Builder().setTargetResolution(previewSize).build()
+                .apply { setSurfaceProvider(surfaceProvider) }
+            val analysis = ImageAnalysis.Builder()
+                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                .setTargetResolution(previewSize).build().apply {
+                    if (imageAnalyzer != null) {
+                        setAnalyzer(executor, imageAnalyzer)
+                    }
                 }
-            }
             val owner = activity as LifecycleOwner
             try {
                 cameraProvider!!.unbindAll()
                 camera = cameraProvider!!.bindToLifecycle(owner, cameraSelector, preview, analysis)
                 camera!!.cameraInfo.torchState.observe(owner) { state ->
                     // TorchState.OFF = 0; TorchState.ON = 1
-                    FlEvent.send(mapOf("flash" to state))
+                    FlCamera.flEvent!!.send(mapOf("flash" to state))
                 }
                 camera!!.cameraInfo.zoomState.observe(owner) { state ->
-                    FlEvent.send(mapOf("maxZoomRatio" to state.maxZoomRatio, "zoomRatio" to state.zoomRatio))
+                    FlCamera.flEvent!!.send(
+                        mapOf(
+                            "maxZoomRatio" to state.maxZoomRatio, "zoomRatio" to state.zoomRatio
+                        )
+                    )
                 }
                 val resolution = preview.attachedSurfaceResolution!!
                 val map: MutableMap<String, Any> = HashMap()

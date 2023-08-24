@@ -17,15 +17,10 @@ import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import fl.camera.FlCamera
 import fl.channel.FlDataStreamHandlerCancel
-import fl.channel.FlEvent
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
+
 
 class FlMlKitTextRecognizePlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
 
@@ -45,7 +40,6 @@ class FlMlKitTextRecognizePlugin : FlutterPlugin, MethodChannel.MethodCallHandle
         channel.setMethodCallHandler(null)
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     @SuppressLint("UnsafeOptInUsageError")
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {
@@ -58,7 +52,9 @@ class FlMlKitTextRecognizePlugin : FlutterPlugin, MethodChannel.MethodCallHandle
                     val mediaImage = imageProxy.image
                     val currentTime = System.currentTimeMillis()
                     if (currentTime - lastCurrentTime >= frequency && mediaImage != null && canRecognize) {
-                        val inputImage = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+                        val inputImage = InputImage.fromMediaImage(
+                            mediaImage, imageProxy.imageInfo.rotationDegrees
+                        )
                         analysis(inputImage, null, imageProxy)
                         lastCurrentTime = currentTime
                     } else {
@@ -90,7 +86,6 @@ class FlMlKitTextRecognizePlugin : FlutterPlugin, MethodChannel.MethodCallHandle
     }
 
     private fun recognizeImageByte(call: MethodCall, result: MethodChannel.Result) {
-        val useEvent = call.argument<Boolean>("useEvent")!!
         val byteArray = call.argument<ByteArray>("byte")!!
         var rotationDegrees = call.argument<Int>("rotationDegrees")
         val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
@@ -100,7 +95,7 @@ class FlMlKitTextRecognizePlugin : FlutterPlugin, MethodChannel.MethodCallHandle
         }
         if (rotationDegrees == null) rotationDegrees = 0
         val inputImage = InputImage.fromBitmap(bitmap, rotationDegrees)
-        analysis(inputImage, if (useEvent) null else result, null)
+        analysis(inputImage, result)
     }
 
     private fun setRecognizedLanguage(call: MethodCall) {
@@ -113,7 +108,9 @@ class FlMlKitTextRecognizePlugin : FlutterPlugin, MethodChannel.MethodCallHandle
         }
     }
 
-    private fun analysis(inputImage: InputImage, result: MethodChannel.Result?, imageProxy: ImageProxy?) {
+    private fun analysis(
+        inputImage: InputImage, result: MethodChannel.Result? = null, imageProxy: ImageProxy? = null
+    ) {
         getTextRecognition().process(inputImage).addOnSuccessListener { visionText ->
             var width = inputImage.width
             var height = inputImage.height
@@ -127,11 +124,12 @@ class FlMlKitTextRecognizePlugin : FlutterPlugin, MethodChannel.MethodCallHandle
             map["width"] = width.toDouble()
             map["height"] = height.toDouble()
             if (result == null) {
-                FlEvent.send(map)
+                FlCamera.flEvent?.send(map)
             } else {
                 result.success(map)
             }
-        }.addOnFailureListener { result?.success(null) }.addOnCompleteListener { imageProxy?.close() }
+        }.addOnFailureListener { result?.success(null) }
+            .addOnCompleteListener { imageProxy?.close() }
 
     }
 
@@ -144,30 +142,32 @@ class FlMlKitTextRecognizePlugin : FlutterPlugin, MethodChannel.MethodCallHandle
 
 
     private val Text.data: Map<String, Any?>
-        get() = mapOf("text" to text, "textBlocks" to textBlocks.map { textBlock -> textBlock.data })
+        get() = mapOf(
+            "text" to text,
+            "textBlocks" to textBlocks.map { textBlock -> textBlock.data })
 
     private val Text.TextBlock.data: Map<String, Any?>
         get() = mapOf(
-                "text" to text,
-                "recognizedLanguage" to recognizedLanguage,
-                "boundingBox" to boundingBox?.data,
-                "corners" to cornerPoints?.map { corner -> corner.data },
-                "lines" to lines.map { line -> line.data },
+            "text" to text,
+            "recognizedLanguage" to recognizedLanguage,
+            "boundingBox" to boundingBox?.data,
+            "corners" to cornerPoints?.map { corner -> corner.data },
+            "lines" to lines.map { line -> line.data },
         )
     private val Text.Element.data: Map<String, Any?>
         get() = mapOf(
-                "text" to text,
-                "recognizedLanguage" to recognizedLanguage,
-                "boundingBox" to boundingBox?.data,
-                "corners" to cornerPoints?.map { corner -> corner.data },
+            "text" to text,
+            "recognizedLanguage" to recognizedLanguage,
+            "boundingBox" to boundingBox?.data,
+            "corners" to cornerPoints?.map { corner -> corner.data },
         )
     private val Text.Line.data: Map<String, Any?>
         get() = mapOf(
-                "text" to text,
-                "recognizedLanguage" to recognizedLanguage,
-                "boundingBox" to boundingBox?.data,
-                "corners" to cornerPoints?.map { corner -> corner.data },
-                "elements" to elements.map { element -> element.data },
+            "text" to text,
+            "recognizedLanguage" to recognizedLanguage,
+            "boundingBox" to boundingBox?.data,
+            "corners" to cornerPoints?.map { corner -> corner.data },
+            "elements" to elements.map { element -> element.data },
         )
 
     private val Rect.data: Map<String, Int>

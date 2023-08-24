@@ -48,12 +48,6 @@ class FlMlKitTextRecognizeController extends CameraController {
   /// The currently recognized language
   RecognizedLanguage get recognizedLanguage => _recognizedLanguage;
 
-  /// 初始化消息通道和基础配置
-  /// Initialize the message channel and basic configuration
-  @override
-  Future<bool> initialize([FlEventListenData? onData]) =>
-      super.initialize(onData ?? _onData);
-
   /// 设置 params
   /// Set params
   Future<bool> setParams({double? frequency, bool? canRecognize}) async {
@@ -78,18 +72,18 @@ class FlMlKitTextRecognizeController extends CameraController {
     return state ?? false;
   }
 
-  @protected
-  void _onData(dynamic data) {
-    super.onData(data);
-    if (!_canRecognize) return;
-    if (data is Map) {
-      final String? barcodes = data['text'] as String?;
-      if (barcodes != null) {
-        data = AnalysisTextModel.fromMap(data);
-        onDataChanged?.call(data);
-      }
-    }
-  }
+  @override
+  FlEventListenData get onDataListen => (dynamic data) {
+        super.onDataListen(data);
+        if (!_canRecognize) return;
+        if (data is Map) {
+          final String? barcodes = data['text'] as String?;
+          if (barcodes != null) {
+            data = AnalysisTextModel.fromMap(data);
+            onDataChanged?.call(data);
+          }
+        }
+      };
 
   /// 识别图片字节
   /// Identify picture bytes
@@ -97,14 +91,11 @@ class FlMlKitTextRecognizeController extends CameraController {
   /// The return message uses [FlEvent]
   /// [rotationDegrees] Only Android is supported
   Future<AnalysisTextModel?> recognizeImageByte(Uint8List uint8list,
-      {int rotationDegrees = 0, bool useEvent = false}) async {
+      {int rotationDegrees = 0}) async {
     if (!_supportPlatform) return null;
     final map = await _channel.invokeMethod<Map<dynamic, dynamic>?>(
-        'recognizeImageByte', {
-      'byte': uint8list,
-      'useEvent': useEvent,
-      'rotationDegrees': rotationDegrees
-    });
+        'recognizeImageByte',
+        {'byte': uint8list, 'rotationDegrees': rotationDegrees});
     if (map != null) return AnalysisTextModel.fromMap(map);
     return null;
   }

@@ -1,9 +1,7 @@
-import 'package:example/camera_recognize.dart';
 import 'package:example/image_recognize.dart';
 import 'package:example/mlkit_text_recognize.dart';
 import 'package:fl_mlkit_text_recognize/fl_mlkit_text_recognize.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:flutter_waya/flutter_waya.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -38,12 +36,6 @@ class _AppState extends State<_App> {
 
   void scanImage() {
     push(const ImageRecognizePage());
-  }
-
-  Future<void> scanCamera() async {
-    if (!isMobile) return;
-    final bool permission = await getPermission(Permission.camera);
-    if (permission) push(const CameraRecognizePage());
   }
 
   Future<void> openCamera() async {

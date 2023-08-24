@@ -5,6 +5,7 @@ import 'package:fl_channel/fl_channel.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 export 'package:fl_channel/fl_channel.dart';
 
 part 'src/controller.dart';

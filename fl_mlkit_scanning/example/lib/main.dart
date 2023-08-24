@@ -1,9 +1,7 @@
-import 'package:example/camera_scanning.dart';
 import 'package:example/image_scanning.dart';
 import 'package:example/mlkit_scanning.dart';
 import 'package:fl_mlkit_scanning/fl_mlkit_scanning.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:flutter_waya/flutter_waya.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -41,12 +39,6 @@ class _AppState extends State<_App> {
 
   void scanImage() {
     push(const ImageScanningPage());
-  }
-
-  Future<void> scanCamera() async {
-    if (!isMobile) return;
-    final bool permission = await getPermission(Permission.camera);
-    if (permission) push(const CameraScanningPage());
   }
 
   Future<void> openCamera() async {

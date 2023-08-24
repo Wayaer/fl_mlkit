@@ -8,6 +8,7 @@ public class FlCamera: NSObject {
     public var cameraTexture: FlCameraTexture?
 
     public var flDataStream = FlDataStream<CMSampleBuffer>()
+    public var flEvent: FlEvent?
 
     public static let shared = FlCamera()
 
@@ -20,6 +21,9 @@ public class FlCamera: NSObject {
         case "availableCameras":
             availableCameras(result)
         case "initialize":
+            if flEvent == nil {
+                flEvent = FlEvent("fl.camera.event", registrar!.messenger())
+            }
             if cameraTexture == nil {
                 cameraTexture = FlCameraTexture(registrar!.textures())
             }
@@ -45,6 +49,7 @@ public class FlCamera: NSObject {
             cameraTexture?.setZoomRatio(ratio: call.arguments as! Double)
             result(cameraTexture != nil)
         case "dispose":
+            flEvent = nil
             cameraTexture?.dispose()
             cameraTexture = nil
             result(cameraTexture == nil)

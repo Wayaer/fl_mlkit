@@ -133,10 +133,10 @@ public class FlCameraTexture: NSObject, FlutterTexture, AVCaptureVideoDataOutput
             if keyPath == #keyPath(AVCaptureDevice.torchMode) {
                 // off = 0; on = 1; auto = 2;
                 let state = change![.newKey] as? Int
-                FlEvent.shared.send(["flash": state])
+                _ = FlCamera.shared.flEvent?.send(["flash": state])
             } else if keyPath == #keyPath(AVCaptureDevice.videoZoomFactor) {
                 let zoom = (change![.newKey] as? Double) ?? 1.0
-                FlEvent.shared.send(["zoomRatio": zoom, "maxZoomRatio": _device!.activeFormat.videoMaxZoomFactor])
+                _ = FlCamera.shared.flEvent?.send(["zoomRatio": zoom, "maxZoomRatio": _device!.activeFormat.videoMaxZoomFactor])
             }
         }
     }

@@ -39,7 +39,7 @@ public class FlMlKitScanningPlugin: NSObject, FlutterPlugin {
                 let currentTime = Date().timeIntervalSince1970 * 1000
                 if currentTime - lastCurrentTime >= frequency, canScanning {
                     let buffer = CMSampleBufferGetImageBuffer(buffer)
-                    analysis(buffer!.image, nil)
+                    analysis(buffer!.image)
                     lastCurrentTime = currentTime
                 }
             }
@@ -50,12 +50,11 @@ public class FlMlKitScanningPlugin: NSObject, FlutterPlugin {
             result(true)
         case "scanningImageByte":
             let arguments = call.arguments as! [AnyHashable: Any?]
-            let useEvent = arguments["useEvent"] as! Bool
             let uint8list = arguments["byte"] as! FlutterStandardTypedData?
             if uint8list != nil {
                 let image = UIImage(data: uint8list!.data)
                 if image != nil {
-                    analysis(image!, useEvent ? nil : result)
+                    analysis(image!, result)
                     return
                 }
             }
@@ -126,7 +125,7 @@ public class FlMlKitScanningPlugin: NSObject, FlutterPlugin {
         return scanner!
     }
 
-    func analysis(_ image: UIImage, _ result: FlutterResult?) {
+    func analysis(_ image: UIImage, _ result: FlutterResult? = nil) {
         let visionImage = VisionImage(image: image)
         if FlCamera.shared.cameraTexture == nil {
             visionImage.orientation = .up
@@ -146,7 +145,7 @@ public class FlMlKitScanningPlugin: NSObject, FlutterPlugin {
                 ] as [String: Any?]
                 if result == nil {
                     if !list.isEmpty {
-                        FlEvent.shared.send(map)
+                        _ = FlCamera.shared.flEvent?.send(map)
                     }
                 } else {
                     result!(map)

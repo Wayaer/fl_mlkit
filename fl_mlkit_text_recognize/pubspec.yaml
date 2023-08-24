@@ -10,8 +10,7 @@ environment:
 dependencies:
   fl_camera:
     path: ../fl_camera
-  fl_channel:
-    path: ../../fl_channel
+  fl_channel: ^0.0.1
   flutter:
     sdk: flutter
 
