@@ -5,8 +5,8 @@ import 'package:flutter_waya/flutter_waya.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(MaterialApp(
-      navigatorKey: GlobalOptions().navigatorKey,
-      scaffoldMessengerKey: GlobalOptions().scaffoldMessengerKey,
+      navigatorKey: GlobalWayUI().navigatorKey,
+      scaffoldMessengerKey: GlobalWayUI().scaffoldMessengerKey,
       debugShowCheckedModeBanner: false,
       theme: ThemeData.light(useMaterial3: true),
       darkTheme: ThemeData.dark(useMaterial3: true),
@@ -51,7 +51,7 @@ class _AppState extends State<_App> {
     if (!hasZH) {
       final state =
           await translateText.downloadedModel(TranslateLanguage.chinese);
-      log('DownloadedModel TranslateLanguage.chinese = $state');
+      'DownloadedModel TranslateLanguage.chinese = $state'.log();
     }
   }
 
@@ -194,7 +194,7 @@ class _AppState extends State<_App> {
 }
 
 class TranslateRemoteModelManagerPage extends StatefulWidget {
-  const TranslateRemoteModelManagerPage({Key? key}) : super(key: key);
+  const TranslateRemoteModelManagerPage({super.key});
 
   @override
   State<TranslateRemoteModelManagerPage> createState() =>
@@ -274,9 +274,8 @@ class _TranslateRemoteModelManagerPageState
 }
 
 class AppBarText extends AppBar {
-  AppBarText(String text, {Key? key})
+  AppBarText(String text, {super.key})
       : super(
-            key: key,
             elevation: 0,
             title: BText(text, fontSize: 18, fontWeight: FontWeight.bold),
             centerTitle: true);

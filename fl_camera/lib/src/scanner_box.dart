@@ -4,15 +4,14 @@ part of '../fl_camera.dart';
 /// Scan frame animation
 class ScannerBox extends StatefulWidget {
   const ScannerBox(
-      {Key? key,
+      {super.key,
       this.child,
       this.borderColor,
       this.scannerColor,
       this.hornStrokeWidth,
       this.scannerStrokeWidth,
       this.scannerSize,
-      this.backgroundColor})
-      : super(key: key);
+      this.backgroundColor});
 
   /// 扫码框内的组件
   /// Components in code scanning box

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_waya/flutter_waya.dart';
 
 class FlMlKitScanningPage extends StatefulWidget {
-  const FlMlKitScanningPage({Key? key}) : super(key: key);
+  const FlMlKitScanningPage({super.key});
 
   @override
   State<FlMlKitScanningPage> createState() => _FlMlKitScanningPageState();
@@ -214,7 +214,8 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
 }
 
 class _RectBox extends StatelessWidget {
-  const _RectBox(this.model, {Key? key}) : super(key: key);
+  const _RectBox(this.model);
+
   final AnalysisImageModel model;
 
   @override

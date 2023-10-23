@@ -7,7 +7,7 @@ typedef FlMlKitScanningCreateCallback = void Function(
 
 class FlMlKitScanning extends StatefulWidget {
   FlMlKitScanning({
-    Key? key,
+    super.key,
     List<BarcodeFormat>? barcodeFormats,
     this.onDataChanged,
     this.overlay,
@@ -20,9 +20,7 @@ class FlMlKitScanning extends StatefulWidget {
     this.fit = BoxFit.fitWidth,
     this.uninitialized,
     this.frequency = 500,
-  })  : barcodeFormats =
-            barcodeFormats ?? <BarcodeFormat>[BarcodeFormat.qrCode],
-        super(key: key);
+  }) : barcodeFormats = barcodeFormats ?? <BarcodeFormat>[BarcodeFormat.qrCode];
 
   /// 码识别类型
   /// Identification type

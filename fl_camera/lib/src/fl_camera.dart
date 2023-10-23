@@ -8,7 +8,7 @@ typedef FlCameraCameraZoomStateChanged = void Function(CameraZoomState state);
 
 class FlCamera extends StatefulWidget {
   const FlCamera(
-      {Key? key,
+      {super.key,
       this.overlay,
       this.onFlashChanged,
       this.onZoomChanged,
@@ -16,8 +16,7 @@ class FlCamera extends StatefulWidget {
       this.camera,
       this.resolution = CameraResolution.high,
       this.fit = BoxFit.fitWidth,
-      this.uninitialized})
-      : super(key: key);
+      this.uninitialized});
 
   /// 显示在预览框上面
   /// Display above preview box

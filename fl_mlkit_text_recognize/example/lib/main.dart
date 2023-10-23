@@ -8,8 +8,8 @@ import 'package:permission_handler/permission_handler.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(MaterialApp(
-      navigatorKey: GlobalOptions().navigatorKey,
-      scaffoldMessengerKey: GlobalOptions().scaffoldMessengerKey,
+      navigatorKey: GlobalWayUI().navigatorKey,
+      scaffoldMessengerKey: GlobalWayUI().scaffoldMessengerKey,
       debugShowCheckedModeBanner: false,
       theme: ThemeData.light(useMaterial3: true),
       darkTheme: ThemeData.dark(useMaterial3: true),
@@ -45,7 +45,8 @@ class _AppState extends State<_App> {
 }
 
 class CodeBox extends StatelessWidget {
-  const CodeBox(this.model, {Key? key, this.expanded = true}) : super(key: key);
+  const CodeBox(this.model, {super.key, this.expanded = true});
+
   final AnalysisTextModel? model;
   final bool expanded;
 
@@ -66,9 +67,8 @@ class CodeBox extends StatelessWidget {
 }
 
 class AppBarText extends AppBar {
-  AppBarText(String text, {Key? key})
+  AppBarText(String text, {super.key})
       : super(
-            key: key,
             elevation: 0,
             title: BText(text, fontSize: 18, fontWeight: FontWeight.bold),
             centerTitle: true);
@@ -78,7 +78,7 @@ class TextBox extends StatelessWidget {
   final dynamic keyName;
   final dynamic value;
 
-  const TextBox(this.keyName, this.value, {Key? key}) : super(key: key);
+  const TextBox(this.keyName, this.value, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +93,7 @@ class TextBox extends StatelessWidget {
             children: [
               Text('$keyName: ',
                   style: const TextStyle(fontWeight: FontWeight.bold)),
-              Text(value.toString()).expandedNull,
+              Text(value.toString()).expanded,
             ]));
   }
 }
@@ -110,8 +110,8 @@ Future<bool> getPermission(Permission permission) async {
 }
 
 class ElevatedText extends StatelessWidget {
-  const ElevatedText({Key? key, this.onPressed, required this.text})
-      : super(key: key);
+  const ElevatedText({super.key, this.onPressed, required this.text});
+
   final VoidCallback? onPressed;
   final String text;
 
@@ -121,8 +121,8 @@ class ElevatedText extends StatelessWidget {
 }
 
 class ElevatedIcon extends StatelessWidget {
-  const ElevatedIcon({Key? key, this.onPressed, required this.icon})
-      : super(key: key);
+  const ElevatedIcon({super.key, this.onPressed, required this.icon});
+
   final VoidCallback? onPressed;
   final IconData icon;
 

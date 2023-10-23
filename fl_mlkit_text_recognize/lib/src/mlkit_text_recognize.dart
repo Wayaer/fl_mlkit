@@ -6,7 +6,7 @@ typedef FlMlKitTextRecognizeCreateCallback = void Function(
 
 class FlMlKitTextRecognize extends StatefulWidget {
   const FlMlKitTextRecognize({
-    Key? key,
+    super.key,
     this.onDataChanged,
     this.overlay,
     this.uninitialized,
@@ -19,7 +19,7 @@ class FlMlKitTextRecognize extends StatefulWidget {
     this.fit = BoxFit.fitWidth,
     this.recognizedLanguage = RecognizedLanguage.latin,
     this.frequency = 500,
-  }) : super(key: key);
+  });
 
   /// 识别回调
   /// Identify callback

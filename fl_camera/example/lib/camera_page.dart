@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_waya/flutter_waya.dart';
 
 class CameraPage extends StatefulWidget {
-  const CameraPage({Key? key}) : super(key: key);
+  const CameraPage({super.key});
 
   @override
   State<CameraPage> createState() => _CameraPageState();
@@ -138,7 +138,7 @@ class _CameraPageState extends State<CameraPage> {
 }
 
 class ScannerBoxPage extends StatelessWidget {
-  const ScannerBoxPage({Key? key}) : super(key: key);
+  const ScannerBoxPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -153,7 +153,7 @@ class ScannerBoxPage extends StatelessWidget {
 }
 
 class ScannerLinePage extends StatelessWidget {
-  const ScannerLinePage({Key? key}) : super(key: key);
+  const ScannerLinePage({super.key});
 
   @override
   Widget build(BuildContext context) {

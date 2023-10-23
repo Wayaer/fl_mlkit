@@ -5,8 +5,8 @@ import 'package:flutter_waya/flutter_waya.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(MaterialApp(
-      navigatorKey: GlobalOptions().navigatorKey,
-      scaffoldMessengerKey: GlobalOptions().scaffoldMessengerKey,
+      navigatorKey: GlobalWayUI().navigatorKey,
+      scaffoldMessengerKey: GlobalWayUI().scaffoldMessengerKey,
       debugShowCheckedModeBanner: false,
       theme: ThemeData.light(useMaterial3: true),
       darkTheme: ThemeData.dark(useMaterial3: true),
@@ -21,7 +21,7 @@ void main() {
 }
 
 class _App extends StatefulWidget {
-  const _App({Key? key}) : super(key: key);
+  const _App();
 
   @override
   _AppState createState() => _AppState();
@@ -158,9 +158,8 @@ class _AppState extends State<_App> {
 }
 
 class AppBarText extends AppBar {
-  AppBarText(String text, {Key? key})
+  AppBarText(String text, {super.key})
       : super(
-            key: key,
             elevation: 0,
             title: BText(text, fontSize: 18, fontWeight: FontWeight.bold),
             centerTitle: true);

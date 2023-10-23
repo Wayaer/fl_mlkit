@@ -8,8 +8,8 @@ import 'package:permission_handler/permission_handler.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(MaterialApp(
-      navigatorKey: GlobalOptions().navigatorKey,
-      scaffoldMessengerKey: GlobalOptions().scaffoldMessengerKey,
+      navigatorKey: GlobalWayUI().navigatorKey,
+      scaffoldMessengerKey: GlobalWayUI().scaffoldMessengerKey,
       debugShowCheckedModeBanner: false,
       theme: ThemeData.light(useMaterial3: true),
       darkTheme: ThemeData.dark(useMaterial3: true),
@@ -18,7 +18,7 @@ void main() {
 }
 
 class App extends StatelessWidget {
-  const App({Key? key}) : super(key: key);
+  const App({super.key});
 
   @override
   Widget build(BuildContext context) {

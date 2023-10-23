@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_waya/flutter_waya.dart';
 
 class FlMlKitTextRecognizePage extends StatefulWidget {
-  const FlMlKitTextRecognizePage({Key? key}) : super(key: key);
+  const FlMlKitTextRecognizePage({super.key});
 
   @override
   State<FlMlKitTextRecognizePage> createState() =>
@@ -65,7 +65,7 @@ class _FlMlKitTextRecognizePageState extends State<FlMlKitTextRecognizePage>
             onDataChanged: (AnalysisTextModel data) {
               if (data.text != null && data.text!.isNotEmpty) {
                 model = data;
-              if(mounted)  animationController.reset();
+                if (mounted) animationController.reset();
               }
             }),
         AnimatedBuilder(
@@ -205,7 +205,8 @@ class _FlMlKitTextRecognizePageState extends State<FlMlKitTextRecognizePage>
 }
 
 class _RectBox extends StatelessWidget {
-  const _RectBox(this.model, {Key? key}) : super(key: key);
+  const _RectBox(this.model);
+
   final AnalysisTextModel model;
 
   @override

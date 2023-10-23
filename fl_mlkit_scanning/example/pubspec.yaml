@@ -12,13 +12,13 @@ dependencies:
     path: ../
   flutter:
     sdk: flutter
-  flutter_curiosity: ^4.5.0
-  flutter_waya: ^8.0.3
-  permission_handler: ^10.4.3
-  file_picker: ^5.3.3
+  flutter_curiosity: ^5.0.2
+  flutter_waya: ^8.4.0
+  permission_handler: ^11.0.1
+  file_picker: ^6.0.0
 
 dev_dependencies:
-  flutter_lints: ^2.0.2
+  flutter_lints: ^3.0.0
 
 flutter:
   uses-material-design: true

@@ -9,7 +9,7 @@ import 'package:flutter_waya/flutter_waya.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class ImageRecognizePage extends StatefulWidget {
-  const ImageRecognizePage({Key? key}) : super(key: key);
+  const ImageRecognizePage({super.key});
 
   @override
   State<ImageRecognizePage> createState() => _ImageRecognizePageState();
