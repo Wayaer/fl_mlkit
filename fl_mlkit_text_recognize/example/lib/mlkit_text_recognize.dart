@@ -256,7 +256,6 @@ class _LinePainter extends CustomPainter {
         (rect.top) / context.devicePixelRatio,
         rect.width / context.devicePixelRatio,
         rect.height / context.devicePixelRatio);
-    [r.topLeft, r.bottomRight].log(crossLine: false);
     canvas.drawRect(r, paint);
   }
 
@@ -276,12 +275,10 @@ class _BoxPainter extends CustomPainter {
       ..color = Colors.blue.withOpacity(0.4)
       ..strokeWidth = 2;
     final offsets = corners
-        .map((e) => Offset(
-            e.dy / context.devicePixelRatio, e.dx / context.devicePixelRatio))
+        .map((e) => Offset((context.width - (e.dy / context.devicePixelRatio)),
+            e.dx / context.devicePixelRatio))
         .toList();
     final rect = Rect.fromPoints(offsets[1], offsets[3]);
-    [rect.topLeft, rect.bottomRight].log();
-    offsets.log();
     canvas.drawRect(rect, paint);
   }
 
