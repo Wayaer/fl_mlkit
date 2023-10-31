@@ -251,19 +251,13 @@ class _LinePainter extends CustomPainter {
       ..color = Colors.red
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2;
-    final Path path = Path();
-    final double left = (rect.left) / context.devicePixelRatio;
-    final double top = (rect.top) / context.devicePixelRatio;
-
-    final double width = rect.width / context.devicePixelRatio;
-    final double height = rect.height / context.devicePixelRatio;
-
-    path.moveTo(left, top);
-    path.lineTo(left + width, top);
-    path.lineTo(left + width, height + top);
-    path.lineTo(left, height + top);
-    path.lineTo(left, top);
-    canvas.drawPath(path, paint);
+    final r = Rect.fromLTWH(
+        (rect.left) / context.devicePixelRatio,
+        (rect.top) / context.devicePixelRatio,
+        rect.width / context.devicePixelRatio,
+        rect.height / context.devicePixelRatio);
+    [r.topLeft, r.bottomRight].log(crossLine: false);
+    canvas.drawRect(r, paint);
   }
 
   @override
@@ -278,24 +272,17 @@ class _BoxPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final Offset o0 = Offset(corners[0].dx / context.devicePixelRatio,
-        corners[0].dy / context.devicePixelRatio);
-    final Offset o1 = Offset(corners[1].dx / context.devicePixelRatio,
-        corners[1].dy / context.devicePixelRatio);
-    final Offset o2 = Offset(corners[2].dx / context.devicePixelRatio,
-        corners[2].dy / context.devicePixelRatio);
-    final Offset o3 = Offset(corners[3].dx / context.devicePixelRatio,
-        corners[3].dy / context.devicePixelRatio);
     final Paint paint = Paint()
       ..color = Colors.blue.withOpacity(0.4)
       ..strokeWidth = 2;
-    final Path path = Path();
-    path.moveTo(o0.dx, o0.dy);
-    path.lineTo(o1.dx, o1.dy);
-    path.lineTo(o2.dx, o2.dy);
-    path.lineTo(o3.dx, o3.dy);
-    path.lineTo(o0.dx, o0.dy);
-    canvas.drawPath(path, paint);
+    final offsets = corners
+        .map((e) => Offset(
+            e.dy / context.devicePixelRatio, e.dx / context.devicePixelRatio))
+        .toList();
+    final rect = Rect.fromPoints(offsets[1], offsets[3]);
+    [rect.topLeft, rect.bottomRight].log();
+    offsets.log();
+    canvas.drawRect(rect, paint);
   }
 
   @override
