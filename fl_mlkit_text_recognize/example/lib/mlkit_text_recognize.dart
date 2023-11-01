@@ -1,6 +1,7 @@
 import 'package:example/main.dart';
 import 'package:fl_mlkit_text_recognize/fl_mlkit_text_recognize.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_waya/flutter_waya.dart';
 
@@ -274,9 +275,14 @@ class _BoxPainter extends CustomPainter {
     final Paint paint = Paint()
       ..color = Colors.blue.withOpacity(0.4)
       ..strokeWidth = 2;
+
+    /// 由于android原生的 [corners] 表示不一致，所以区分一下
     final offsets = corners
-        .map((e) => Offset((context.width - (e.dy / context.devicePixelRatio)),
-            e.dx / context.devicePixelRatio))
+        .map((e) => isAndroid
+            ? Offset((context.width - (e.dy / context.devicePixelRatio)),
+                e.dx / context.devicePixelRatio)
+            : Offset((e.dx / context.devicePixelRatio),
+                e.dy / context.devicePixelRatio))
         .toList();
     final rect = Rect.fromPoints(offsets[1], offsets[3]);
     canvas.drawRect(rect, paint);
@@ -285,3 +291,5 @@ class _BoxPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
+
+bool isAndroid = defaultTargetPlatform == TargetPlatform.android;
