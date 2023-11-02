@@ -1,7 +1,6 @@
 import 'package:example/main.dart';
 import 'package:fl_mlkit_text_recognize/fl_mlkit_text_recognize.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_waya/flutter_waya.dart';
 
@@ -216,7 +215,6 @@ class _RectBox extends StatelessWidget {
     final List<Widget> children = <Widget>[];
     for (final TextBlock block in blocks) {
       children.add(boundingBox(block.boundingBox!, context));
-      children.add(corners(block.corners!, context));
     }
     return Universal(expand: true, isStack: true, children: children);
   }
@@ -224,24 +222,13 @@ class _RectBox extends StatelessWidget {
   Widget boundingBox(Rect rect, BuildContext context) {
     final double w = model.width! / context.devicePixelRatio;
     final double h = model.height! / context.devicePixelRatio;
-    return Universal(
-        alignment: Alignment.center,
-        child: CustomPaint(
-            size: Size(w, h), painter: _LinePainter(rect, context)));
-  }
-
-  Widget corners(List<Offset> corners, BuildContext context) {
-    final double w = model.width! / context.devicePixelRatio;
-    final double h = model.height! / context.devicePixelRatio;
-    return Universal(
-        alignment: Alignment.center,
-        child: CustomPaint(
-            size: Size(w, h), painter: _BoxPainter(corners, context)));
+    return Center(
+        child: CustomPaint(size: Size(w, h), painter: _Painter(rect, context)));
   }
 }
 
-class _LinePainter extends CustomPainter {
-  _LinePainter(this.rect, this.context);
+class _Painter extends CustomPainter {
+  _Painter(this.rect, this.context);
 
   final Rect rect;
   final BuildContext context;
@@ -258,38 +245,11 @@ class _LinePainter extends CustomPainter {
         rect.width / context.devicePixelRatio,
         rect.height / context.devicePixelRatio);
     canvas.drawRect(r, paint);
+    paint.color = Colors.blue.withOpacity(0.4);
+    paint.style = PaintingStyle.fill;
+    canvas.drawRect(r, paint);
   }
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
-
-class _BoxPainter extends CustomPainter {
-  _BoxPainter(this.corners, this.context);
-
-  final List<Offset> corners;
-  final BuildContext context;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final Paint paint = Paint()
-      ..color = Colors.blue.withOpacity(0.4)
-      ..strokeWidth = 2;
-
-    /// 由于android原生的 [corners] 表示不一致，所以区分一下
-    final offsets = corners
-        .map((e) => isAndroid
-            ? Offset((context.width - (e.dy / context.devicePixelRatio)),
-                e.dx / context.devicePixelRatio)
-            : Offset((e.dx / context.devicePixelRatio),
-                e.dy / context.devicePixelRatio))
-        .toList();
-    final rect = Rect.fromPoints(offsets[1], offsets[3]);
-    canvas.drawRect(rect, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
-}
-
-bool isAndroid = defaultTargetPlatform == TargetPlatform.android;
