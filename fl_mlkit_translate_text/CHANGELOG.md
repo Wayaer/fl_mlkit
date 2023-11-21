@@ -1,3 +1,7 @@
+## 1.1.3
+
+* Add `namespace` in Android
+
 ## 1.1.2
 
 * Update version

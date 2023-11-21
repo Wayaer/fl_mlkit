@@ -12,10 +12,10 @@ dependencies:
   fl_mlkit_identify_language:
     path: ../
   flutter_curiosity: ^5.0.2
-  flutter_waya: ^8.4.0
+  flutter_waya: ^8.6.1
 
 dev_dependencies:
-  flutter_lints: ^3.0.0
+  flutter_lints: ^3.0.1
 
 flutter:
   uses-material-design: true

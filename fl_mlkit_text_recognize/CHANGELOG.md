@@ -1,3 +1,7 @@
+## 3.0.1
+
+* Add `namespace` in Android
+
 ## 3.0.0
 
 * Update `fl_camera`
