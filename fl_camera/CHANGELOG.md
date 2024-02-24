@@ -1,3 +1,7 @@
+## 4.1.0
+
+* Fixes known issues on android
+
 ## 4.0.1
 
 * Use [fl_channel](https://pub.dev/packages/fl_channel)

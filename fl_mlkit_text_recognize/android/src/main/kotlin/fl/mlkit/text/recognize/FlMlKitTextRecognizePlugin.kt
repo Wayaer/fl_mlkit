@@ -24,7 +24,7 @@ import io.flutter.plugin.common.MethodChannel
 
 class FlMlKitTextRecognizePlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
 
-    private lateinit var channel: MethodChannel
+    private var channel: MethodChannel? = null
     private var options: TextRecognizerOptionsInterface = TextRecognizerOptions.DEFAULT_OPTIONS
     private var recognizer: TextRecognizer? = null
     private var lastCurrentTime = 0L
@@ -33,11 +33,11 @@ class FlMlKitTextRecognizePlugin : FlutterPlugin, MethodChannel.MethodCallHandle
 
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "fl.mlkit.text.recognize")
-        channel.setMethodCallHandler(this)
+        channel!!.setMethodCallHandler(this)
     }
 
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
-        channel.setMethodCallHandler(null)
+        channel?.setMethodCallHandler(null)
     }
 
     @SuppressLint("UnsafeOptInUsageError")

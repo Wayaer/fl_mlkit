@@ -18,7 +18,7 @@ import io.flutter.plugin.common.MethodChannel
 
 class FlMlKitScanningPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
 
-    private lateinit var channel: MethodChannel
+    private var channel: MethodChannel? = null
     private var options =
         BarcodeScannerOptions.Builder().setBarcodeFormats(Barcode.FORMAT_ALL_FORMATS).build()
     private var scanner: BarcodeScanner? = null
@@ -28,11 +28,11 @@ class FlMlKitScanningPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
 
     override fun onAttachedToEngine(pluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(pluginBinding.binaryMessenger, "fl.mlkit.scanning")
-        channel.setMethodCallHandler(this)
+        channel!!.setMethodCallHandler(this)
     }
 
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
-        channel.setMethodCallHandler(null)
+        channel?.setMethodCallHandler(null)
     }
 
     @SuppressLint("UnsafeOptInUsageError")

@@ -14,7 +14,7 @@ import io.flutter.plugin.common.MethodChannel.Result
 /** FlMlKitIdentifyLanguagePlugin */
 class FlMlKitIdentifyLanguagePlugin : FlutterPlugin, MethodCallHandler {
 
-    private lateinit var channel: MethodChannel
+    private var channel: MethodChannel? = null
 
     private var languageIdentifier: LanguageIdentifier? = null
     private var options: LanguageIdentificationOptions? = null
@@ -22,27 +22,33 @@ class FlMlKitIdentifyLanguagePlugin : FlutterPlugin, MethodCallHandler {
 
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "fl_mlkit_identify_language")
-        channel.setMethodCallHandler(this)
+        channel!!.setMethodCallHandler(this)
+    }
+
+    override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+        channel?.setMethodCallHandler(null)
     }
 
     override fun onMethodCall(call: MethodCall, result: Result) {
         when (call.method) {
             "identifyLanguage" -> {
                 val text = call.arguments as String
-                getLanguageIdentification().identifyLanguage(text).addOnSuccessListener { languageCode ->
-                    result.success(languageCode)
-                }.addOnFailureListener {
-                    result.success(null)
-                }
+                getLanguageIdentification().identifyLanguage(text)
+                    .addOnSuccessListener { languageCode ->
+                        result.success(languageCode)
+                    }.addOnFailureListener {
+                        result.success(null)
+                    }
             }
 
             "identifyPossibleLanguages" -> {
                 val text = call.arguments as String
-                getLanguageIdentification().identifyPossibleLanguages(text).addOnSuccessListener { identifiedLanguages ->
-                    result.success(identifiedLanguages.map { model -> model.data })
-                }.addOnFailureListener {
-                    result.success(null)
-                }
+                getLanguageIdentification().identifyPossibleLanguages(text)
+                    .addOnSuccessListener { identifiedLanguages ->
+                        result.success(identifiedLanguages.map { model -> model.data })
+                    }.addOnFailureListener {
+                        result.success(null)
+                    }
             }
 
             "setConfidence" -> {
@@ -65,8 +71,8 @@ class FlMlKitIdentifyLanguagePlugin : FlutterPlugin, MethodCallHandler {
 
     private val IdentifiedLanguage.data: Map<String, Any?>
         get() = mapOf(
-                "languageTag" to languageTag,
-                "confidence" to confidence,
+            "languageTag" to languageTag,
+            "confidence" to confidence,
         )
 
     private fun dispose() {
@@ -85,13 +91,12 @@ class FlMlKitIdentifyLanguagePlugin : FlutterPlugin, MethodCallHandler {
 
     private fun getOptions(): LanguageIdentificationOptions {
         if (options == null) {
-            options = LanguageIdentificationOptions.Builder().setConfidenceThreshold(currentConfidence).build()
+            options =
+                LanguageIdentificationOptions.Builder().setConfidenceThreshold(currentConfidence)
+                    .build()
         }
         return options!!
     }
 
 
-    override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
-        channel.setMethodCallHandler(null)
-    }
 }

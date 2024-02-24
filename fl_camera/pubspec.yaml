@@ -1,6 +1,6 @@
 name: fl_camera
 description: A camera plugin for flutter , support Android(used CameraX) and IOS
-version: 4.0.1
+version: 4.1.0
 repository: https://github.com/Wayaer/fl_mlkit/tree/main/fl_camera
 
 environment:
@@ -10,7 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  fl_channel: ^0.0.3
+  fl_channel: ^0.1.0
 
 dev_dependencies:
   flutter_lints: ^3.0.1

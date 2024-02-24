@@ -12,9 +12,9 @@ dependencies:
     path: ../
   flutter:
     sdk: flutter
-  flutter_curiosity: ^5.0.3
-  flutter_waya: ^8.6.1
-  permission_handler: ^11.0.1
+  flutter_curiosity: ^6.0.0
+  flutter_waya: ^8.7.2
+  permission_handler: ^11.3.0
   file_picker: ^6.1.1
 
 dev_dependencies:

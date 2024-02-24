@@ -1,3 +1,7 @@
+## 5.1.0
+
+* Update dependencies
+
 ## 5.0.1
 
 * Add `namespace` in Android

@@ -29,7 +29,7 @@ object FlCamera {
                 "availableCameras" -> result.success(getAvailableCameras(activity))
                 "initialize" -> {
                     if (flEvent == null) {
-                        flEvent = FlEvent(pluginBinding.binaryMessenger, "fl.camera.event")
+                        flEvent = FlEvent("fl.camera.event", pluginBinding.binaryMessenger)
                     }
                     if (flCamera == null) {
                         flCamera = FlCameraX(activity, pluginBinding.textureRegistry)

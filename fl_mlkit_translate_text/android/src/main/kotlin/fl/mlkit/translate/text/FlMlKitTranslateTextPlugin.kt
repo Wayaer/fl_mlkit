@@ -1,6 +1,5 @@
 package fl.mlkit.translate.text
 
-import androidx.annotation.NonNull
 import com.google.mlkit.common.model.DownloadConditions
 import com.google.mlkit.common.model.RemoteModelManager
 import com.google.mlkit.nl.translate.*
@@ -14,7 +13,7 @@ import io.flutter.plugin.common.MethodChannel.Result
 /** FlMlKitTranslateTextPlugin */
 class FlMlKitTranslateTextPlugin : FlutterPlugin, MethodCallHandler {
 
-    private lateinit var channel: MethodChannel
+    private var channel: MethodChannel? = null
 
     private var options: TranslatorOptions? = null
     private var conditions: DownloadConditions? = null
@@ -24,12 +23,16 @@ class FlMlKitTranslateTextPlugin : FlutterPlugin, MethodCallHandler {
     private var currentTarget = TranslateLanguage.CHINESE
 
 
-    override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-        channel = MethodChannel(flutterPluginBinding.binaryMessenger, "fl_mlkit_translate_text")
-        channel.setMethodCallHandler(this)
+    override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+        channel = MethodChannel(binding.binaryMessenger, "fl_mlkit_translate_text")
+        channel!!.setMethodCallHandler(this)
     }
 
-    override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
+    override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+        channel?.setMethodCallHandler(null)
+    }
+
+    override fun onMethodCall(call: MethodCall, result: Result) {
         when (call.method) {
             "translate" -> {
                 val text = call.argument<String>("text")!!
@@ -52,6 +55,7 @@ class FlMlKitTranslateTextPlugin : FlutterPlugin, MethodCallHandler {
                     }
                 }
             }
+
             "switchLanguage" -> {
                 val source = call.argument<String>("source")
                 val target = call.argument<String>("target")
@@ -60,6 +64,7 @@ class FlMlKitTranslateTextPlugin : FlutterPlugin, MethodCallHandler {
                 currentTarget = getTranslateLanguage(target!!)
                 result.success(true)
             }
+
             "getCurrentLanguage" -> {
                 val map = mapOf(
                     "source" to currentSource,
@@ -67,15 +72,16 @@ class FlMlKitTranslateTextPlugin : FlutterPlugin, MethodCallHandler {
                 )
                 result.success(map)
             }
+
             "getDownloadedModels" -> {
                 getModelManager().getDownloadedModels(TranslateRemoteModel::class.java)
                     .addOnSuccessListener { models ->
                         result.success(models.map { model -> model.data })
-                    }
-                    .addOnFailureListener {
+                    }.addOnFailureListener {
                         result.success(null)
                     }
             }
+
             "deleteDownloadedModel" -> {
                 val model = getTranslateRemoteModel(call.arguments as String)
                 getModelManager().deleteDownloadedModel(model).addOnSuccessListener {
@@ -84,6 +90,7 @@ class FlMlKitTranslateTextPlugin : FlutterPlugin, MethodCallHandler {
                     result.success(false)
                 }
             }
+
             "downloadedModel" -> {
                 val model = getTranslateRemoteModel(call.arguments as String)
                 getModelManager().download(model, getConditions()).addOnSuccessListener {
@@ -92,6 +99,7 @@ class FlMlKitTranslateTextPlugin : FlutterPlugin, MethodCallHandler {
                     result.success(false)
                 }
             }
+
             "isModelDownloaded" -> {
                 val model = getTranslateRemoteModel(call.arguments as String)
                 getModelManager().isModelDownloaded(model).addOnSuccessListener { hasModel ->
@@ -100,10 +108,12 @@ class FlMlKitTranslateTextPlugin : FlutterPlugin, MethodCallHandler {
                     result.success(false)
                 }
             }
+
             "dispose" -> {
                 dispose()
                 result.success(true)
             }
+
             else -> {
                 result.notImplemented()
             }
@@ -137,9 +147,7 @@ class FlMlKitTranslateTextPlugin : FlutterPlugin, MethodCallHandler {
 
     private fun getConditions(): DownloadConditions {
         if (conditions == null) {
-            conditions = DownloadConditions.Builder()
-                .requireWifi()
-                .build()
+            conditions = DownloadConditions.Builder().requireWifi().build()
         }
         return conditions!!
     }
@@ -160,16 +168,11 @@ class FlMlKitTranslateTextPlugin : FlutterPlugin, MethodCallHandler {
 
     private fun getTranslatorOptions(): TranslatorOptions {
         if (options == null) {
-            options = TranslatorOptions.Builder()
-                .setSourceLanguage(currentSource)
-                .setTargetLanguage(currentTarget)
-                .build()
+            options = TranslatorOptions.Builder().setSourceLanguage(currentSource)
+                .setTargetLanguage(currentTarget).build()
         }
         return options!!
     }
 
 
-    override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
-        channel.setMethodCallHandler(null)
-    }
 }

@@ -7,7 +7,7 @@ import io.flutter.plugin.common.MethodChannel
 
 class FlCameraPlugin : FlutterPlugin, ActivityAware {
 
-    private lateinit var channel: MethodChannel
+    private var channel: MethodChannel? = null
     private var plugin: FlutterPlugin.FlutterPluginBinding? = null
 
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
@@ -32,6 +32,6 @@ class FlCameraPlugin : FlutterPlugin, ActivityAware {
     }
 
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
-        channel.setMethodCallHandler(null)
+        channel?.setMethodCallHandler(null)
     }
 }
