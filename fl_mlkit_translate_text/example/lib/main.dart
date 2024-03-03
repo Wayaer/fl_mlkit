@@ -1,12 +1,12 @@
+import 'package:fl_extended/fl_extended.dart';
 import 'package:fl_mlkit_translate_text/fl_mlkit_translate_text.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_waya/flutter_waya.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(MaterialApp(
-      navigatorKey: GlobalWayUI().navigatorKey,
-      scaffoldMessengerKey: GlobalWayUI().scaffoldMessengerKey,
+      navigatorKey: FlExtended().navigatorKey,
+      scaffoldMessengerKey: FlExtended().scaffoldMessengerKey,
       debugShowCheckedModeBanner: false,
       theme: ThemeData.light(useMaterial3: true),
       darkTheme: ThemeData.dark(useMaterial3: true),

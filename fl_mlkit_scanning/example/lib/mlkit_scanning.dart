@@ -1,8 +1,8 @@
 import 'package:example/main.dart';
+import 'package:fl_extended/fl_extended.dart';
 import 'package:fl_mlkit_scanning/fl_mlkit_scanning.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_waya/flutter_waya.dart';
 
 class FlMlKitScanningPage extends StatefulWidget {
   const FlMlKitScanningPage({super.key});
