@@ -1,12 +1,12 @@
+import 'package:fl_extended/fl_extended.dart';
 import 'package:fl_mlkit_translate_text/fl_mlkit_translate_text.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_waya/flutter_waya.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(MaterialApp(
-      navigatorKey: GlobalWayUI().navigatorKey,
-      scaffoldMessengerKey: GlobalWayUI().scaffoldMessengerKey,
+      navigatorKey: FlExtended().navigatorKey,
+      scaffoldMessengerKey: FlExtended().scaffoldMessengerKey,
       debugShowCheckedModeBanner: false,
       theme: ThemeData.light(useMaterial3: true),
       darkTheme: ThemeData.dark(useMaterial3: true),
@@ -169,7 +169,7 @@ class _AppState extends State<_App> {
           future: translateText.getDownloadedModels,
           onWaiting: (_) => const CircularProgressIndicator(),
           onDone: (_, value, __) {
-            return ScrollList.builder(
+            return ListView.separated(
                 itemBuilder: (_, index) {
                   return Universal(
                       onTap: () {
@@ -222,7 +222,7 @@ class _TranslateRemoteModelManagerPageState
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBarText('TranslateRemoteModel Manager'),
-        body: ScrollList.builder(
+        body: ListView.separated(
           padding: const EdgeInsets.symmetric(vertical: 10),
           itemBuilder: (_, int index) {
             var item = TranslateLanguage.values[index];
@@ -237,9 +237,12 @@ class _TranslateRemoteModelManagerPageState
                   RText(texts: [
                     '${abb.toUpperCase()}  ',
                     item.toString().split('.')[1]
-                  ], styles: const [
-                    TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    TextStyle(),
+                  ], styles: [
+                    TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: context.theme.primaryColor),
+                    TextStyle(color: context.theme.primaryColor),
                   ]),
                   ValueBuilder<bool>(builder: (_, bool? isLoading, updater) {
                     isLoading ??= false;

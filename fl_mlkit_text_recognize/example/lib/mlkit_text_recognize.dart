@@ -1,8 +1,9 @@
 import 'package:example/main.dart';
+import 'package:fl_extended/fl_extended.dart';
+import 'package:fl_list_wheel/fl_list_wheel.dart';
 import 'package:fl_mlkit_text_recognize/fl_mlkit_text_recognize.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_waya/flutter_waya.dart';
 
 class FlMlKitTextRecognizePage extends StatefulWidget {
   const FlMlKitTextRecognizePage({super.key});
@@ -79,7 +80,7 @@ class _FlMlKitTextRecognizePageState extends State<FlMlKitTextRecognizePage>
             child: SizedBox(
                 width: 150,
                 height: 300,
-                child: ListWheel.builder(
+                child: FlListWheel.builder(
                     onSelectedItemChanged: (int index) {
                       FlMlKitTextRecognizeController()
                           .setRecognizedLanguage(

@@ -2,10 +2,9 @@ import 'dart:io';
 
 import 'package:example/main.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:fl_extended/fl_extended.dart';
 import 'package:fl_mlkit_text_recognize/fl_mlkit_text_recognize.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_curiosity/flutter_curiosity.dart';
-import 'package:flutter_waya/flutter_waya.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class ImageRecognizePage extends StatefulWidget {
@@ -19,7 +18,7 @@ class _ImageRecognizePageState extends State<ImageRecognizePage> {
   String? path;
   AnalysisTextModel? model;
 
-  int? selectIndex;
+  RecognizedLanguage selectLanguage = RecognizedLanguage.latin;
 
   @override
   Widget build(BuildContext context) {
@@ -33,21 +32,23 @@ class _ImageRecognizePageState extends State<ImageRecognizePage> {
               ElevatedText(onPressed: openGallery, text: 'Select Picture'),
               ElevatedButton(
                   onPressed: () {},
-                  child: DropdownMenuButton.material(
-                      itemCount: RecognizedLanguage.values.length,
-                      onChanged: (int index) {
-                        selectIndex = index;
-                        FlMlKitTextRecognizeController().setRecognizedLanguage(
-                            RecognizedLanguage.values[selectIndex!]);
-                      },
-                      builder: (int? index) => BText(index == null
-                          ? 'Select Recognized Language'
-                          : RecognizedLanguage.values[index].name),
-                      itemBuilder: (int index) => Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 4),
-                          child: BText(RecognizedLanguage.values[index].name,
-                              fontSize: 14)))),
+                  child: DropdownButton<RecognizedLanguage>(
+                    value: selectLanguage,
+                    items: RecognizedLanguage.values.builder((item) =>
+                        DropdownMenuItem(
+                            value: item,
+                            child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 4),
+                                child: BText(item.name, fontSize: 14)))),
+                    onChanged: (RecognizedLanguage? value) {
+                      if (value == null) return;
+                      selectLanguage = value;
+                      FlMlKitTextRecognizeController()
+                          .setRecognizedLanguage(value);
+                      setState(() {});
+                    },
+                  )),
               ElevatedText(onPressed: scanByte, text: 'Recognize'),
               TextBox('path', path),
               if (path != null && path!.isNotEmpty)
@@ -62,13 +63,13 @@ class _ImageRecognizePageState extends State<ImageRecognizePage> {
             ]));
   }
 
+  // builder: (int? index) =>
+  // BText(index == null
+  // ? 'Select Recognized Language'
+  //     : RecognizedLanguage.values[index].name),
   Future<void> scanByte() async {
     if (path == null || path!.isEmpty) {
       showToast('Please select a picture');
-      return;
-    }
-    if (selectIndex == null) {
-      showToast('Please select recognized language');
       return;
     }
     bool hasPermission = true;
