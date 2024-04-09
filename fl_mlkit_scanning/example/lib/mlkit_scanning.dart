@@ -1,5 +1,6 @@
 import 'package:example/main.dart';
 import 'package:fl_extended/fl_extended.dart';
+import 'package:fl_list_wheel/fl_list_wheel.dart';
 import 'package:fl_mlkit_scanning/fl_mlkit_scanning.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -80,11 +81,11 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
           child: SizedBox(
               width: 150,
               height: 300,
-              child: ListWheelState(
+              child: FlListWheelState(
                   initialItem: 1,
                   count: BarcodeFormat.values.length,
                   builder: (FixedExtentScrollController controller) =>
-                      ListWheel.builder(
+                      FlListWheel.builder(
                           controller: controller,
                           onSelectedItemChanged: (int index) {
                             var format = BarcodeFormat.values[index];

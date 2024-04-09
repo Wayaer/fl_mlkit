@@ -136,6 +136,6 @@ class ElevatedIcon extends StatelessWidget {
   final IconData icon;
 
   @override
-  Widget build(BuildContext context) => ElevatedButton(
-      onPressed: onPressed, child: Icon(icon, color: Colors.white));
+  Widget build(BuildContext context) =>
+      ElevatedButton(onPressed: onPressed, child: Icon(icon));
 }
