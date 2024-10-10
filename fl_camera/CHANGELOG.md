@@ -1,3 +1,7 @@
+## 4.2.0
+
+* Update gradle version
+
 ## 4.1.0
 
 * Fixes known issues on android

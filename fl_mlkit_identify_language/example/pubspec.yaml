@@ -11,10 +11,10 @@ dependencies:
     sdk: flutter
   fl_mlkit_identify_language:
     path: ../
-  fl_extended: ^1.0.0
+  fl_extended: ^1.5.0
 
 dev_dependencies:
-  flutter_lints: ^3.0.2
+  flutter_lints: ^5.0.0
 
 flutter:
   uses-material-design: true

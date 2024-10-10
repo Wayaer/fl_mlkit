@@ -2,15 +2,13 @@ group 'fl.mlkit.identify.language'
 version '1.0'
 
 buildscript {
-    ext.kotlin_version = '1.8.0'
     repositories {
         google()
         mavenCentral()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.2.2'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.android.tools.build:gradle:8.5.2'
     }
 }
 
@@ -25,7 +23,12 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 33
+    compileSdk = 34
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
+    }
 
     if (project.android.hasProperty("namespace")) {
         namespace 'fl.mlkit.identify.language'
@@ -36,11 +39,10 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion 21
+        minSdk = 16
     }
-}
 
-dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'com.google.mlkit:language-id:17.0.4'
+    dependencies {
+        implementation 'com.google.mlkit:language-id:17.0.6'
+    }
 }

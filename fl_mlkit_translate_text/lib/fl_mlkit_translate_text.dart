@@ -1,5 +1,3 @@
-library fl_mlkit_translate_text;
-
 import 'dart:async';
 
 import 'package:flutter/services.dart';
