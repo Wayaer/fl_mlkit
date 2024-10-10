@@ -2,15 +2,13 @@ group 'fl.mlkit.text.recognize'
 version '1.0'
 
 buildscript {
-    ext.kotlin_version = '1.8.0'
     repositories {
         google()
         mavenCentral()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.2.2'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.android.tools.build:gradle:8.5.2'
     }
 }
 
@@ -25,36 +23,39 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 33
+    compileSdk = 34
 
     if (project.android.hasProperty("namespace")) {
         namespace 'fl.mlkit.text.recognize'
     }
 
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
+    }
+
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
+
     defaultConfig {
-        minSdkVersion 21
+        minSdk = 21
     }
-}
 
-dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    dependencies {
+        // To recognize Latin script
+        implementation 'com.google.mlkit:text-recognition:16.0.1'
 
-    // To recognize Latin script
-    implementation 'com.google.mlkit:text-recognition:16.0.0'
+        // To recognize Chinese script
+        implementation 'com.google.mlkit:text-recognition-chinese:16.0.1'
 
-    // To recognize Chinese script
-    implementation 'com.google.mlkit:text-recognition-chinese:16.0.0'
+        // To recognize Devanagari script
+        implementation 'com.google.mlkit:text-recognition-devanagari:16.0.1'
 
-    // To recognize Devanagari script
-    implementation 'com.google.mlkit:text-recognition-devanagari:16.0.0'
+        // To recognize Japanese script
+        implementation 'com.google.mlkit:text-recognition-japanese:16.0.1'
 
-    // To recognize Japanese script
-    implementation 'com.google.mlkit:text-recognition-japanese:16.0.0'
-
-    // To recognize Korean script
-    implementation 'com.google.mlkit:text-recognition-korean:16.0.0'
-
+        // To recognize Korean script
+        implementation 'com.google.mlkit:text-recognition-korean:16.0.1'
+    }
 }

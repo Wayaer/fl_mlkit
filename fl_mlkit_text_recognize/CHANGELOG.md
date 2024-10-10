@@ -1,3 +1,7 @@
+## 3.2.0
+
+* Update gradle version
+
 ## 3.1.0
 
 * Update dependencies

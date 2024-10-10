@@ -67,7 +67,8 @@ class _ImageScanningPageState extends State<ImageScanningPage> {
     if (isAndroid) hasPermission = await getPermission(Permission.storage);
     if (isIOS) hasPermission = true;
     if (!hasPermission) return;
-    final result = await FilePicker.platform.pickFiles(type: FileType.image);
+    final result = await FilePicker.platform
+        .pickFiles(type: FileType.image, allowCompression: false);
     if (result == null || result.files.isEmpty) return;
     path = result.files.first.path;
     setState(() {});

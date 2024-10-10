@@ -23,8 +23,8 @@ Google mlkit text recognize plugin, supports Android and IOS.
   s.dependency 'GoogleMLKit/TextRecognitionJapanese'
   s.dependency 'GoogleMLKit/TextRecognitionKorean'
   s.static_framework = true
-  s.platform = :ios, '11.0'
-  s.ios.deployment_target = '11.0'
+  s.platform = :ios, '12.0'
+  s.ios.deployment_target = '12.0'
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
   s.swift_version = '5.0'
 end
