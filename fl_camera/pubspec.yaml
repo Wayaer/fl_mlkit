@@ -10,7 +10,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  fl_channel: ^0.2.0
+  fl_channel:
+    path: ../../fl_channel
 
 dev_dependencies:
   flutter_lints: ^5.0.0

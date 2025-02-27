@@ -26,18 +26,11 @@ class FlCameraX(
     private var camera: Camera? = null
 
     private fun checkPermission(): Boolean {
-        return ContextCompat.checkSelfPermission(
-            activity, Manifest.permission.CAMERA
-        ) == PackageManager.PERMISSION_GRANTED
+        return ContextCompat.checkSelfPermission(activity, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
     }
 
     @SuppressLint("RestrictedApi")
-    fun initCameraX(
-        previewSize: Size,
-        cameraSelector: CameraSelector,
-        result: MethodChannel.Result,
-        imageAnalyzer: ImageAnalysis.Analyzer? = null
-    ) {
+    fun initCameraX(previewSize: Size, cameraSelector: CameraSelector, result: MethodChannel.Result, imageAnalyzer: ImageAnalysis.Analyzer? = null) {
         if (!checkPermission()) {
             result.success(null)
             return
@@ -53,11 +46,8 @@ class FlCameraX(
                 val surface = Surface(texture)
                 request.provideSurface(surface, executor) { }
             }
-            val preview = Preview.Builder().setTargetResolution(previewSize).build()
-                .apply { setSurfaceProvider(surfaceProvider) }
-            val analysis = ImageAnalysis.Builder()
-                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                .setTargetResolution(previewSize).build().apply {
+            val preview = Preview.Builder().setTargetResolution(previewSize).build().apply { setSurfaceProvider(surfaceProvider) }
+            val analysis = ImageAnalysis.Builder().setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST).setTargetResolution(previewSize).build().apply {
                     if (imageAnalyzer != null) {
                         setAnalyzer(executor, imageAnalyzer)
                     }
@@ -68,14 +58,10 @@ class FlCameraX(
                 camera = cameraProvider!!.bindToLifecycle(owner, cameraSelector, preview, analysis)
                 camera!!.cameraInfo.torchState.observe(owner) { state ->
                     // TorchState.OFF = 0; TorchState.ON = 1
-                    FlCamera.flEvent!!.send(mapOf("flash" to state))
+                    FlCamera.flEventChannel?.send(mapOf("flash" to state))
                 }
                 camera!!.cameraInfo.zoomState.observe(owner) { state ->
-                    FlCamera.flEvent!!.send(
-                        mapOf(
-                            "maxZoomRatio" to state.maxZoomRatio, "zoomRatio" to state.zoomRatio
-                        )
-                    )
+                    FlCamera.flEventChannel?.send(mapOf("maxZoomRatio" to state.maxZoomRatio, "zoomRatio" to state.zoomRatio))
                 }
                 val resolution = preview.attachedSurfaceResolution!!
                 val map: MutableMap<String, Any> = HashMap()
