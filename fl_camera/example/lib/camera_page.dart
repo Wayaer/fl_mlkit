@@ -71,9 +71,9 @@ class _CameraPageState extends State<CameraPage> {
     return ValueListenableBuilder(
         valueListenable: flashState,
         builder: (_, bool state, __) {
-          return IconBox(
+          return IconLabel(
               size: 30,
-              color: state ? Colors.white : Colors.white.withOpacity(0.6),
+              color: state ? Colors.white : Colors.white.withValues(alpha: 0.6),
               padding: const EdgeInsets.fromLTRB(10, 10, 10, 40),
               icon: state ? Icons.flash_on : Icons.flash_off,
               onTap: () {

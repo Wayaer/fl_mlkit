@@ -84,7 +84,8 @@ abstract class CameraController {
   /// zoom ratio
   FlCameraCameraZoomStateChanged? onZoomChanged;
 
-  FlEvent? _flEvent;
+  /// 消息通道
+  FlEventChannel? _flEventChannel;
 
   /// 获取可用摄像机
   /// 通常在第一次加载 Camera 后自动获取设备的可用相机，并且赋值给了[cameras]，所以后续可以不用再调用这个方法，可直接使用[cameras]
@@ -96,9 +97,9 @@ abstract class CameraController {
   /// instead of calling the method.
   Future<List<CameraInfo>?> availableCameras() async {
     try {
-      final List<Map<dynamic, dynamic>>? cameras = await _channel
+      final cameras = await _channel
           .invokeListMethod<Map<dynamic, dynamic>>('availableCameras');
-      if (cameras == null) return <CameraInfo>[];
+      if (cameras == null) return [];
       _cameras = cameras
           .map((Map<dynamic, dynamic> camera) => CameraInfo(
               name: camera['name'] as String,
@@ -115,20 +116,20 @@ abstract class CameraController {
   /// initialize all Including camera and event
   Future<bool> initialize() async {
     if (!_supportPlatform) return false;
-    _flEvent ??= FlEvent('fl.camera.event');
-    bool? result = await _channel.invokeMethod<bool?>('initialize');
-    if (result == true) result = _flEvent!.listen(onDataListen);
+    _flEventChannel ??= await FlChannel().create('fl.camera.event');
+    bool? result = await _channel.invokeMethod<bool>('initialize');
+    if (result == true) result = _flEventChannel!.listen(onDataListen);
     _isInitialize = result == true;
     await availableCameras();
     return result ?? false;
   }
 
   /// 消息回调监听
-  FlEventListenData get onDataListen => (dynamic data) {
+  FlEventChannelListenData get onDataListen => (dynamic data) {
         if (data is Map) {
           if (data.containsKey('flash')) {
             /// flash state
-            final int? flashState = data['flash'] as int?;
+            final flashState = data['flash'] as int?;
             if (flashState != null) {
               _cameraFlash = FlashState.values[flashState];
               onFlashChanged?.call(_cameraFlash!);
@@ -137,8 +138,8 @@ abstract class CameraController {
           } else if (data.containsKey('zoomRatio') &&
               data.containsKey('maxZoomRatio')) {
             /// zoom ratio state
-            final double? zoomRatio = data['zoomRatio'] as double?;
-            final double? maxZoomRatio = data['maxZoomRatio'] as double?;
+            final zoomRatio = data['zoomRatio'] as double?;
+            final maxZoomRatio = data['maxZoomRatio'] as double?;
             if (zoomRatio != null && maxZoomRatio != null) {
               _cameraZoom = CameraZoomState(
                   maxZoomRatio: maxZoomRatio, zoomRatio: zoomRatio);
@@ -158,12 +159,8 @@ abstract class CameraController {
     if (!_supportPlatform) return null;
     assert(_isInitialize, 'Call initialize first');
     if (resolution != null) cameraResolution = resolution;
-    final arguments = <String, dynamic>{
-      'cameraId': camera.name,
-      'resolution': cameraResolution.name
-    };
-    final Map<dynamic, dynamic>? map = await _channel
-        .invokeMethod<Map<dynamic, dynamic>?>('startPreview', arguments);
+    final map = await _channel.invokeMethod<Map>('startPreview',
+        {'cameraId': camera.name, 'resolution': cameraResolution.name});
     if (map != null) {
       cameraOptions.value = FlCameraOptions.fromMap(map);
       if (_previousCamera != camera) _previousCamera = camera;
@@ -177,7 +174,7 @@ abstract class CameraController {
   Future<bool> stopPreview() async {
     assert(_isInitialize, 'Call initialize first');
     if (cameraOptions.value == null) return false;
-    final bool? state = await _channel.invokeMethod<bool?>('stopPreview');
+    final state = await _channel.invokeMethod<bool>('stopPreview');
     if (state == true) cameraOptions.value = null;
     return state ?? false;
   }
@@ -206,8 +203,8 @@ abstract class CameraController {
   Future<bool> setFlashMode(FlashState status) async {
     if (!_supportPlatform || cameraOptions.value == null) return false;
     assert(_isInitialize, 'Call initialize first');
-    final bool? state =
-        await _channel.invokeMethod<bool?>('setFlashMode', status.index);
+    final state =
+        await _channel.invokeMethod<bool>('setFlashMode', status.index);
     return state ?? false;
   }
 
@@ -217,17 +214,16 @@ abstract class CameraController {
     if (!_supportPlatform || cameraOptions.value == null) return false;
     assert(_isInitialize, 'Call initialize first');
     assert(ratio >= 1, 'ratio must be greater than or equal to 1');
-    final bool? state =
-        await _channel.invokeMethod<bool?>('setZoomRatio', ratio);
+    final state = await _channel.invokeMethod<bool>('setZoomRatio', ratio);
     return state ?? false;
   }
 
   /// dispose  all
   Future<bool> dispose() async {
     if (!_supportPlatform) return false;
-    await _flEvent?.dispose();
-    _flEvent = null;
-    bool? state = await _channel.invokeMethod<bool?>('dispose');
+    await _flEventChannel?.dispose();
+    _flEventChannel = null;
+    final state = await _channel.invokeMethod<bool>('dispose');
     cameraOptions.value = null;
     _cameraFlash = null;
     _cameraZoom = null;

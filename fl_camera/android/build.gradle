@@ -43,9 +43,9 @@ android {
     }
 
     dependencies {
-        api "androidx.camera:camera-camera2:1.3.4"
-        api "androidx.camera:camera-lifecycle:1.3.4"
-        api 'androidx.camera:camera-core:1.3.4'
+        api "androidx.camera:camera-camera2:1.4.1"
+        api "androidx.camera:camera-lifecycle:1.4.1"
+        api 'androidx.camera:camera-core:1.4.1'
     }
 }
 

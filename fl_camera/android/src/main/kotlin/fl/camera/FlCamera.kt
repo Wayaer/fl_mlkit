@@ -11,16 +11,18 @@ import android.util.Size
 import androidx.camera.camera2.interop.Camera2CameraInfo
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageProxy
+import fl.channel.FlChannelPlugin
 import fl.channel.FlDataStream
-import fl.channel.FlEvent
+import fl.channel.FlEventChannel
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodChannel
 
 object FlCamera {
     var flDataStream = FlDataStream<ImageProxy>()
-    var flEvent: FlEvent? = null
+    var flEventChannel: FlEventChannel? = null
     fun binding(
-        activity: Activity, pluginBinding: FlutterPlugin.FlutterPluginBinding
+        activity: Activity,
+        pluginBinding: FlutterPlugin.FlutterPluginBinding
     ): MethodChannel {
         val channel = MethodChannel(pluginBinding.binaryMessenger, "fl.camera")
         var flCamera: FlCameraX? = null
@@ -28,8 +30,8 @@ object FlCamera {
             when (call.method) {
                 "availableCameras" -> result.success(getAvailableCameras(activity))
                 "initialize" -> {
-                    if (flEvent == null) {
-                        flEvent = FlEvent("fl.camera.event", pluginBinding.binaryMessenger)
+                    if (flEventChannel == null) {
+                        flEventChannel = FlChannelPlugin.getEventChannel("fl.camera.event")
                     }
                     if (flCamera == null) {
                         flCamera = FlCameraX(activity, pluginBinding.textureRegistry)
@@ -66,7 +68,8 @@ object FlCamera {
                 "dispose" -> {
                     flCamera?.dispose()
                     flCamera = null
-                    flEvent = null
+                    flEventChannel?.cancel()
+                    flEventChannel = null
                     result.success(true)
                 }
 
@@ -96,7 +99,8 @@ object FlCamera {
     }
 
     private fun getBestAvailableCamcorderProfileForResolutionPreset(
-        cameraId: Int, preset: String
+        cameraId: Int,
+        preset: String
     ): CamcorderProfile {
         return when (preset) {
             "max" -> {

@@ -72,7 +72,7 @@ class _LinePainter extends CustomPainter {
     final Paint paint = Paint()
       ..isAntiAlias = true
       ..shader = RadialGradient(
-        colors: <Color>[color, color.withOpacity(0.1)],
+        colors: <Color>[color, color.withValues(alpha: 0.1)],
         radius: 0.5,
       ).createShader(rect);
     canvas.translate(0.0, size.height * offset);

@@ -168,9 +168,9 @@ class ScannerPainter extends CustomPainter {
         10 + left, value * (height - 20) + top + 10, width - 20, 0);
     final List<double> stop = <double>[0.0, 0.5, 1];
     paintValue.shader = LinearGradient(colors: <Color>[
-      scannerColor.withOpacity(0.2),
+      scannerColor.withValues(alpha: 0.2),
       scannerColor,
-      scannerColor.withOpacity(0.2),
+      scannerColor.withValues(alpha: 0.2),
     ], stops: stop)
         .createShader(scanRect);
     paintValue.strokeWidth = scannerStrokeWidth;
