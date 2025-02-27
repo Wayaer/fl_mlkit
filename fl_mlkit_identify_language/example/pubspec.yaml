@@ -4,14 +4,15 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.18.0 <4.0.0"
+  sdk: ">=3.7.0 <4.0.0"
+  flutter: ">=3.29.0"
 
 dependencies:
   flutter:
     sdk: flutter
   fl_mlkit_identify_language:
     path: ../
-  fl_extended: ^1.5.0
+  fl_extended: ^1.7.2
 
 dev_dependencies:
   flutter_lints: ^5.0.0

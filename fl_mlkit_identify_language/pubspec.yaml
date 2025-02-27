@@ -1,6 +1,6 @@
 name: fl_mlkit_identify_language
 description: Identify the language of text with ML Kit on Android And IOS
-version: 1.2.0
+version: 1.2.1
 repository: https://github.com/Wayaer/fl_mlkit/tree/main/fl_mlkit_identify_language
 
 environment:

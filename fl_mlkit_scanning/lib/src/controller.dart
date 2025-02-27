@@ -25,7 +25,7 @@ class FlMlKitScanningController extends CameraController {
 
   bool get canScanning => _canScanning;
 
-  List<BarcodeFormat> _barcodeFormats = <BarcodeFormat>[BarcodeFormat.all];
+  List<BarcodeFormat> _barcodeFormats = [BarcodeFormat.all];
 
   /// The currently BarcodeFormat
   List<BarcodeFormat> get barcodeFormats => _barcodeFormats;
@@ -36,7 +36,7 @@ class FlMlKitScanningController extends CameraController {
     if (!_supportPlatform) return false;
     if (frequency != null) _frequency = frequency;
     if (canScanning != null) _canScanning = canScanning;
-    final bool? state = await _channel.invokeMethod<bool?>('setParams', {
+    final state = await _channel.invokeMethod<bool>('setParams', {
       'frequency': _frequency,
       'canScanning': _canScanning,
     });
@@ -52,7 +52,7 @@ class FlMlKitScanningController extends CameraController {
       barcodeFormats = [BarcodeFormat.all];
     }
     if (barcodeFormats.isEmpty) barcodeFormats = [BarcodeFormat.all];
-    final bool? state = await _channel.invokeMethod<bool?>(
+    final state = await _channel.invokeMethod<bool>(
         'setBarcodeFormat',
         barcodeFormats
             .map((BarcodeFormat e) => e.toString().split('.')[1])
@@ -63,7 +63,7 @@ class FlMlKitScanningController extends CameraController {
   }
 
   @override
-  FlEventListenData get onDataListen => (dynamic data) {
+  FlEventChannelListenData get onDataListen => (dynamic data) {
         super.onDataListen(data);
         if (!_canScanning) return;
         if (data is Map) {
@@ -82,7 +82,7 @@ class FlMlKitScanningController extends CameraController {
   Future<AnalysisImageModel?> scanningImageByte(Uint8List uint8list,
       {int rotationDegrees = 0}) async {
     if (!_supportPlatform) return null;
-    final map = await _channel.invokeMethod<Map<dynamic, dynamic>?>(
+    final map = await _channel.invokeMethod<Map<dynamic, dynamic>>(
         'scanningImageByte',
         {'byte': uint8list, 'rotationDegrees': rotationDegrees});
     if (map != null) return AnalysisImageModel.fromMap(map);
@@ -100,7 +100,7 @@ class FlMlKitScanningController extends CameraController {
   @override
   Future<bool> dispose() async {
     await super.dispose();
-    final state = await _channel.invokeMethod<bool?>('dispose');
+    final state = await _channel.invokeMethod<bool>('dispose');
     return state ?? false;
   }
 }

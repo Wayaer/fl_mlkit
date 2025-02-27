@@ -54,7 +54,7 @@ class FlMlKitTextRecognizeController extends CameraController {
     if (!_supportPlatform) return false;
     if (frequency != null) _frequency = frequency;
     if (canRecognize != null) _canRecognize = canRecognize;
-    final bool? state = await _channel.invokeMethod<bool?>('setParams', {
+    final state = await _channel.invokeMethod<bool>('setParams', {
       'frequency': _frequency,
       'canRecognize': _canRecognize,
     });
@@ -67,13 +67,13 @@ class FlMlKitTextRecognizeController extends CameraController {
       RecognizedLanguage recognizedLanguage) async {
     if (!_supportPlatform) return false;
     _recognizedLanguage = recognizedLanguage;
-    final bool? state = await _channel.invokeMethod<bool?>(
+    final state = await _channel.invokeMethod<bool>(
         'setRecognizedLanguage', _recognizedLanguage.toString().split('.')[1]);
     return state ?? false;
   }
 
   @override
-  FlEventListenData get onDataListen => (dynamic data) {
+  FlEventChannelListenData get onDataListen => (dynamic data) {
         super.onDataListen(data);
         if (!_canRecognize) return;
         if (data is Map) {
@@ -93,7 +93,7 @@ class FlMlKitTextRecognizeController extends CameraController {
   Future<AnalysisTextModel?> recognizeImageByte(Uint8List uint8list,
       {int rotationDegrees = 0}) async {
     if (!_supportPlatform) return null;
-    final map = await _channel.invokeMethod<Map<dynamic, dynamic>?>(
+    final map = await _channel.invokeMethod<Map<dynamic, dynamic>>(
         'recognizeImageByte',
         {'byte': uint8list, 'rotationDegrees': rotationDegrees});
     if (map != null) return AnalysisTextModel.fromMap(map);
@@ -111,7 +111,7 @@ class FlMlKitTextRecognizeController extends CameraController {
   @override
   Future<bool> dispose() async {
     await super.dispose();
-    final state = await _channel.invokeMethod<bool?>('dispose');
+    final state = await _channel.invokeMethod<bool>('dispose');
     return state ?? false;
   }
 }

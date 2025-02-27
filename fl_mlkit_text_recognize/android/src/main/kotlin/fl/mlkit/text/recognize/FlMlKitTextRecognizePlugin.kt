@@ -124,7 +124,7 @@ class FlMlKitTextRecognizePlugin : FlutterPlugin, MethodChannel.MethodCallHandle
             map["width"] = width.toDouble()
             map["height"] = height.toDouble()
             if (result == null) {
-                FlCamera.flEvent?.send(map)
+                FlCamera.flEventChannel?.send(map)
             } else {
                 result.success(map)
             }

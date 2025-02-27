@@ -147,7 +147,7 @@ class FlMlKitScanningPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
             )
             if (result == null) {
                 if (list.isNotEmpty()) {
-                    FlCamera.flEvent?.send(map)
+                    FlCamera.flEventChannel?.send(map)
                 }
             } else {
                 result.success(map)

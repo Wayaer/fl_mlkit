@@ -145,7 +145,7 @@ public class FlMlKitScanningPlugin: NSObject, FlutterPlugin {
                 ] as [String: Any?]
                 if result == nil {
                     if !list.isEmpty {
-                        _ = FlCamera.shared.flEvent?.send(map)
+                        _ = FlCamera.shared.flEventChannel?.send(map)
                     }
                 } else {
                     result!(map)
