@@ -2,8 +2,8 @@ part of '../fl_mlkit_scanning.dart';
 
 typedef EventBarcodeListen = void Function(AnalysisImageModel data);
 
-typedef FlMlKitScanningCreateCallback = void Function(
-    FlMlKitScanningController controller);
+typedef FlMlKitScanningCreateCallback =
+    void Function(FlMlKitScanningController controller);
 
 class FlMlKitScanning extends StatefulWidget {
   FlMlKitScanning({
@@ -109,8 +109,10 @@ class _FlMlKitScanningState extends FlCameraState<FlMlKitScanning> {
     if (widget.onDataChanged != null) {
       _controller.onDataChanged = widget.onDataChanged;
     }
-    final options =
-        await _controller.startPreview(camera, resolution: widget.resolution);
+    final options = await _controller.startPreview(
+      camera,
+      resolution: widget.resolution,
+    );
     if (options != null && mounted) {
       if (widget.autoScanning) _controller.startScanning();
       setState(() {});
@@ -137,10 +139,9 @@ class _FlMlKitScanningState extends FlCameraState<FlMlKitScanning> {
     boxFit = widget.fit;
     Widget current = super.build(context);
     if (widget.overlay != null) {
-      current = Stack(children: [
-        current,
-        SizedBox.expand(child: widget.overlay),
-      ]);
+      current = Stack(
+        children: [current, SizedBox.expand(child: widget.overlay)],
+      );
     }
     return current;
   }

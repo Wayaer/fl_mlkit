@@ -29,9 +29,12 @@ class FlMlKitIdentifyLanguage {
 
   /// Identify possible languages
   Future<List<IdentifiedLanguageModel>> identifyPossibleLanguages(
-      String text) async {
+    String text,
+  ) async {
     final list = await _channel.invokeListMethod<Map<dynamic, dynamic>>(
-        'identifyPossibleLanguages', text);
+      'identifyPossibleLanguages',
+      text,
+    );
     if (list != null && list.isNotEmpty) {
       return list.map((data) => IdentifiedLanguageModel.fromMap(data)).toList();
     }
@@ -41,16 +44,19 @@ class FlMlKitIdentifyLanguage {
   /// Set confidence
   Future<bool> setConfidence(double confidence) async {
     assert(confidence >= 0.01 && confidence <= 1);
-    final state =
-        await _channel.invokeMethod<bool>('setConfidence', confidence);
+    final state = await _channel.invokeMethod<bool>(
+      'setConfidence',
+      confidence,
+    );
     if (state == true) _confidence = confidence;
     return state ?? false;
   }
 
   /// Get native confidence
   Future<double> getCurrentConfidence() async {
-    final confidence =
-        await _channel.invokeMethod<double>('getCurrentConfidence');
+    final confidence = await _channel.invokeMethod<double>(
+      'getCurrentConfidence',
+    );
     if (confidence != null) _confidence = confidence;
     return confidence ?? _confidence;
   }
@@ -67,8 +73,8 @@ class IdentifiedLanguageModel {
   });
 
   IdentifiedLanguageModel.fromMap(Map<dynamic, dynamic> data)
-      : languageTag = data['languageTag'] as String,
-        confidence = data['confidence'] as double;
+    : languageTag = data['languageTag'] as String,
+      confidence = data['confidence'] as double;
 
   /// If the call succeeds, a BCP-47 language code(https://en.wikipedia.org/wiki/IETF_language_tag) is passed to the success listener,
   /// indicating the language of the text. If no language is confidently detected,
