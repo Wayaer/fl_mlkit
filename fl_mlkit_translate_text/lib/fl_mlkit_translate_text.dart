@@ -23,18 +23,26 @@ class FlMlKitTranslateText {
 
   /// translation
   /// [downloadModelIfNeeded] The model will be downloaded if needed
-  Future<String?> translate(String text,
-      {bool downloadModelIfNeeded = false}) async {
+  Future<String?> translate(
+    String text, {
+    bool downloadModelIfNeeded = false,
+  }) async {
     if (text.isEmpty) return null;
-    return await _channel.invokeMethod<String?>('translate',
-        {'text': text, 'downloadModelIfNeeded': downloadModelIfNeeded});
+    return await _channel.invokeMethod<String?>('translate', {
+      'text': text,
+      'downloadModelIfNeeded': downloadModelIfNeeded,
+    });
   }
 
   /// Switching translation languages
   Future<bool> switchLanguage(
-      TranslateLanguage source, TranslateLanguage target) async {
-    bool? state = await _channel.invokeMethod<bool?>('switchLanguage',
-        {'source': toAbbreviations(source), 'target': toAbbreviations(target)});
+    TranslateLanguage source,
+    TranslateLanguage target,
+  ) async {
+    bool? state = await _channel.invokeMethod<bool?>('switchLanguage', {
+      'source': toAbbreviations(source),
+      'target': toAbbreviations(target),
+    });
     if (state == true) {
       _sourceLanguage = source;
       _targetLanguage = target;
@@ -45,8 +53,9 @@ class FlMlKitTranslateText {
 
   /// Get current language
   Future<void> getCurrentLanguage() async {
-    final Map<dynamic, dynamic>? map =
-        await _channel.invokeMapMethod('getCurrentLanguage');
+    final Map<dynamic, dynamic>? map = await _channel.invokeMapMethod(
+      'getCurrentLanguage',
+    );
     if (map != null) {
       _sourceLanguage = toTranslateLanguage(map['source'])!;
       _targetLanguage = toTranslateLanguage(map['target'])!;
@@ -55,32 +64,40 @@ class FlMlKitTranslateText {
 
   /// Get downloaded models
   Future<List<TranslateRemoteModel>> getDownloadedModels() async {
-    final List<dynamic>? list =
-        await _channel.invokeListMethod('getDownloadedModels');
+    final List<dynamic>? list = await _channel.invokeListMethod(
+      'getDownloadedModels',
+    );
     return list != null
         ? List<TranslateRemoteModel>.unmodifiable(
-            list.map<dynamic>((dynamic e) => TranslateRemoteModel.fromMap(e)))
+          list.map<dynamic>((dynamic e) => TranslateRemoteModel.fromMap(e)),
+        )
         : [];
   }
 
   /// Downloaded model
   Future<bool> downloadedModel(TranslateLanguage language) async {
     final bool? state = await _channel.invokeMethod(
-        'downloadedModel', toAbbreviations(language));
+      'downloadedModel',
+      toAbbreviations(language),
+    );
     return state ?? false;
   }
 
   /// Delete downloaded model
   Future<bool> deleteDownloadedModel(TranslateLanguage language) async {
     final bool? state = await _channel.invokeMethod(
-        'deleteDownloadedModel', toAbbreviations(language));
+      'deleteDownloadedModel',
+      toAbbreviations(language),
+    );
     return state ?? false;
   }
 
   /// Whether downloaded model
   Future<bool> isModelDownloaded(TranslateLanguage language) async {
     final bool? state = await _channel.invokeMethod(
-        'isModelDownloaded', toAbbreviations(language));
+      'isModelDownloaded',
+      toAbbreviations(language),
+    );
     return state ?? false;
   }
 
@@ -116,74 +133,76 @@ class FlMlKitTranslateText {
   }
 
   Map<String, TranslateLanguage> get allLanguage => {
-        'af': TranslateLanguage.afrikaans,
-        'sq': TranslateLanguage.albanian,
-        'ar': TranslateLanguage.arabic,
-        'be': TranslateLanguage.belarusian,
-        'bg': TranslateLanguage.bulgarian,
-        'bn': TranslateLanguage.bengali,
-        'ca': TranslateLanguage.catalan,
-        'zh': TranslateLanguage.chinese,
-        'hr': TranslateLanguage.croatian,
-        'cs': TranslateLanguage.czech,
-        'da': TranslateLanguage.danish,
-        'nl': TranslateLanguage.dutch,
-        'en': TranslateLanguage.english,
-        'eo': TranslateLanguage.esperanto,
-        'et': TranslateLanguage.estonian,
-        'fi': TranslateLanguage.finnish,
-        'fr': TranslateLanguage.french,
-        'gl': TranslateLanguage.galician,
-        'ka': TranslateLanguage.georgian,
-        'de': TranslateLanguage.german,
-        'el': TranslateLanguage.greek,
-        'gu': TranslateLanguage.gujarati,
-        'ht': TranslateLanguage.haitianCreole,
-        'he': TranslateLanguage.hebrew,
-        'hi': TranslateLanguage.hindi,
-        'hu': TranslateLanguage.hungarian,
-        'is': TranslateLanguage.icelandic,
-        'id': TranslateLanguage.indonesian,
-        'ga': TranslateLanguage.irish,
-        'it': TranslateLanguage.italian,
-        'ja': TranslateLanguage.japanese,
-        'kn': TranslateLanguage.kannada,
-        'ko': TranslateLanguage.korean,
-        'lt': TranslateLanguage.lithuanian,
-        'lv': TranslateLanguage.latvian,
-        'mk': TranslateLanguage.macedonian,
-        'mr': TranslateLanguage.marathi,
-        'ms': TranslateLanguage.malay,
-        'mt': TranslateLanguage.maltese,
-        'no': TranslateLanguage.norwegian,
-        'fa': TranslateLanguage.persian,
-        'pl': TranslateLanguage.polish,
-        'pt': TranslateLanguage.portuguese,
-        'ro': TranslateLanguage.romanian,
-        'ru': TranslateLanguage.russian,
-        'sk': TranslateLanguage.slovak,
-        'sl': TranslateLanguage.slovenian,
-        'es': TranslateLanguage.spanish,
-        'sv': TranslateLanguage.swedish,
-        'sw': TranslateLanguage.swahili,
-        'tl': TranslateLanguage.tagalog,
-        'ta': TranslateLanguage.tamil,
-        'te': TranslateLanguage.telugu,
-        'th': TranslateLanguage.thai,
-        'tr': TranslateLanguage.turkish,
-        'uk': TranslateLanguage.ukrainian,
-        'ur': TranslateLanguage.urdu,
-        'vi': TranslateLanguage.vietnamese,
-        'cy': TranslateLanguage.welsh,
-      };
+    'af': TranslateLanguage.afrikaans,
+    'sq': TranslateLanguage.albanian,
+    'ar': TranslateLanguage.arabic,
+    'be': TranslateLanguage.belarusian,
+    'bg': TranslateLanguage.bulgarian,
+    'bn': TranslateLanguage.bengali,
+    'ca': TranslateLanguage.catalan,
+    'zh': TranslateLanguage.chinese,
+    'hr': TranslateLanguage.croatian,
+    'cs': TranslateLanguage.czech,
+    'da': TranslateLanguage.danish,
+    'nl': TranslateLanguage.dutch,
+    'en': TranslateLanguage.english,
+    'eo': TranslateLanguage.esperanto,
+    'et': TranslateLanguage.estonian,
+    'fi': TranslateLanguage.finnish,
+    'fr': TranslateLanguage.french,
+    'gl': TranslateLanguage.galician,
+    'ka': TranslateLanguage.georgian,
+    'de': TranslateLanguage.german,
+    'el': TranslateLanguage.greek,
+    'gu': TranslateLanguage.gujarati,
+    'ht': TranslateLanguage.haitianCreole,
+    'he': TranslateLanguage.hebrew,
+    'hi': TranslateLanguage.hindi,
+    'hu': TranslateLanguage.hungarian,
+    'is': TranslateLanguage.icelandic,
+    'id': TranslateLanguage.indonesian,
+    'ga': TranslateLanguage.irish,
+    'it': TranslateLanguage.italian,
+    'ja': TranslateLanguage.japanese,
+    'kn': TranslateLanguage.kannada,
+    'ko': TranslateLanguage.korean,
+    'lt': TranslateLanguage.lithuanian,
+    'lv': TranslateLanguage.latvian,
+    'mk': TranslateLanguage.macedonian,
+    'mr': TranslateLanguage.marathi,
+    'ms': TranslateLanguage.malay,
+    'mt': TranslateLanguage.maltese,
+    'no': TranslateLanguage.norwegian,
+    'fa': TranslateLanguage.persian,
+    'pl': TranslateLanguage.polish,
+    'pt': TranslateLanguage.portuguese,
+    'ro': TranslateLanguage.romanian,
+    'ru': TranslateLanguage.russian,
+    'sk': TranslateLanguage.slovak,
+    'sl': TranslateLanguage.slovenian,
+    'es': TranslateLanguage.spanish,
+    'sv': TranslateLanguage.swedish,
+    'sw': TranslateLanguage.swahili,
+    'tl': TranslateLanguage.tagalog,
+    'ta': TranslateLanguage.tamil,
+    'te': TranslateLanguage.telugu,
+    'th': TranslateLanguage.thai,
+    'tr': TranslateLanguage.turkish,
+    'uk': TranslateLanguage.ukrainian,
+    'ur': TranslateLanguage.urdu,
+    'vi': TranslateLanguage.vietnamese,
+    'cy': TranslateLanguage.welsh,
+  };
 }
 
 class TranslateRemoteModel {
   TranslateRemoteModel.fromMap(Map<dynamic, dynamic> data)
-      : language = FlMlKitTranslateText()
-            .toTranslateLanguage(data['language'] as String)!,
-        modelType = _toTranslateRemoteModelType(data['modelType'] as String?),
-        isBaseModel = data['isBaseModel'] as bool?;
+    : language =
+          FlMlKitTranslateText().toTranslateLanguage(
+            data['language'] as String,
+          )!,
+      modelType = _toTranslateRemoteModelType(data['modelType'] as String?),
+      isBaseModel = data['isBaseModel'] as bool?;
 
   /// Translate language
   late TranslateLanguage language;

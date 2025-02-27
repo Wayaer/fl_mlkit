@@ -20,7 +20,7 @@ class FlMlKitScanning extends StatefulWidget {
     this.fit = BoxFit.fitWidth,
     this.uninitialized,
     this.frequency = 500,
-  }) : barcodeFormats = barcodeFormats ?? <BarcodeFormat>[BarcodeFormat.qrCode];
+  }) : barcodeFormats = barcodeFormats ?? [BarcodeFormat.qrCode];
 
   /// 码识别类型
   /// Identification type

@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(MaterialApp(
+  runApp(
+    MaterialApp(
       navigatorKey: FlExtended().navigatorKey,
       scaffoldMessengerKey: FlExtended().scaffoldMessengerKey,
       debugShowCheckedModeBanner: false,
@@ -12,12 +13,13 @@ void main() {
       darkTheme: ThemeData.dark(useMaterial3: true),
       title: 'FlMlKitTranslate',
       home: Scaffold(
-          appBar: AppBarText('Fl MlKit Translate Text'),
-          body: SingleChildScrollView(
-              child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: _App(),
-          )))));
+        appBar: AppBarText('Fl MlKit Translate Text'),
+        body: SingleChildScrollView(
+          child: Padding(padding: const EdgeInsets.all(10.0), child: _App()),
+        ),
+      ),
+    ),
+  );
 }
 
 class _App extends StatefulWidget {
@@ -49,23 +51,26 @@ class _AppState extends State<_App> {
       }
     }
     if (!hasZH) {
-      final state =
-          await translateText.downloadedModel(TranslateLanguage.chinese);
+      final state = await translateText.downloadedModel(
+        TranslateLanguage.chinese,
+      );
       'DownloadedModel TranslateLanguage.chinese = $state'.log();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      ElevatedText(
+    return Column(
+      children: [
+        ElevatedText(
           text: 'TranslateRemoteModel Manager',
           onPressed: () {
             context.requestFocus();
             push(const TranslateRemoteModelManagerPage());
-          }),
-      const SizedBox(height: 20),
-      TextField(
+          },
+        ),
+        const SizedBox(height: 20),
+        TextField(
           controller: controller,
           maxLength: 500,
           maxLines: 4,
@@ -73,58 +78,81 @@ class _AppState extends State<_App> {
             context.requestFocus();
           },
           decoration: const InputDecoration(
-              border: OutlineInputBorder(), hintText: 'Please enter text')),
-      StatefulBuilder(builder: (_, state) {
-        return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-          ElevatedText(
-              onPressed: () async {
-                context.requestFocus();
-                final language = await selectLanguage();
-                if (language != null &&
-                    language != translateText.sourceLanguage &&
-                    language != translateText.targetLanguage) {
-                  translateText
-                      .switchLanguage(language, translateText.targetLanguage)
-                      .then((value) {
-                    state(() {});
-                  });
-                }
-              },
-              text: translateText.sourceLanguage.name),
-          IconButton(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              onPressed: () {
-                translateText
-                    .switchLanguage(translateText.targetLanguage,
-                        translateText.sourceLanguage)
-                    .then((value) {
-                  state(() {});
-                });
-              },
-              icon: const Icon(Icons.swap_horizontal_circle)),
-          ElevatedText(
-              onPressed: () async {
-                context.requestFocus();
-                final language = await selectLanguage();
-                if (language != null &&
-                    language != translateText.sourceLanguage &&
-                    language != translateText.targetLanguage) {
-                  translateText
-                      .switchLanguage(translateText.sourceLanguage, language)
-                      .then((value) {
-                    state(() {});
-                  });
-                }
-              },
-              text: translateText.targetLanguage.name),
-        ]);
-      }),
-      ElevatedText(text: 'Translation', onPressed: translation),
-      const SizedBox(height: 20),
-      ValueListenableBuilder(
-          valueListenable: text,
-          builder: (_, String value, __) {
-            return Universal(
+            border: OutlineInputBorder(),
+            hintText: 'Please enter text',
+          ),
+        ),
+        StatefulBuilder(
+          builder: (_, state) {
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedText(
+                  onPressed: () async {
+                    context.requestFocus();
+                    final language = await selectLanguage();
+                    if (language != null &&
+                        language != translateText.sourceLanguage &&
+                        language != translateText.targetLanguage) {
+                      translateText
+                          .switchLanguage(
+                        language,
+                        translateText.targetLanguage,
+                      )
+                          .then((value) {
+                        state(() {});
+                      });
+                    }
+                  },
+                  text: translateText.sourceLanguage.name,
+                ),
+                IconButton(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  onPressed: () {
+                    translateText
+                        .switchLanguage(
+                      translateText.targetLanguage,
+                      translateText.sourceLanguage,
+                    )
+                        .then((value) {
+                      state(() {});
+                    });
+                  },
+                  icon: const Icon(Icons.swap_horizontal_circle),
+                ),
+                ElevatedText(
+                  onPressed: () async {
+                    context.requestFocus();
+                    final language = await selectLanguage();
+                    if (language != null &&
+                        language != translateText.sourceLanguage &&
+                        language != translateText.targetLanguage) {
+                      translateText
+                          .switchLanguage(
+                        translateText.sourceLanguage,
+                        language,
+                      )
+                          .then((value) {
+                        state(() {});
+                      });
+                    }
+                  },
+                  text: translateText.targetLanguage.name,
+                ),
+              ],
+            );
+          },
+        ),
+        ElevatedText(text: 'Translation', onPressed: translation),
+        const SizedBox(height: 20),
+        Card(
+          child: ValueListenableBuilder(
+            valueListenable: text,
+            builder: (_, String value, __) {
+              return Universal(
                 onLongPress: () {
                   value.toClipboard;
                   showToast('Has been copied');
@@ -132,13 +160,13 @@ class _AppState extends State<_App> {
                 alignment: Alignment.center,
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10)),
-                child: BText(value,
-                    color: Colors.black, textAlign: TextAlign.center));
-          })
-    ]);
+                child: BText(value, textAlign: TextAlign.center),
+              );
+            },
+          ),
+        ),
+      ],
+    );
   }
 
   Future<void> translation() async {
@@ -147,10 +175,12 @@ class _AppState extends State<_App> {
       return;
     }
     context.requestFocus();
-    final hasSourceModel =
-        await translateText.isModelDownloaded(translateText.sourceLanguage);
-    final hasTargetModel =
-        await translateText.isModelDownloaded(translateText.targetLanguage);
+    final hasSourceModel = await translateText.isModelDownloaded(
+      translateText.sourceLanguage,
+    );
+    final hasTargetModel = await translateText.isModelDownloaded(
+      translateText.targetLanguage,
+    );
     if (hasSourceModel && hasTargetModel) {
       final value = await translateText.translate(controller.text);
       if (value != null) text.value = value;
@@ -160,30 +190,36 @@ class _AppState extends State<_App> {
   }
 
   Future<TranslateLanguage?> selectLanguage() => Container(
-      padding: const EdgeInsets.all(20),
-      decoration: const BoxDecoration(
-          color: Colors.white,
+        padding: const EdgeInsets.all(20),
+        decoration: const BoxDecoration(
           borderRadius: BorderRadius.horizontal(
-              left: Radius.circular(10), right: Radius.circular(10))),
-      child: CustomFutureBuilder<List<TranslateRemoteModel>>(
+            left: Radius.circular(10),
+            right: Radius.circular(10),
+          ),
+        ),
+        child: CustomFutureBuilder<List<TranslateRemoteModel>>(
           future: translateText.getDownloadedModels,
           onWaiting: (_) => const CircularProgressIndicator(),
           onDone: (_, value, __) {
             return ListView.separated(
-                itemBuilder: (_, index) {
-                  return Universal(
-                      onTap: () {
-                        pop(value[index].language);
-                      },
-                      padding: const EdgeInsets.symmetric(vertical: 5),
-                      child: BText(value[index].language.toString(),
-                          color: Colors.black));
-                },
-                itemCount: value.length,
-                separatorBuilder: (BuildContext context, int index) =>
-                    const Divider(thickness: 0.3));
-          })).popupBottomSheet(
-      options: const BottomSheetOptions(isScrollControlled: false));
+              itemBuilder: (_, index) {
+                return Universal(
+                  onTap: () {
+                    pop(value[index].language);
+                  },
+                  padding: const EdgeInsets.symmetric(vertical: 5),
+                  child: BText(value[index].language.toString()),
+                );
+              },
+              itemCount: value.length,
+              separatorBuilder: (BuildContext context, int index) =>
+                  const Divider(thickness: 0.3),
+            );
+          },
+        ),
+      ).popupBottomSheet(
+        options: const BottomSheetOptions(isScrollControlled: false),
+      );
 
   @override
   void dispose() {
@@ -214,65 +250,72 @@ class _TranslateRemoteModelManagerPageState
   Future<void> getDownloadedModels() async {
     var list = await FlMlKitTranslateText().getDownloadedModels();
     listLanguage = list.builder(
-        (item) => FlMlKitTranslateText().toAbbreviations(item.language));
+      (item) => FlMlKitTranslateText().toAbbreviations(item.language),
+    );
     setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBarText('TranslateRemoteModel Manager'),
-        body: ListView.separated(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          itemBuilder: (_, int index) {
-            var item = TranslateLanguage.values[index];
-            var abb = FlMlKitTranslateText().toAbbreviations(item);
-            var isDownload = listLanguage.contains(abb);
-            return Universal(
-                direction: Axis.horizontal,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                children: [
-                  RText(texts: [
-                    '${abb.toUpperCase()}  ',
-                    item.toString().split('.')[1]
-                  ], styles: [
-                    TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: context.theme.primaryColor),
-                    TextStyle(color: context.theme.primaryColor),
-                  ]),
-                  ValueBuilder<bool>(builder: (_, bool? isLoading, updater) {
-                    isLoading ??= false;
-                    if (isLoading) return const CircularProgressIndicator();
-                    return isDownload
-                        ? ElevatedText(
-                            text: 'Delete',
-                            onPressed: () async {
-                              updater(true);
-                              final state = await FlMlKitTranslateText()
-                                  .deleteDownloadedModel(item);
-                              updater(false);
-                              if (state) getDownloadedModels();
-                            })
-                        : ElevatedText(
-                            text: 'Download',
-                            onPressed: () async {
-                              updater(true);
-                              final state = await FlMlKitTranslateText()
-                                  .downloadedModel(item);
-                              updater(false);
-                              if (state) getDownloadedModels();
-                            });
-                  })
-                ]);
-          },
-          itemCount: TranslateLanguage.values.length,
-          separatorBuilder: (BuildContext context, int index) =>
-              const Divider(),
-        ));
+      appBar: AppBarText('TranslateRemoteModel Manager'),
+      body: ListView.separated(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        itemBuilder: (_, int index) {
+          var item = TranslateLanguage.values[index];
+          var abb = FlMlKitTranslateText().toAbbreviations(item);
+          var isDownload = listLanguage.contains(abb);
+          return Universal(
+            direction: Axis.horizontal,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            children: [
+              BText.rich(
+                texts: [
+                  '${abb.toUpperCase()}  ',
+                  item.toString().split('.')[1],
+                ],
+                styles: [
+                  TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ],
+              ),
+              ValueBuilder<bool>(
+                builder: (_, bool? isLoading, updater) {
+                  isLoading ??= false;
+                  if (isLoading) return const CircularProgressIndicator();
+                  return isDownload
+                      ? ElevatedText(
+                          text: 'Delete',
+                          onPressed: () async {
+                            updater(true);
+                            final state = await FlMlKitTranslateText()
+                                .deleteDownloadedModel(item);
+                            updater(false);
+                            if (state) getDownloadedModels();
+                          },
+                        )
+                      : ElevatedText(
+                          text: 'Download',
+                          onPressed: () async {
+                            updater(true);
+                            final state = await FlMlKitTranslateText()
+                                .downloadedModel(item);
+                            updater(false);
+                            if (state) getDownloadedModels();
+                          },
+                        );
+                },
+              ),
+            ],
+          );
+        },
+        itemCount: TranslateLanguage.values.length,
+        separatorBuilder: (BuildContext context, int index) => const Divider(),
+      ),
+    );
   }
 }
 

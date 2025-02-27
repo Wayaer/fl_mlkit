@@ -120,9 +120,9 @@ class _FlMlKitTextRecognizePageState extends State<FlMlKitTextRecognizePage>
     return ValueListenableBuilder(
         valueListenable: flashState,
         builder: (_, bool state, __) {
-          return IconBox(
+          return IconLabel(
               size: 30,
-              color: state ? Colors.white : Colors.white.withOpacity(0.6),
+              color: state ? Colors.white : Colors.white.withValues(alpha: 0.6),
               padding: const EdgeInsets.fromLTRB(10, 10, 10, 40),
               icon: state ? Icons.flash_on : Icons.flash_off,
               onTap: () {
@@ -244,7 +244,7 @@ class _Painter extends CustomPainter {
         rect.width / context.devicePixelRatio,
         rect.height / context.devicePixelRatio);
     canvas.drawRect(r, paint);
-    paint.color = Colors.blue.withOpacity(0.4);
+    paint.color = Colors.blue.withValues(alpha: 0.4);
     paint.style = PaintingStyle.fill;
     canvas.drawRect(r, paint);
   }

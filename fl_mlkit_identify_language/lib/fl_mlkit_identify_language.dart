@@ -1,5 +1,3 @@
-library fl_mlkit_identify_language;
-
 import 'dart:async';
 
 import 'package:flutter/services.dart';
@@ -10,8 +8,9 @@ class FlMlKitIdentifyLanguage {
 
   FlMlKitIdentifyLanguage._();
 
-  static const MethodChannel _channel =
-      MethodChannel('fl_mlkit_identify_language');
+  static const MethodChannel _channel = MethodChannel(
+    'fl_mlkit_identify_language',
+  );
 
   static FlMlKitIdentifyLanguage? _singleton;
 
@@ -21,8 +20,7 @@ class FlMlKitIdentifyLanguage {
 
   /// Identify language
   Future<IdentifiedLanguageModel?> identifyLanguage(String text) async {
-    final String? tag =
-        await _channel.invokeMethod<String?>('identifyLanguage', text);
+    final tag = await _channel.invokeMethod<String>('identifyLanguage', text);
     if (tag != null) {
       return IdentifiedLanguageModel(confidence: _confidence, languageTag: tag);
     }
@@ -32,9 +30,8 @@ class FlMlKitIdentifyLanguage {
   /// Identify possible languages
   Future<List<IdentifiedLanguageModel>> identifyPossibleLanguages(
       String text) async {
-    final List<Map<dynamic, dynamic>>? list =
-        await _channel.invokeListMethod<Map<dynamic, dynamic>>(
-            'identifyPossibleLanguages', text);
+    final list = await _channel.invokeListMethod<Map<dynamic, dynamic>>(
+        'identifyPossibleLanguages', text);
     if (list != null && list.isNotEmpty) {
       return list.map((data) => IdentifiedLanguageModel.fromMap(data)).toList();
     }
@@ -44,28 +41,30 @@ class FlMlKitIdentifyLanguage {
   /// Set confidence
   Future<bool> setConfidence(double confidence) async {
     assert(confidence >= 0.01 && confidence <= 1);
-    final bool? state =
-        await _channel.invokeMethod<bool?>('setConfidence', confidence);
+    final state =
+        await _channel.invokeMethod<bool>('setConfidence', confidence);
     if (state == true) _confidence = confidence;
     return state ?? false;
   }
 
   /// Get native confidence
   Future<double> getCurrentConfidence() async {
-    final double? confidence =
-        await _channel.invokeMethod<double?>('getCurrentConfidence');
+    final confidence =
+        await _channel.invokeMethod<double>('getCurrentConfidence');
     if (confidence != null) _confidence = confidence;
     return confidence ?? _confidence;
   }
 
   /// Be sure to call this method when you are no longer using a collapsible
   Future<bool> dispose(double confidence) async =>
-      (await _channel.invokeMethod<bool?>('dispose')) ?? false;
+      (await _channel.invokeMethod<bool>('dispose')) ?? false;
 }
 
 class IdentifiedLanguageModel {
-  IdentifiedLanguageModel(
-      {required this.languageTag, required this.confidence});
+  IdentifiedLanguageModel({
+    required this.languageTag,
+    required this.confidence,
+  });
 
   IdentifiedLanguageModel.fromMap(Map<dynamic, dynamic> data)
       : languageTag = data['languageTag'] as String,

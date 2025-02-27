@@ -1,3 +1,7 @@
+## 4.3.1
+
+* Update fl_channel
+
 ## 4.2.0
 
 * Update gradle version

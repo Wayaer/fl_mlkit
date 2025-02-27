@@ -114,7 +114,7 @@ public class FlMlKitTextRecognizePlugin: NSObject, FlutterPlugin {
                 map.updateValue(image.size.height, forKey: "height")
                 map.updateValue(image.size.width, forKey: "width")
                 if result == nil {
-                    _ = FlCamera.shared.flEvent?.send(map)
+                    _ = FlCamera.shared.flEventChannel?.send(map)
                 } else {
                     result!(map)
                 }
