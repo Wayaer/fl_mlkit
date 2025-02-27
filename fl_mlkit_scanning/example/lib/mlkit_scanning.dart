@@ -38,135 +38,170 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
     return PopScope(
       canPop: false,
       child: Scaffold(
-          body: Stack(children: <Widget>[
-        FlMlKitScanning(
-            frequency: 800,
-            camera: currentCamera,
-            // overlay: const ScannerBox(),
-            onFlashChanged: (FlashState state) {
-              showToast('$state');
-              flashState.value = state == FlashState.on;
-            },
-            onZoomChanged: (CameraZoomState zoom) {
-              showToast('zoom ratio:${zoom.zoomRatio}');
-              maxRatio = zoom.maxZoomRatio ?? 10;
-              ratio.value = zoom.zoomRatio ?? 1;
-            },
-            resolution: CameraResolution.veryHigh,
-            autoScanning: true,
-            barcodeFormats: const [BarcodeFormat.all],
-            fit: BoxFit.fitWidth,
-            uninitialized: Container(
+        body: Stack(
+          children: <Widget>[
+            FlMlKitScanning(
+              frequency: 800,
+              camera: currentCamera,
+              // overlay: const ScannerBox(),
+              onFlashChanged: (FlashState state) {
+                showToast('$state');
+                flashState.value = state == FlashState.on;
+              },
+              onZoomChanged: (CameraZoomState zoom) {
+                showToast('zoom ratio:${zoom.zoomRatio}');
+                maxRatio = zoom.maxZoomRatio ?? 10;
+                ratio.value = zoom.zoomRatio ?? 1;
+              },
+              resolution: CameraResolution.veryHigh,
+              autoScanning: true,
+              barcodeFormats: const [BarcodeFormat.all],
+              fit: BoxFit.fitWidth,
+              uninitialized: Container(
                 color: Colors.black,
                 alignment: Alignment.center,
-                child: const Text('Camera not initialized',
-                    style: TextStyle(color: Colors.blueAccent))),
-            onDataChanged: (AnalysisImageModel data) {
-              final List<Barcode>? barcodes = data.barcodes;
-              if (barcodes != null && barcodes.isNotEmpty) {
-                model = data;
-                animationController.reset();
-              }
-            }),
-        AnimatedBuilder(
-            animation: animationController,
-            builder: (_, __) =>
-                model != null ? _RectBox(model!) : const SizedBox()),
-        Universal(
-            alignment: Alignment.bottomCenter,
-            mainAxisSize: MainAxisSize.min,
-            children: [buildRatioSlider, buildFlashState]),
-        Align(
-          alignment: Alignment.centerRight,
-          child: SizedBox(
-              width: 150,
-              height: 300,
-              child: FlListWheelState(
+                child: const Text(
+                  'Camera not initialized',
+                  style: TextStyle(color: Colors.blueAccent),
+                ),
+              ),
+              onDataChanged: (AnalysisImageModel data) {
+                final List<Barcode>? barcodes = data.barcodes;
+                if (barcodes != null && barcodes.isNotEmpty) {
+                  model = data;
+                  animationController.reset();
+                }
+              },
+            ),
+            AnimatedBuilder(
+              animation: animationController,
+              builder:
+                  (_, __) =>
+                      model != null ? _RectBox(model!) : const SizedBox(),
+            ),
+            Universal(
+              alignment: Alignment.bottomCenter,
+              mainAxisSize: MainAxisSize.min,
+              children: [buildRatioSlider, buildFlashState],
+            ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: SizedBox(
+                width: 150,
+                height: 300,
+                child: FlListWheelState(
                   initialItem: 1,
                   count: BarcodeFormat.values.length,
-                  builder: (FixedExtentScrollController controller) =>
-                      FlListWheel.builder(
-                          controller: controller,
-                          onSelectedItemChanged: (int index) {
-                            var format = BarcodeFormat.values[index];
-                            FlMlKitScanningController()
-                                .setBarcodeFormat([format]).then((value) {
-                              animationReset();
-                              showToast('setBarcodeFormat:$format $value');
-                            });
-                          },
-                          options: const WheelOptions.cupertino(),
-                          itemBuilder: (_, int index) => Align(
-                              alignment: Alignment.center,
-                              child: BText(BarcodeFormat.values[index].name,
-                                  fontSize: 16, fontWeight: FontWeight.bold)),
-                          itemCount: BarcodeFormat.values.length))),
-        ),
-        Positioned(
-            right: 12,
-            left: 12,
-            top: context.statusBarHeight + 12,
-            child: Row(
+                  builder:
+                      (FixedExtentScrollController controller) =>
+                          FlListWheel.builder(
+                            controller: controller,
+                            onSelectedItemChanged: (int index) {
+                              var format = BarcodeFormat.values[index];
+                              FlMlKitScanningController()
+                                  .setBarcodeFormat([format])
+                                  .then((value) {
+                                    animationReset();
+                                    showToast(
+                                      'setBarcodeFormat:$format $value',
+                                    );
+                                  });
+                            },
+                            options: const WheelOptions.cupertino(),
+                            itemBuilder:
+                                (_, int index) => Align(
+                                  alignment: Alignment.center,
+                                  child: BText(
+                                    BarcodeFormat.values[index].name,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                            itemCount: BarcodeFormat.values.length,
+                          ),
+                ),
+              ),
+            ),
+            Positioned(
+              right: 12,
+              left: 12,
+              top: context.statusBarHeight + 12,
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   const BackButton(color: Colors.white, onPressed: pop),
-                  Row(children: [
-                    ElevatedIcon(
-                        icon: Icons.flip_camera_ios, onPressed: switchCamera),
-                    const SizedBox(width: 12),
-                    previewButton,
-                    const SizedBox(width: 12),
-                    canScanningButton,
-                  ])
-                ])),
-      ])),
+                  Row(
+                    children: [
+                      ElevatedIcon(
+                        icon: Icons.flip_camera_ios,
+                        onPressed: switchCamera,
+                      ),
+                      const SizedBox(width: 12),
+                      previewButton,
+                      const SizedBox(width: 12),
+                      canScanningButton,
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
   Widget get buildFlashState {
     return ValueListenableBuilder(
-        valueListenable: flashState,
-        builder: (_, bool state, __) {
-          return IconLabel(
-              size: 30,
-              color: state ? Colors.white : Colors.white.withValues(alpha: 0.6),
-              padding: const EdgeInsets.fromLTRB(10, 10, 10, 40),
-              icon: state ? Icons.flash_on : Icons.flash_off,
-              onTap: () {
-                FlMlKitScanningController()
-                    .setFlashMode(state ? FlashState.off : FlashState.on);
-              });
-        });
+      valueListenable: flashState,
+      builder: (_, bool state, __) {
+        return IconLabel(
+          size: 30,
+          color: state ? Colors.white : Colors.white.withValues(alpha: 0.6),
+          padding: const EdgeInsets.fromLTRB(10, 10, 10, 40),
+          icon: state ? Icons.flash_on : Icons.flash_off,
+          onTap: () {
+            FlMlKitScanningController().setFlashMode(
+              state ? FlashState.off : FlashState.on,
+            );
+          },
+        );
+      },
+    );
   }
 
   Widget get buildRatioSlider {
     return ValueListenableBuilder(
-        valueListenable: ratio,
-        builder: (_, double ratio, __) {
-          return CupertinoSlider(
-              value: ratio.floorToDouble(),
-              min: 1,
-              max: maxRatio,
-              divisions: maxRatio.toInt(),
-              onChanged: (double value) {
-                FlMlKitScanningController().setZoomRatio(value.floorToDouble());
-              });
-        });
+      valueListenable: ratio,
+      builder: (_, double ratio, __) {
+        return CupertinoSlider(
+          value: ratio.floorToDouble(),
+          min: 1,
+          max: maxRatio,
+          divisions: maxRatio.toInt(),
+          onChanged: (double value) {
+            FlMlKitScanningController().setZoomRatio(value.floorToDouble());
+          },
+        );
+      },
+    );
   }
 
   Widget get canScanningButton => ValueListenableBuilder(
-      valueListenable: canScanning,
-      builder: (_, bool value, __) {
-        return ElevatedText(
-            text: value ? 'pause' : 'start',
-            onPressed: () async {
-              value
-                  ? await FlMlKitScanningController().pauseScanning()
-                  : await FlMlKitScanningController().startScanning();
-              canScanning.value = !canScanning.value;
-              animationReset();
-            });
-      });
+    valueListenable: canScanning,
+    builder: (_, bool value, __) {
+      return ElevatedText(
+        text: value ? 'pause' : 'start',
+        onPressed: () async {
+          value
+              ? await FlMlKitScanningController().pauseScanning()
+              : await FlMlKitScanningController().startScanning();
+          canScanning.value = !canScanning.value;
+          animationReset();
+        },
+      );
+    },
+  );
 
   void animationReset() {
     model = null;
@@ -174,21 +209,24 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
   }
 
   Widget get previewButton => ValueListenableBuilder<FlCameraOptions?>(
-      valueListenable: FlMlKitScanningController().cameraOptions,
-      builder: (_, FlCameraOptions? options, __) {
-        return ElevatedText(
-            text: options == null ? 'start' : 'stop',
-            onPressed: () async {
-              if (options == null) {
-                if (FlMlKitScanningController().previousCamera != null) {
-                  await FlMlKitScanningController().startPreview(
-                      FlMlKitScanningController().previousCamera!);
-                }
-              } else {
-                await FlMlKitScanningController().stopPreview();
-              }
-            });
-      });
+    valueListenable: FlMlKitScanningController().cameraOptions,
+    builder: (_, FlCameraOptions? options, __) {
+      return ElevatedText(
+        text: options == null ? 'start' : 'stop',
+        onPressed: () async {
+          if (options == null) {
+            if (FlMlKitScanningController().previousCamera != null) {
+              await FlMlKitScanningController().startPreview(
+                FlMlKitScanningController().previousCamera!,
+              );
+            }
+          } else {
+            await FlMlKitScanningController().stopPreview();
+          }
+        },
+      );
+    },
+  );
 
   Future<void> switchCamera() async {
     for (final CameraInfo cameraInfo in FlMlKitScanningController().cameras!) {
@@ -232,18 +270,24 @@ class _RectBox extends StatelessWidget {
     final double w = model.width! / context.devicePixelRatio;
     final double h = model.height! / context.devicePixelRatio;
     return Universal(
-        alignment: Alignment.center,
-        child: CustomPaint(
-            size: Size(w, h), painter: _LinePainter(rect, context)));
+      alignment: Alignment.center,
+      child: CustomPaint(
+        size: Size(w, h),
+        painter: _LinePainter(rect, context),
+      ),
+    );
   }
 
   Widget corners(List<Offset> corners, BuildContext context) {
     final double w = model.width! / context.devicePixelRatio;
     final double h = model.height! / context.devicePixelRatio;
     return Universal(
-        alignment: Alignment.center,
-        child: CustomPaint(
-            size: Size(w, h), painter: _BoxPainter(corners, context)));
+      alignment: Alignment.center,
+      child: CustomPaint(
+        size: Size(w, h),
+        painter: _BoxPainter(corners, context),
+      ),
+    );
   }
 }
 
@@ -255,15 +299,17 @@ class _LinePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final Paint paint = Paint()
-      ..color = Colors.red
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2;
+    final Paint paint =
+        Paint()
+          ..color = Colors.red
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 2;
     final r = Rect.fromLTWH(
-        (rect.left) / context.devicePixelRatio,
-        (rect.top) / context.devicePixelRatio,
-        rect.width / context.devicePixelRatio,
-        rect.height / context.devicePixelRatio);
+      (rect.left) / context.devicePixelRatio,
+      (rect.top) / context.devicePixelRatio,
+      rect.width / context.devicePixelRatio,
+      rect.height / context.devicePixelRatio,
+    );
     canvas.drawRect(r, paint);
   }
 
@@ -279,14 +325,20 @@ class _BoxPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final Paint paint = Paint()
-      ..color = Colors.blue.withValues(alpha: 0.4)
-      ..strokeWidth = 2;
+    final Paint paint =
+        Paint()
+          ..color = Colors.blue.withValues(alpha: 0.4)
+          ..strokeWidth = 2;
 
-    final offsets = corners
-        .map((e) => Offset(
-            (e.dx / context.devicePixelRatio), e.dy / context.devicePixelRatio))
-        .toList();
+    final offsets =
+        corners
+            .map(
+              (e) => Offset(
+                (e.dx / context.devicePixelRatio),
+                e.dy / context.devicePixelRatio,
+              ),
+            )
+            .toList();
     final rect = Rect.fromPoints(offsets[1], offsets[3]);
     canvas.drawRect(rect, paint);
   }

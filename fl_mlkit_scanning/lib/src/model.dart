@@ -2,9 +2,9 @@ part of '../fl_mlkit_scanning.dart';
 
 class AnalysisImageModel {
   AnalysisImageModel.fromMap(Map<dynamic, dynamic> data)
-      : barcodes = _getBarcodeList(data['barcodes'] as List<dynamic>?),
-        height = data['height'] as double?,
-        width = data['width'] as double?;
+    : barcodes = _getBarcodeList(data['barcodes'] as List<dynamic>?),
+      height = data['height'] as double?,
+      width = data['width'] as double?;
 
   /// The coordinate points of [corners] and the boundary line of [boundingbox] are
   /// based on width and height
@@ -27,27 +27,29 @@ class AnalysisImageModel {
 class Barcode {
   /// Create a [Barcode] from native data.
   Barcode.fromMap(Map<dynamic, dynamic> data)
-      : corners = _getCorners(data['corners'] as List<dynamic>?),
-        format = _getFormat(data['format'] as int?),
-        bytes = data['bytes'] as Uint8List?,
-        value = data['value'] as String?,
-        displayValue = data['displayValue'] as String?,
-        boundingBox = _getRect(data['boundingBox'] as Map<dynamic, dynamic>?),
-        type = data['type'] != null
-            ? BarcodeType.values[data['type'] as int]
-            : null,
-        calendarEvent =
-            _getCalendarEvent(data['calendarEvent'] as Map<dynamic, dynamic>?),
-        contactInfo =
-            _getContactInfo(data['contactInfo'] as Map<dynamic, dynamic>?),
-        driverLicense =
-            _getDriverLicense(data['driverLicense'] as Map<dynamic, dynamic>?),
-        email = _getEmail(data['email'] as Map<dynamic, dynamic>?),
-        geoPoint = _getGeoPoint(data['geoPoint'] as Map<dynamic, dynamic>?),
-        phone = _getPhone(data['phone'] as Map<dynamic, dynamic>?),
-        sms = _getSMS(data['sms'] as Map<dynamic, dynamic>?),
-        url = _getUrl(data['url'] as Map<dynamic, dynamic>?),
-        wifi = _getWiFi(data['wifi'] as Map<dynamic, dynamic>?);
+    : corners = _getCorners(data['corners'] as List<dynamic>?),
+      format = _getFormat(data['format'] as int?),
+      bytes = data['bytes'] as Uint8List?,
+      value = data['value'] as String?,
+      displayValue = data['displayValue'] as String?,
+      boundingBox = _getRect(data['boundingBox'] as Map<dynamic, dynamic>?),
+      type =
+          data['type'] != null ? BarcodeType.values[data['type'] as int] : null,
+      calendarEvent = _getCalendarEvent(
+        data['calendarEvent'] as Map<dynamic, dynamic>?,
+      ),
+      contactInfo = _getContactInfo(
+        data['contactInfo'] as Map<dynamic, dynamic>?,
+      ),
+      driverLicense = _getDriverLicense(
+        data['driverLicense'] as Map<dynamic, dynamic>?,
+      ),
+      email = _getEmail(data['email'] as Map<dynamic, dynamic>?),
+      geoPoint = _getGeoPoint(data['geoPoint'] as Map<dynamic, dynamic>?),
+      phone = _getPhone(data['phone'] as Map<dynamic, dynamic>?),
+      sms = _getSMS(data['sms'] as Map<dynamic, dynamic>?),
+      url = _getUrl(data['url'] as Map<dynamic, dynamic>?),
+      wifi = _getWiFi(data['wifi'] as Map<dynamic, dynamic>?);
 
   /// Returns four corner points in clockwise direction starting with top-left.
   ///
@@ -124,13 +126,13 @@ class Barcode {
 class CalendarEvent {
   /// Create a [CalendarEvent] from native data.
   CalendarEvent.fromMap(Map<dynamic, dynamic> data)
-      : description = data['description'] as String?,
-        start = DateTime.tryParse(data['start'] as String? ?? ''),
-        end = DateTime.tryParse(data['end'] as String? ?? ''),
-        location = data['location'] as String?,
-        organizer = data['organizer'] as String?,
-        status = data['status'] as String?,
-        summary = data['summary'] as String?;
+    : description = data['description'] as String?,
+      start = DateTime.tryParse(data['start'] as String? ?? ''),
+      end = DateTime.tryParse(data['end'] as String? ?? ''),
+      location = data['location'] as String?,
+      organizer = data['organizer'] as String?,
+      status = data['status'] as String?,
+      summary = data['summary'] as String?;
 
   /// Gets the description of the calendar event.
   ///
@@ -172,23 +174,31 @@ class CalendarEvent {
 class ContactInfo {
   /// Create a [ContactInfo] from native data.
   ContactInfo.fromMap(Map<dynamic, dynamic> data)
-      : addresses = data['addresses'] != null
-            ? List<Address>.unmodifiable((data['addresses'] as List<dynamic>)
-                .map<dynamic>(
-                    (dynamic e) => Address.fromMap(e as Map<dynamic, dynamic>)))
-            : null,
-        emails = data['emails'] != null
-            ? List<Email>.unmodifiable((data['emails'] as List<dynamic>)
-                .map<dynamic>(
-                    (dynamic e) => Email.fromMap(e as Map<dynamic, dynamic>)))
-            : null,
-        name = _getName(data['name'] as Map<dynamic, dynamic>?),
-        organization = data['organization'] as String?,
-        phones = List<Phone>.unmodifiable((data['phones'] as List<dynamic>)
-            .map<dynamic>(
-                (dynamic e) => Phone.fromMap(e as Map<dynamic, dynamic>))),
-        title = data['title'] as String?,
-        urls = List<String>.unmodifiable(data['urls'] as List<dynamic>);
+    : addresses =
+          data['addresses'] != null
+              ? List<Address>.unmodifiable(
+                (data['addresses'] as List<dynamic>).map<dynamic>(
+                  (dynamic e) => Address.fromMap(e as Map<dynamic, dynamic>),
+                ),
+              )
+              : null,
+      emails =
+          data['emails'] != null
+              ? List<Email>.unmodifiable(
+                (data['emails'] as List<dynamic>).map<dynamic>(
+                  (dynamic e) => Email.fromMap(e as Map<dynamic, dynamic>),
+                ),
+              )
+              : null,
+      name = _getName(data['name'] as Map<dynamic, dynamic>?),
+      organization = data['organization'] as String?,
+      phones = List<Phone>.unmodifiable(
+        (data['phones'] as List<dynamic>).map<dynamic>(
+          (dynamic e) => Phone.fromMap(e as Map<dynamic, dynamic>),
+        ),
+      ),
+      title = data['title'] as String?,
+      urls = List<String>.unmodifiable(data['urls'] as List<dynamic>);
 
   /// Gets contact person's addresses.
   ///
@@ -230,11 +240,11 @@ class ContactInfo {
 class Address {
   /// Create a [Address] from native data.
   Address.fromMap(Map<dynamic, dynamic> data)
-      : addressLines =
-            List<String>.unmodifiable(data['addressLines'] as List<dynamic>),
-        type = data['type'] != null
-            ? AddressType.values[data['type'] as int]
-            : null;
+    : addressLines = List<String>.unmodifiable(
+        data['addressLines'] as List<dynamic>,
+      ),
+      type =
+          data['type'] != null ? AddressType.values[data['type'] as int] : null;
 
   /// Gets formatted address, multiple lines when appropriate. This field always contains at least one line.
   final List<String>? addressLines;
@@ -247,13 +257,13 @@ class Address {
 class PersonName {
   /// Create a [PersonName] from native data.
   PersonName.fromMap(Map<dynamic, dynamic> data)
-      : first = data['first'] as String?,
-        middle = data['middle'] as String?,
-        last = data['last'] as String?,
-        prefix = data['prefix'] as String?,
-        suffix = data['suffix'] as String?,
-        formattedName = data['formattedName'] as String?,
-        pronunciation = data['pronunciation'] as String?;
+    : first = data['first'] as String?,
+      middle = data['middle'] as String?,
+      last = data['last'] as String?,
+      prefix = data['prefix'] as String?,
+      suffix = data['suffix'] as String?,
+      formattedName = data['formattedName'] as String?,
+      pronunciation = data['pronunciation'] as String?;
 
   /// Gets first name.
   ///
@@ -295,20 +305,20 @@ class PersonName {
 class DriverLicense {
   /// Create a [DriverLicense] from native data.
   DriverLicense.fromMap(Map<dynamic, dynamic> data)
-      : addressCity = data['addressCity'] as String?,
-        addressState = data['addressState'] as String?,
-        addressStreet = data['addressStreet'] as String?,
-        addressZip = data['addressZip'] as String?,
-        birthDate = data['birthDate'] as String?,
-        documentType = data['documentType'] as String?,
-        expiryDate = data['expiryDate'] as String?,
-        firstName = data['firstName'] as String?,
-        gender = data['gender'] as String?,
-        issueDate = data['issueDate'] as String?,
-        issuingCountry = data['issuingCountry'] as String?,
-        lastName = data['lastName'] as String?,
-        licenseNumber = data['licenseNumber'] as String?,
-        middleName = data['middleName'] as String?;
+    : addressCity = data['addressCity'] as String?,
+      addressState = data['addressState'] as String?,
+      addressStreet = data['addressStreet'] as String?,
+      addressZip = data['addressZip'] as String?,
+      birthDate = data['birthDate'] as String?,
+      documentType = data['documentType'] as String?,
+      expiryDate = data['expiryDate'] as String?,
+      firstName = data['firstName'] as String?,
+      gender = data['gender'] as String?,
+      issueDate = data['issueDate'] as String?,
+      issuingCountry = data['issuingCountry'] as String?,
+      lastName = data['lastName'] as String?,
+      licenseNumber = data['licenseNumber'] as String?,
+      middleName = data['middleName'] as String?;
 
   /// Gets city of holder's address.
   ///
@@ -387,11 +397,11 @@ class DriverLicense {
 class Email {
   /// Create a [Email] from native data.
   Email.fromMap(Map<dynamic, dynamic> data)
-      : address = data['address'] as String?,
-        body = data['body'] as String?,
-        subject = data['subject'] as String?,
-        type =
-            data['type'] != null ? EmailType.values[data['type'] as int] : null;
+    : address = data['address'] as String?,
+      body = data['body'] as String?,
+      subject = data['subject'] as String?,
+      type =
+          data['type'] != null ? EmailType.values[data['type'] as int] : null;
 
   /// Gets email's address.
   ///
@@ -418,8 +428,8 @@ class Email {
 class GeoPoint {
   /// Create a [GeoPoint] from native data.
   GeoPoint.fromMap(Map<dynamic, dynamic> data)
-      : latitude = data['latitude'] as double?,
-        longitude = data['longitude'] as double?;
+    : latitude = data['latitude'] as double?,
+      longitude = data['longitude'] as double?;
 
   /// Gets the latitude.
   final double? latitude;
@@ -432,9 +442,9 @@ class GeoPoint {
 class Phone {
   /// Create a [Phone] from native data.
   Phone.fromMap(Map<dynamic, dynamic> data)
-      : number = data['number'] as String?,
-        type =
-            data['type'] != null ? PhoneType.values[data['type'] as int] : null;
+    : number = data['number'] as String?,
+      type =
+          data['type'] != null ? PhoneType.values[data['type'] as int] : null;
 
   /// Gets phone number.
   ///
@@ -451,8 +461,8 @@ class Phone {
 class SMS {
   /// Create a [SMS] from native data.
   SMS.fromMap(Map<dynamic, dynamic> data)
-      : message = data['message'] as String?,
-        phoneNumber = data['phoneNumber'] as String?;
+    : message = data['message'] as String?,
+      phoneNumber = data['phoneNumber'] as String?;
 
   /// Gets the message content of the sms.
   ///
@@ -469,8 +479,8 @@ class SMS {
 class UrlBookmark {
   /// Create a [UrlBookmark] from native data.
   UrlBookmark.fromMap(Map<dynamic, dynamic> data)
-      : title = data['title'] as String?,
-        url = data['url'] as String?;
+    : title = data['title'] as String?,
+      url = data['url'] as String?;
 
   /// Gets the title of the bookmark.
   ///
@@ -487,10 +497,10 @@ class UrlBookmark {
 class WiFi {
   /// Create a [WiFi] from native data.
   WiFi.fromMap(Map<dynamic, dynamic> data)
-      : encryptionType =
-            EncryptionType.values[data['encryptionType'] as int? ?? 0],
-        ssid = data['ssid'] as String?,
-        password = data['password'] as String?;
+    : encryptionType =
+          EncryptionType.values[data['encryptionType'] as int? ?? 0],
+      ssid = data['ssid'] as String?,
+      password = data['password'] as String?;
 
   /// Gets the encryption type of the WIFI.
   ///
@@ -518,7 +528,11 @@ Rect? _getRect(Map<dynamic, dynamic>? data) {
       final int right = (data['right'] as int?) ?? 0;
       final int bottom = (data['bottom'] as int?) ?? 0;
       return Rect.fromLTRB(
-          left.toDouble(), top.toDouble(), right.toDouble(), bottom.toDouble());
+        left.toDouble(),
+        top.toDouble(),
+        right.toDouble(),
+        bottom.toDouble(),
+      );
     } else if (_isIOS) {
       final double x = (data['x'] as double?) ?? 0;
       final double y = (data['y'] as double?) ?? 0;
@@ -530,14 +544,20 @@ Rect? _getRect(Map<dynamic, dynamic>? data) {
   return null;
 }
 
-List<Barcode>? _getBarcodeList(List<dynamic>? data) => data
-    ?.map((dynamic item) => Barcode.fromMap(item as Map<dynamic, dynamic>))
-    .toList();
+List<Barcode>? _getBarcodeList(List<dynamic>? data) =>
+    data
+        ?.map((dynamic item) => Barcode.fromMap(item as Map<dynamic, dynamic>))
+        .toList();
 
-List<Offset>? _getCorners(List<dynamic>? data) => data != null
-    ? List<Offset>.unmodifiable(data.map<dynamic>(
-        (dynamic e) => Offset(e['x'] as double? ?? 0, e['y'] as double? ?? 0)))
-    : null;
+List<Offset>? _getCorners(List<dynamic>? data) =>
+    data != null
+        ? List<Offset>.unmodifiable(
+          data.map<dynamic>(
+            (dynamic e) =>
+                Offset(e['x'] as double? ?? 0, e['y'] as double? ?? 0),
+          ),
+        )
+        : null;
 
 BarcodeFormat _getFormat(int? value) {
   switch (value) {

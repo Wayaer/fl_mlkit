@@ -97,10 +97,9 @@ class _AppState extends State<_App> {
                   width: double.infinity,
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: Colors.white,
                     borderRadius: BorderRadius.circular(6),
                   ),
-                  child: RText(
+                  child: BText.rich(
                     texts: [
                       'confidence：',
                       item.confidence.toString(),
@@ -108,24 +107,7 @@ class _AppState extends State<_App> {
                       item.languageTag,
                     ],
                     textAlign: TextAlign.start,
-                    styles: const [
-                      TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ],
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
@@ -165,9 +147,9 @@ class _AppState extends State<_App> {
   Future<double?> selectConfidence() {
     var confidences = [0.01, 0.1, 0.25, 0.5, 0.75, 1.0];
     return Universal(
+      safeBottom: true,
       mainAxisSize: MainAxisSize.min,
       decoration: const BoxDecoration(
-        color: Colors.white,
         borderRadius: BorderRadius.horizontal(
           left: Radius.circular(10),
           right: Radius.circular(10),
@@ -176,20 +158,11 @@ class _AppState extends State<_App> {
       children: confidences.builder(
         (item) => Universal(
           width: double.infinity,
-          decoration: const BoxDecoration(
-            border: Border(
-              bottom: BorderSide(color: Colors.black12, width: 0.5),
-            ),
-          ),
           onTap: () {
             pop(item);
           },
           padding: const EdgeInsets.symmetric(vertical: 10),
-          child: BText(
-            item.toString(),
-            color: Colors.black,
-            textAlign: TextAlign.center,
-          ),
+          child: BText(item.toString(), textAlign: TextAlign.center),
         ),
       ),
     ).popupBottomSheet(
@@ -200,14 +173,14 @@ class _AppState extends State<_App> {
 
 class AppBarText extends AppBar {
   AppBarText(String text, {super.key})
-      : super(
-          elevation: 0,
-          title: BText(text, fontSize: 18, fontWeight: FontWeight.bold),
-          centerTitle: true,
-        );
+    : super(
+        elevation: 0,
+        title: BText(text, fontSize: 18, fontWeight: FontWeight.bold),
+        centerTitle: true,
+      );
 }
 
 class ElevatedText extends ElevatedButton {
   ElevatedText({super.key, required String text, required super.onPressed})
-      : super(child: Text(text));
+    : super(child: Text(text));
 }

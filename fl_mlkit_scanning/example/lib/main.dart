@@ -7,14 +7,17 @@ import 'package:permission_handler/permission_handler.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(MaterialApp(
+  runApp(
+    MaterialApp(
       navigatorKey: FlExtended().navigatorKey,
       scaffoldMessengerKey: FlExtended().scaffoldMessengerKey,
       debugShowCheckedModeBanner: false,
       theme: ThemeData.light(useMaterial3: true),
       darkTheme: ThemeData.dark(useMaterial3: true),
       home: _App(),
-      title: 'FlMlKitScanning'));
+      title: 'FlMlKitScanning',
+    ),
+  );
 }
 
 class _App extends StatefulWidget {
@@ -28,13 +31,17 @@ class _AppState extends State<_App> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBarText('Fl MlKit Scanning'),
-        body: Universal(width: double.infinity, children: [
+      appBar: AppBarText('Fl MlKit Scanning'),
+      body: Universal(
+        width: double.infinity,
+        children: [
           ElevatedText(onPressed: openCamera, text: 'Turn on camera scanning'),
           ElevatedText(onPressed: scanImage, text: 'Image scanning'),
           const SizedBox(height: 30),
-          CodeBox(list)
-        ]));
+          CodeBox(list),
+        ],
+      ),
+    );
   }
 
   void scanImage() {
@@ -62,31 +69,38 @@ class CodeBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Universal(
-        expanded: expanded,
-        isScroll: expanded,
-        children: list.builderEntry((MapEntry<int, Barcode> entry) {
-          return Column(children: <Widget>[
+      expanded: expanded,
+      isScroll: expanded,
+      children: list.builderEntry((MapEntry<int, Barcode> entry) {
+        return Column(
+          children: <Widget>[
             Text('NO.${entry.key + 1}'),
             const SizedBox(height: 6),
             Text('value:${entry.value.value}').sizedBox(width: double.infinity),
             const SizedBox(height: 6),
             Text('type:${entry.value.type}').sizedBox(width: double.infinity),
-            Text('boundingBox:${entry.value.boundingBox?.size}')
-                .sizedBox(width: double.infinity),
-            Text('boundingBox:${entry.value.boundingBox}')
-                .sizedBox(width: double.infinity),
-            Text('corners:${entry.value.corners}')
-                .sizedBox(width: double.infinity),
-          ]);
-        }));
+            Text(
+              'boundingBox:${entry.value.boundingBox?.size}',
+            ).sizedBox(width: double.infinity),
+            Text(
+              'boundingBox:${entry.value.boundingBox}',
+            ).sizedBox(width: double.infinity),
+            Text(
+              'corners:${entry.value.corners}',
+            ).sizedBox(width: double.infinity),
+          ],
+        );
+      }),
+    );
   }
 }
 
 class AppBarText extends AppBar {
   AppBarText(String text, {super.key})
-      : super(
-            elevation: 0,
-            title: BText(text, fontSize: 18, fontWeight: FontWeight.bold));
+    : super(
+        elevation: 0,
+        title: BText(text, fontSize: 18, fontWeight: FontWeight.bold),
+      );
 }
 
 class TextBox extends StatelessWidget {
@@ -98,12 +112,15 @@ class TextBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Visibility(
-        visible: value != null &&
-            value.toString().isNotEmpty &&
-            value.toString() != 'null',
-        child: Container(
-            margin: const EdgeInsets.all(10),
-            child: Text('$keyName = $value')));
+      visible:
+          value != null &&
+          value.toString().isNotEmpty &&
+          value.toString() != 'null',
+      child: Container(
+        margin: const EdgeInsets.all(10),
+        child: Text('$keyName = $value'),
+      ),
+    );
   }
 }
 

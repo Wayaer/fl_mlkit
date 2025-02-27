@@ -21,22 +21,27 @@ class _ImageScanningPageState extends State<ImageScanningPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBarText('Scanning file image'),
-        body: Universal(isScroll: true, width: double.infinity, children: [
+      appBar: AppBarText('Scanning file image'),
+      body: Universal(
+        isScroll: true,
+        width: double.infinity,
+        children: [
           ElevatedText(onPressed: openGallery, text: 'Select Picture'),
           ElevatedText(onPressed: scanByte, text: 'Scanning'),
           TextBox('path', path),
           if (path != null && path!.isNotEmpty)
             Container(
-                width: double.infinity,
-                height: 300,
-                margin:
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
-                child: Image.file(File(path!))),
+              width: double.infinity,
+              height: 300,
+              margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
+              child: Image.file(File(path!)),
+            ),
           if (list != null && list!.isEmpty)
             const TextBox('Unrecognized', 'Unrecognized'),
-          CodeBox(list ?? [], expanded: false)
-        ]));
+          CodeBox(list ?? [], expanded: false),
+        ],
+      ),
+    );
   }
 
   Future<void> scanByte() async {
@@ -51,8 +56,9 @@ class _ImageScanningPageState extends State<ImageScanningPage> {
       final File file = File(path!);
       final call = FlMlKitScanningController();
       await call.setBarcodeFormat([BarcodeFormat.all]);
-      final AnalysisImageModel? data =
-          await call.scanningImageByte(file.readAsBytesSync());
+      final AnalysisImageModel? data = await call.scanningImageByte(
+        file.readAsBytesSync(),
+      );
       if (data != null && data.barcodes != null && data.barcodes!.isNotEmpty) {
         list = data.barcodes;
         setState(() {});
@@ -67,8 +73,10 @@ class _ImageScanningPageState extends State<ImageScanningPage> {
     if (isAndroid) hasPermission = await getPermission(Permission.storage);
     if (isIOS) hasPermission = true;
     if (!hasPermission) return;
-    final result = await FilePicker.platform
-        .pickFiles(type: FileType.image, allowCompression: false);
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.image,
+      allowCompression: false,
+    );
     if (result == null || result.files.isEmpty) return;
     path = result.files.first.path;
     setState(() {});
