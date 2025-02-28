@@ -2,8 +2,8 @@ part of '../fl_mlkit_scanning.dart';
 
 typedef EventBarcodeListen = void Function(AnalysisImageModel data);
 
-typedef FlMlKitScanningCreateCallback =
-    void Function(FlMlKitScanningController controller);
+typedef FlMlKitScanningCreateCallback = void Function(
+    FlMlKitScanningController controller);
 
 class FlMlKitScanning extends StatefulWidget {
   FlMlKitScanning({

@@ -6,7 +6,7 @@ enum FlashState {
   on,
 
   /// IOS only , off in Android
-  auto
+  auto,
 }
 
 enum CameraResolution {
@@ -26,7 +26,7 @@ enum CameraResolution {
   ultraHigh,
 
   /// android QUALITY_HIGH  ios max
-  max
+  max,
 }
 
 /// Camera position
@@ -97,14 +97,21 @@ abstract class CameraController {
   /// instead of calling the method.
   Future<List<CameraInfo>?> availableCameras() async {
     try {
-      final cameras = await _channel
-          .invokeListMethod<Map<dynamic, dynamic>>('availableCameras');
+      final cameras = await _channel.invokeListMethod<Map<dynamic, dynamic>>(
+        'availableCameras',
+      );
       if (cameras == null) return [];
-      _cameras = cameras
-          .map((Map<dynamic, dynamic> camera) => CameraInfo(
-              name: camera['name'] as String,
-              lensFacing: _getCameraLensFacing(camera['lensFacing'] as String)))
-          .toList();
+      _cameras =
+          cameras
+              .map(
+                (Map<dynamic, dynamic> camera) => CameraInfo(
+                  name: camera['name'] as String,
+                  lensFacing: _getCameraLensFacing(
+                    camera['lensFacing'] as String,
+                  ),
+                ),
+              )
+              .toList();
       return _cameras;
     } on PlatformException catch (e) {
       debugPrint(e.toString());
@@ -126,41 +133,47 @@ abstract class CameraController {
 
   /// 消息回调监听
   FlEventChannelListenData get onDataListen => (dynamic data) {
-        if (data is Map) {
-          if (data.containsKey('flash')) {
-            /// flash state
-            final flashState = data['flash'] as int?;
-            if (flashState != null) {
-              _cameraFlash = FlashState.values[flashState];
-              onFlashChanged?.call(_cameraFlash!);
-              return;
-            }
-          } else if (data.containsKey('zoomRatio') &&
-              data.containsKey('maxZoomRatio')) {
-            /// zoom ratio state
-            final zoomRatio = data['zoomRatio'] as double?;
-            final maxZoomRatio = data['maxZoomRatio'] as double?;
-            if (zoomRatio != null && maxZoomRatio != null) {
-              _cameraZoom = CameraZoomState(
-                  maxZoomRatio: maxZoomRatio, zoomRatio: zoomRatio);
-              onZoomChanged?.call(_cameraZoom!);
-              return;
-            }
-          }
+    if (data is Map) {
+      if (data.containsKey('flash')) {
+        /// flash state
+        final flashState = data['flash'] as int?;
+        if (flashState != null) {
+          _cameraFlash = FlashState.values[flashState];
+          onFlashChanged?.call(_cameraFlash!);
+          return;
         }
-      };
+      } else if (data.containsKey('zoomRatio') &&
+          data.containsKey('maxZoomRatio')) {
+        /// zoom ratio state
+        final zoomRatio = data['zoomRatio'] as double?;
+        final maxZoomRatio = data['maxZoomRatio'] as double?;
+        if (zoomRatio != null && maxZoomRatio != null) {
+          _cameraZoom = CameraZoomState(
+            maxZoomRatio: maxZoomRatio,
+            zoomRatio: zoomRatio,
+          );
+          onZoomChanged?.call(_cameraZoom!);
+          return;
+        }
+      }
+    }
+  };
 
   /// 开始预览
   /// start Preview
   /// [camera] 需要预览的相机 Camera to preview
   /// [resolution] 预览相机支持的分辨率 Preview the resolution supported by the camera
-  Future<FlCameraOptions?> startPreview(CameraInfo camera,
-      {CameraResolution? resolution}) async {
+  Future<FlCameraOptions?> startPreview(
+    CameraInfo camera, {
+    CameraResolution? resolution,
+  }) async {
     if (!_supportPlatform) return null;
     assert(_isInitialize, 'Call initialize first');
     if (resolution != null) cameraResolution = resolution;
-    final map = await _channel.invokeMethod<Map>('startPreview',
-        {'cameraId': camera.name, 'resolution': cameraResolution.name});
+    final map = await _channel.invokeMethod<Map>('startPreview', {
+      'cameraId': camera.name,
+      'resolution': cameraResolution.name,
+    });
     if (map != null) {
       cameraOptions.value = FlCameraOptions.fromMap(map);
       if (_previousCamera != camera) _previousCamera = camera;
@@ -203,8 +216,10 @@ abstract class CameraController {
   Future<bool> setFlashMode(FlashState status) async {
     if (!_supportPlatform || cameraOptions.value == null) return false;
     assert(_isInitialize, 'Call initialize first');
-    final state =
-        await _channel.invokeMethod<bool>('setFlashMode', status.index);
+    final state = await _channel.invokeMethod<bool>(
+      'setFlashMode',
+      status.index,
+    );
     return state ?? false;
   }
 
@@ -271,18 +286,18 @@ class FlCameraOptions {
   double? height;
 
   Map<String, dynamic> toMap() => <String, dynamic>{
-        'textureId': textureId,
-        'width': width,
-        'height': height
-      };
+    'textureId': textureId,
+    'width': width,
+    'height': height,
+  };
 }
 
 class CameraZoomState {
   CameraZoomState({this.maxZoomRatio, this.zoomRatio});
 
   CameraZoomState.fromMap(Map<String, dynamic> map)
-      : maxZoomRatio = map['maxZoomRatio'] as double?,
-        zoomRatio = map['maxZoomRatio'] as double?;
+    : maxZoomRatio = map['maxZoomRatio'] as double?,
+      zoomRatio = map['maxZoomRatio'] as double?;
 
   /// 最大缩放比例
   /// Camera max zoom ratio

@@ -1,4 +1,4 @@
-## 5.2.1
+## 5.2.2
 
 * Update gradle version
 * Update dependencies

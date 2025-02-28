@@ -73,8 +73,8 @@ class IdentifiedLanguageModel {
   });
 
   IdentifiedLanguageModel.fromMap(Map<dynamic, dynamic> data)
-      : languageTag = data['languageTag'] as String,
-        confidence = data['confidence'] as double;
+    : languageTag = data['languageTag'] as String,
+      confidence = data['confidence'] as double;
 
   /// If the call succeeds, a BCP-47 language code(https://en.wikipedia.org/wiki/IETF_language_tag) is passed to the success listener,
   /// indicating the language of the text. If no language is confidently detected,

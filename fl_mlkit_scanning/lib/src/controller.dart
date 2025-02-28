@@ -65,16 +65,16 @@ class FlMlKitScanningController extends CameraController {
 
   @override
   FlEventChannelListenData get onDataListen => (dynamic data) {
-    super.onDataListen(data);
-    if (!_canScanning) return;
-    if (data is Map) {
-      final List<dynamic>? barcodes = data['barcodes'] as List<dynamic>?;
-      if (barcodes != null) {
-        data = AnalysisImageModel.fromMap(data);
-        onDataChanged?.call(data);
-      }
-    }
-  };
+        super.onDataListen(data);
+        if (!_canScanning) return;
+        if (data is Map) {
+          final List<dynamic>? barcodes = data['barcodes'] as List<dynamic>?;
+          if (barcodes != null) {
+            data = AnalysisImageModel.fromMap(data);
+            onDataChanged?.call(data);
+          }
+        }
+      };
 
   /// 识别图片字节
   /// Identify picture bytes
