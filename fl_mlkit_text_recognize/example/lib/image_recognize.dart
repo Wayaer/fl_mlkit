@@ -23,44 +23,51 @@ class _ImageRecognizePageState extends State<ImageRecognizePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBarText('Recognize file image'),
-        body: Universal(
-            padding: const EdgeInsets.all(20),
-            isScroll: true,
-            width: double.infinity,
-            children: [
-              ElevatedText(onPressed: openGallery, text: 'Select Picture'),
-              ElevatedButton(
-                  onPressed: () {},
-                  child: DropdownButton<RecognizedLanguage>(
-                    value: selectLanguage,
-                    items: RecognizedLanguage.values.builder((item) =>
-                        DropdownMenuItem(
-                            value: item,
-                            child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 10, vertical: 4),
-                                child: BText(item.name, fontSize: 14)))),
-                    onChanged: (RecognizedLanguage? value) {
-                      if (value == null) return;
-                      selectLanguage = value;
-                      FlMlKitTextRecognizeController()
-                          .setRecognizedLanguage(value);
-                      setState(() {});
-                    },
-                  )),
-              ElevatedText(onPressed: scanByte, text: 'Recognize'),
-              TextBox('path', path),
-              if (path != null && path!.isNotEmpty)
-                Container(
-                    width: double.infinity,
-                    height: 300,
-                    margin:
-                        const EdgeInsets.symmetric(vertical: 5, horizontal: 40),
-                    child: Image.file(File(path!))),
-              if (model == null) const TextBox('Unrecognized', 'Unrecognized'),
-              CodeBox(model, expanded: false)
-            ]));
+      appBar: AppBarText('Recognize file image'),
+      body: Universal(
+        padding: const EdgeInsets.all(20),
+        isScroll: true,
+        width: double.infinity,
+        children: [
+          ElevatedText(onPressed: openGallery, text: 'Select Picture'),
+          ElevatedButton(
+            onPressed: () {},
+            child: DropdownButton<RecognizedLanguage>(
+              value: selectLanguage,
+              items: RecognizedLanguage.values.builder(
+                (item) => DropdownMenuItem(
+                  value: item,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    child: BText(item.name, fontSize: 14),
+                  ),
+                ),
+              ),
+              onChanged: (RecognizedLanguage? value) {
+                if (value == null) return;
+                selectLanguage = value;
+                FlMlKitTextRecognizeController().setRecognizedLanguage(value);
+                setState(() {});
+              },
+            ),
+          ),
+          ElevatedText(onPressed: scanByte, text: 'Recognize'),
+          TextBox('path', path),
+          if (path != null && path!.isNotEmpty)
+            Container(
+              width: double.infinity,
+              height: 300,
+              margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 40),
+              child: Image.file(File(path!)),
+            ),
+          if (model == null) const TextBox('Unrecognized', 'Unrecognized'),
+          CodeBox(model, expanded: false),
+        ],
+      ),
+    );
   }
 
   // builder: (int? index) =>

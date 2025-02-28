@@ -1,6 +1,7 @@
-## 3.2.0
+## 3.2.1
 
-* Update gradle version
+* Update gradle
+* Update `fl_camera`
 
 ## 3.1.0
 

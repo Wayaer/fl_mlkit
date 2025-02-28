@@ -96,12 +96,12 @@ class _AppState extends State<_App> {
                         language != translateText.targetLanguage) {
                       translateText
                           .switchLanguage(
-                        language,
-                        translateText.targetLanguage,
-                      )
+                            language,
+                            translateText.targetLanguage,
+                          )
                           .then((value) {
-                        state(() {});
-                      });
+                            state(() {});
+                          });
                     }
                   },
                   text: translateText.sourceLanguage.name,
@@ -114,12 +114,12 @@ class _AppState extends State<_App> {
                   onPressed: () {
                     translateText
                         .switchLanguage(
-                      translateText.targetLanguage,
-                      translateText.sourceLanguage,
-                    )
+                          translateText.targetLanguage,
+                          translateText.sourceLanguage,
+                        )
                         .then((value) {
-                      state(() {});
-                    });
+                          state(() {});
+                        });
                   },
                   icon: const Icon(Icons.swap_horizontal_circle),
                 ),
@@ -132,12 +132,12 @@ class _AppState extends State<_App> {
                         language != translateText.targetLanguage) {
                       translateText
                           .switchLanguage(
-                        translateText.sourceLanguage,
-                        language,
-                      )
+                            translateText.sourceLanguage,
+                            language,
+                          )
                           .then((value) {
-                        state(() {});
-                      });
+                            state(() {});
+                          });
                     }
                   },
                   text: translateText.targetLanguage.name,
@@ -190,36 +190,37 @@ class _AppState extends State<_App> {
   }
 
   Future<TranslateLanguage?> selectLanguage() => Container(
-        padding: const EdgeInsets.all(20),
-        decoration: const BoxDecoration(
-          borderRadius: BorderRadius.horizontal(
-            left: Radius.circular(10),
-            right: Radius.circular(10),
-          ),
-        ),
-        child: CustomFutureBuilder<List<TranslateRemoteModel>>(
-          future: translateText.getDownloadedModels,
-          onWaiting: (_) => const CircularProgressIndicator(),
-          onDone: (_, value, __) {
-            return ListView.separated(
-              itemBuilder: (_, index) {
-                return Universal(
-                  onTap: () {
-                    pop(value[index].language);
-                  },
-                  padding: const EdgeInsets.symmetric(vertical: 5),
-                  child: BText(value[index].language.toString()),
-                );
+    padding: const EdgeInsets.all(20),
+    decoration: const BoxDecoration(
+      borderRadius: BorderRadius.horizontal(
+        left: Radius.circular(10),
+        right: Radius.circular(10),
+      ),
+    ),
+    child: CustomFutureBuilder<List<TranslateRemoteModel>>(
+      future: translateText.getDownloadedModels,
+      onWaiting: (_) => const CircularProgressIndicator(),
+      onDone: (_, value, __) {
+        return ListView.separated(
+          itemBuilder: (_, index) {
+            return Universal(
+              onTap: () {
+                pop(value[index].language);
               },
-              itemCount: value.length,
-              separatorBuilder: (BuildContext context, int index) =>
-                  const Divider(thickness: 0.3),
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              child: BText(value[index].language.toString()),
             );
           },
-        ),
-      ).popupBottomSheet(
-        options: const BottomSheetOptions(isScrollControlled: false),
-      );
+          itemCount: value.length,
+          separatorBuilder:
+              (BuildContext context, int index) =>
+                  const Divider(thickness: 0.3),
+        );
+      },
+    ),
+  ).popupBottomSheet(
+    options: const BottomSheetOptions(isScrollControlled: false),
+  );
 
   @override
   void dispose() {
@@ -275,12 +276,7 @@ class _TranslateRemoteModelManagerPageState
                   '${abb.toUpperCase()}  ',
                   item.toString().split('.')[1],
                 ],
-                styles: [
-                  TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ],
+                styles: [TextStyle(fontSize: 16, fontWeight: FontWeight.bold)],
               ),
               ValueBuilder<bool>(
                 builder: (_, bool? isLoading, updater) {
@@ -288,25 +284,25 @@ class _TranslateRemoteModelManagerPageState
                   if (isLoading) return const CircularProgressIndicator();
                   return isDownload
                       ? ElevatedText(
-                          text: 'Delete',
-                          onPressed: () async {
-                            updater(true);
-                            final state = await FlMlKitTranslateText()
-                                .deleteDownloadedModel(item);
-                            updater(false);
-                            if (state) getDownloadedModels();
-                          },
-                        )
+                        text: 'Delete',
+                        onPressed: () async {
+                          updater(true);
+                          final state = await FlMlKitTranslateText()
+                              .deleteDownloadedModel(item);
+                          updater(false);
+                          if (state) getDownloadedModels();
+                        },
+                      )
                       : ElevatedText(
-                          text: 'Download',
-                          onPressed: () async {
-                            updater(true);
-                            final state = await FlMlKitTranslateText()
-                                .downloadedModel(item);
-                            updater(false);
-                            if (state) getDownloadedModels();
-                          },
-                        );
+                        text: 'Download',
+                        onPressed: () async {
+                          updater(true);
+                          final state = await FlMlKitTranslateText()
+                              .downloadedModel(item);
+                          updater(false);
+                          if (state) getDownloadedModels();
+                        },
+                      );
                 },
               ),
             ],
@@ -321,13 +317,14 @@ class _TranslateRemoteModelManagerPageState
 
 class AppBarText extends AppBar {
   AppBarText(String text, {super.key})
-      : super(
-            elevation: 0,
-            title: BText(text, fontSize: 18, fontWeight: FontWeight.bold),
-            centerTitle: true);
+    : super(
+        elevation: 0,
+        title: BText(text, fontSize: 18, fontWeight: FontWeight.bold),
+        centerTitle: true,
+      );
 }
 
 class ElevatedText extends ElevatedButton {
   ElevatedText({super.key, required String text, required super.onPressed})
-      : super(child: Text(text));
+    : super(child: Text(text));
 }
