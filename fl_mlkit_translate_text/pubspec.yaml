@@ -4,8 +4,8 @@ version: 1.2.1
 repository: https://github.com/Wayaer/fl_mlkit/tree/main/fl_mlkit_translate_text
 
 environment:
-  sdk: ">=3.0.0 <4.0.0"
-  flutter: ">=3.24.0"
+  sdk: ">=3.7.0 <4.0.0"
+  flutter: '>=3.29.0'
 
 dependencies:
   flutter:
