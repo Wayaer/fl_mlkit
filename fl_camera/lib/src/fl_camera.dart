@@ -7,16 +7,17 @@ typedef FlCameraFlashStateChanged = void Function(FlashState state);
 typedef FlCameraCameraZoomStateChanged = void Function(CameraZoomState state);
 
 class FlCamera extends StatefulWidget {
-  const FlCamera(
-      {super.key,
-      this.overlay,
-      this.onFlashChanged,
-      this.onZoomChanged,
-      this.updateReset = false,
-      this.camera,
-      this.resolution = CameraResolution.high,
-      this.fit = BoxFit.fitWidth,
-      this.uninitialized});
+  const FlCamera({
+    super.key,
+    this.overlay,
+    this.onFlashChanged,
+    this.onZoomChanged,
+    this.updateReset = false,
+    this.camera,
+    this.resolution = CameraResolution.high,
+    this.fit = BoxFit.fitWidth,
+    this.uninitialized,
+  });
 
   /// 显示在预览框上面
   /// Display above preview box
@@ -80,8 +81,10 @@ class _FlCameraStateWidget extends FlCameraState<FlCamera> {
       }
     }
     if (camera == null) return;
-    final options =
-        await controller.startPreview(camera, resolution: widget.resolution);
+    final options = await controller.startPreview(
+      camera,
+      resolution: widget.resolution,
+    );
     if (options != null && mounted) setState(() {});
   }
 
@@ -102,10 +105,9 @@ class _FlCameraStateWidget extends FlCameraState<FlCamera> {
     boxFit = widget.fit;
     Widget camera = super.build(context);
     if (widget.overlay != null) {
-      camera = Stack(children: <Widget>[
-        camera,
-        SizedBox.expand(child: widget.overlay),
-      ]);
+      camera = Stack(
+        children: <Widget>[camera, SizedBox.expand(child: widget.overlay)],
+      );
     }
     return camera;
   }
@@ -140,32 +142,38 @@ abstract class FlCameraState<T extends StatefulWidget> extends State<T>
     WidgetsBinding.instance.addObserver(this);
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((Duration duration) async {
-      await SystemChrome.setPreferredOrientations(
-          <DeviceOrientation>[DeviceOrientation.portraitUp]);
-      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light
-          .copyWith(statusBarColor: Colors.transparent));
+      await SystemChrome.setPreferredOrientations(<DeviceOrientation>[
+        DeviceOrientation.portraitUp,
+      ]);
+      SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle.light.copyWith(statusBarColor: Colors.transparent),
+      );
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
-        valueListenable: controller.cameraOptions,
-        builder: (_, FlCameraOptions? options, __) {
-          late Widget current;
-          if (options != null && options.textureId != null) {
-            current = ColoredBox(
-                color: Colors.black,
-                child: FittedBox(
-                    fit: boxFit!,
-                    child: SizedBox.fromSize(
-                        size: Size(options.width!, options.height!),
-                        child: Texture(textureId: options.textureId!))));
-          } else {
-            current = uninitialized ?? const SizedBox();
-          }
-          return SizedBox.expand(child: current);
-        });
+      valueListenable: controller.cameraOptions,
+      builder: (_, FlCameraOptions? options, __) {
+        late Widget current;
+        if (options != null && options.textureId != null) {
+          current = ColoredBox(
+            color: Colors.black,
+            child: FittedBox(
+              fit: boxFit!,
+              child: SizedBox.fromSize(
+                size: Size(options.width!, options.height!),
+                child: Texture(textureId: options.textureId!),
+              ),
+            ),
+          );
+        } else {
+          current = uninitialized ?? const SizedBox();
+        }
+        return SizedBox.expand(child: current);
+      },
+    );
   }
 
   @override

@@ -19,22 +19,30 @@ class _ScannerLineState extends State<ScannerLine>
   @override
   void initState() {
     super.initState();
-    controller =
-        AnimationController(duration: const Duration(seconds: 2), vsync: this);
+    controller = AnimationController(
+      duration: const Duration(seconds: 2),
+      vsync: this,
+    );
     offsetAnimation = Tween<double>(begin: 0.2, end: 0.8).animate(controller);
-    opacityAnimation =
-        CurvedAnimation(parent: controller, curve: _OpacityCurve());
+    opacityAnimation = CurvedAnimation(
+      parent: controller,
+      curve: _OpacityCurve(),
+    );
     controller.repeat();
   }
 
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
-      animation: controller,
-      builder: (BuildContext context, Widget? child) => Opacity(
+    animation: controller,
+    builder:
+        (BuildContext context, Widget? child) => Opacity(
           opacity: opacityAnimation.value,
           child: CustomPaint(
-              size: const Size(double.infinity, double.infinity),
-              painter: _LinePainter(offsetAnimation.value, widget.color))));
+            size: const Size(double.infinity, double.infinity),
+            painter: _LinePainter(offsetAnimation.value, widget.color),
+          ),
+        ),
+  );
 
   @override
   void dispose() {
@@ -69,12 +77,13 @@ class _LinePainter extends CustomPainter {
     final double dx = size.width / 2.0;
     final Offset center = Offset(dx, radius);
     final Rect rect = Rect.fromCircle(center: center, radius: radius);
-    final Paint paint = Paint()
-      ..isAntiAlias = true
-      ..shader = RadialGradient(
-        colors: <Color>[color, color.withValues(alpha: 0.1)],
-        radius: 0.5,
-      ).createShader(rect);
+    final Paint paint =
+        Paint()
+          ..isAntiAlias = true
+          ..shader = RadialGradient(
+            colors: <Color>[color, color.withValues(alpha: 0.1)],
+            radius: 0.5,
+          ).createShader(rect);
     canvas.translate(0.0, size.height * offset);
     canvas.scale(1.0, 0.1);
     final Rect top = Rect.fromLTRB(0, 0, size.width, radius);
