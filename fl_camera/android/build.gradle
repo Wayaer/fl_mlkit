@@ -1,0 +1,51 @@
+group 'fl.camera'
+version '1.0'
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.5.2'
+    }
+}
+
+rootProject.allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+android {
+    compileSdk = 34
+
+    if (project.android.hasProperty("namespace")) {
+        namespace 'fl.camera'
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
+    defaultConfig {
+        minSdk = 21
+    }
+
+    dependencies {
+        api "androidx.camera:camera-camera2:1.4.1"
+        api "androidx.camera:camera-lifecycle:1.4.1"
+        api 'androidx.camera:camera-core:1.4.1'
+    }
+}
+

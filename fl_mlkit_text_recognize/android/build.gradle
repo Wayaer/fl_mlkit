@@ -1,0 +1,61 @@
+group 'fl.mlkit.text.recognize'
+version '1.0'
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.5.2'
+    }
+}
+
+rootProject.allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+android {
+    compileSdk = 34
+
+    if (project.android.hasProperty("namespace")) {
+        namespace 'fl.mlkit.text.recognize'
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
+    defaultConfig {
+        minSdk = 21
+    }
+
+    dependencies {
+        // To recognize Latin script
+        implementation 'com.google.mlkit:text-recognition:16.0.1'
+
+        // To recognize Chinese script
+        implementation 'com.google.mlkit:text-recognition-chinese:16.0.1'
+
+        // To recognize Devanagari script
+        implementation 'com.google.mlkit:text-recognition-devanagari:16.0.1'
+
+        // To recognize Japanese script
+        implementation 'com.google.mlkit:text-recognition-japanese:16.0.1'
+
+        // To recognize Korean script
+        implementation 'com.google.mlkit:text-recognition-korean:16.0.1'
+    }
+}
