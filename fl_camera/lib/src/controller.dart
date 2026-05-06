@@ -33,11 +33,13 @@ enum CameraResolution {
 enum CameraLensFacing { back, front, external }
 
 class FlCameraController extends CameraController {
-  factory FlCameraController() => _singleton ??= FlCameraController._();
+  factory FlCameraController() => _instance;
 
   FlCameraController._();
 
-  static FlCameraController? _singleton;
+  static final FlCameraController _instance = FlCameraController._();
+
+  static FlCameraController get instance => _instance;
 }
 
 abstract class CameraController {
@@ -101,17 +103,16 @@ abstract class CameraController {
         'availableCameras',
       );
       if (cameras == null) return [];
-      _cameras =
-          cameras
-              .map(
-                (Map<dynamic, dynamic> camera) => CameraInfo(
-                  name: camera['name'] as String,
-                  lensFacing: _getCameraLensFacing(
-                    camera['lensFacing'] as String,
-                  ),
-                ),
-              )
-              .toList();
+      _cameras = cameras
+          .map(
+            (Map<dynamic, dynamic> camera) => CameraInfo(
+              name: camera['name'] as String,
+              lensFacing: _getCameraLensFacing(
+                camera['lensFacing'] as String,
+              ),
+            ),
+          )
+          .toList();
       return _cameras;
     } on PlatformException catch (e) {
       debugPrint(e.toString());
@@ -133,31 +134,30 @@ abstract class CameraController {
 
   /// 消息回调监听
   FlEventChannelListenData get onDataListen => (dynamic data) {
-    if (data is Map) {
-      if (data.containsKey('flash')) {
-        /// flash state
-        final flashState = data['flash'] as int?;
-        if (flashState != null) {
-          _cameraFlash = FlashState.values[flashState];
-          onFlashChanged?.call(_cameraFlash!);
-          return;
+        if (data is Map) {
+          if (data.containsKey('flash')) {
+            /// flash state
+            final flashState = data['flash'] as int?;
+            if (flashState != null) {
+              _cameraFlash = FlashState.values[flashState];
+              onFlashChanged?.call(_cameraFlash!);
+              return;
+            }
+          } else if (data.containsKey('zoomRatio') && data.containsKey('maxZoomRatio')) {
+            /// zoom ratio state
+            final zoomRatio = data['zoomRatio'] as double?;
+            final maxZoomRatio = data['maxZoomRatio'] as double?;
+            if (zoomRatio != null && maxZoomRatio != null) {
+              _cameraZoom = CameraZoomState(
+                maxZoomRatio: maxZoomRatio,
+                zoomRatio: zoomRatio,
+              );
+              onZoomChanged?.call(_cameraZoom!);
+              return;
+            }
+          }
         }
-      } else if (data.containsKey('zoomRatio') &&
-          data.containsKey('maxZoomRatio')) {
-        /// zoom ratio state
-        final zoomRatio = data['zoomRatio'] as double?;
-        final maxZoomRatio = data['maxZoomRatio'] as double?;
-        if (zoomRatio != null && maxZoomRatio != null) {
-          _cameraZoom = CameraZoomState(
-            maxZoomRatio: maxZoomRatio,
-            zoomRatio: zoomRatio,
-          );
-          onZoomChanged?.call(_cameraZoom!);
-          return;
-        }
-      }
-    }
-  };
+      };
 
   /// 开始预览
   /// start Preview
@@ -286,18 +286,18 @@ class FlCameraOptions {
   double? height;
 
   Map<String, dynamic> toMap() => <String, dynamic>{
-    'textureId': textureId,
-    'width': width,
-    'height': height,
-  };
+        'textureId': textureId,
+        'width': width,
+        'height': height,
+      };
 }
 
 class CameraZoomState {
   CameraZoomState({this.maxZoomRatio, this.zoomRatio});
 
   CameraZoomState.fromMap(Map<String, dynamic> map)
-    : maxZoomRatio = map['maxZoomRatio'] as double?,
-      zoomRatio = map['maxZoomRatio'] as double?;
+      : maxZoomRatio = map['maxZoomRatio'] as double?,
+        zoomRatio = map['maxZoomRatio'] as double?;
 
   /// 最大缩放比例
   /// Camera max zoom ratio

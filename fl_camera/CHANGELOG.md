@@ -1,4 +1,4 @@
-## 4.3.1
+## 4.3.2
 
 * Update fl_channel
 
