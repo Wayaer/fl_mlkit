@@ -3,16 +3,15 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 
 class FlMlKitIdentifyLanguage {
-  factory FlMlKitIdentifyLanguage() =>
-      _singleton ??= FlMlKitIdentifyLanguage._();
+  factory FlMlKitIdentifyLanguage() => _instance;
 
   FlMlKitIdentifyLanguage._();
 
-  static const MethodChannel _channel = MethodChannel(
-    'fl_mlkit_identify_language',
-  );
+  static final FlMlKitIdentifyLanguage _instance = FlMlKitIdentifyLanguage._();
 
-  static FlMlKitIdentifyLanguage? _singleton;
+  static FlMlKitIdentifyLanguage get instance => _instance;
+
+  final MethodChannel _channel = MethodChannel('fl_mlkit_identify_language');
 
   double _confidence = 0.5;
 
@@ -62,8 +61,7 @@ class FlMlKitIdentifyLanguage {
   }
 
   /// Be sure to call this method when you are no longer using a collapsible
-  Future<bool> dispose(double confidence) async =>
-      (await _channel.invokeMethod<bool>('dispose')) ?? false;
+  Future<bool> dispose(double confidence) async => (await _channel.invokeMethod<bool>('dispose')) ?? false;
 }
 
 class IdentifiedLanguageModel {
@@ -73,8 +71,8 @@ class IdentifiedLanguageModel {
   });
 
   IdentifiedLanguageModel.fromMap(Map<dynamic, dynamic> data)
-    : languageTag = data['languageTag'] as String,
-      confidence = data['confidence'] as double;
+      : languageTag = data['languageTag'] as String,
+        confidence = data['confidence'] as double;
 
   /// If the call succeeds, a BCP-47 language code(https://en.wikipedia.org/wiki/IETF_language_tag) is passed to the success listener,
   /// indicating the language of the text. If no language is confidently detected,

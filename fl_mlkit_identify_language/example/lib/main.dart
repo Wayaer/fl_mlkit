@@ -14,9 +14,7 @@ void main() {
       title: 'FlMlKitIdentifyLanguage',
       home: Scaffold(
         appBar: AppBarText('Fl MlKit Identify Language'),
-        body: const SingleChildScrollView(
-          child: Padding(padding: EdgeInsets.all(10.0), child: _App()),
-        ),
+        body: const SingleChildScrollView(child: Padding(padding: EdgeInsets.all(10.0), child: _App())),
       ),
     ),
   );
@@ -30,8 +28,9 @@ class _App extends StatefulWidget {
 }
 
 class _AppState extends State<_App> {
-  ValueNotifier<List<IdentifiedLanguageModel>> identifiedLanguageModel =
-      ValueNotifier<List<IdentifiedLanguageModel>>([]);
+  ValueNotifier<List<IdentifiedLanguageModel>> identifiedLanguageModel = ValueNotifier<List<IdentifiedLanguageModel>>(
+    [],
+  );
   TextEditingController controller = TextEditingController();
   FocusNode focusNode = FocusNode();
   FlMlKitIdentifyLanguage mlKitIdentifyLanguage = FlMlKitIdentifyLanguage();
@@ -49,10 +48,7 @@ class _AppState extends State<_App> {
           onSubmitted: (value) {
             focusNode.unfocus();
           },
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            hintText: 'Please enter text',
-          ),
+          decoration: const InputDecoration(border: OutlineInputBorder(), hintText: 'Please enter text'),
         ),
         CustomFutureBuilder<double>(
           future: () async => mlKitIdentifyLanguage.confidence,
@@ -63,9 +59,7 @@ class _AppState extends State<_App> {
                 focusNode.unfocus();
                 final confidence = await selectConfidence();
                 if (confidence != null) {
-                  final state = await mlKitIdentifyLanguage.setConfidence(
-                    confidence,
-                  );
+                  final state = await mlKitIdentifyLanguage.setConfidence(confidence);
                   if (state) reset();
                 }
               },
@@ -82,10 +76,7 @@ class _AppState extends State<_App> {
             });
           },
         ),
-        ElevatedText(
-          text: 'Identify Possible Language',
-          onPressed: identifyPossibleLanguages,
-        ),
+        ElevatedText(text: 'Identify Possible Language', onPressed: identifyPossibleLanguages),
         const SizedBox(height: 20),
         ValueListenableBuilder(
           valueListenable: identifiedLanguageModel,
@@ -96,16 +87,9 @@ class _AppState extends State<_App> {
                   margin: const EdgeInsets.symmetric(vertical: 10),
                   width: double.infinity,
                   padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: BText.rich(
-                    texts: [
-                      'confidence：',
-                      item.confidence.toString(),
-                      '      languageTag：',
-                      item.languageTag,
-                    ],
+                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(6)),
+                  child: FlText.richText(
+                    texts: ['confidence：', item.confidence.toString(), '      languageTag：', item.languageTag],
                     textAlign: TextAlign.start,
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
@@ -137,9 +121,7 @@ class _AppState extends State<_App> {
       return;
     }
     context.requestFocus();
-    final data = await mlKitIdentifyLanguage.identifyPossibleLanguages(
-      controller.text,
-    );
+    final data = await mlKitIdentifyLanguage.identifyPossibleLanguages(controller.text);
     identifiedLanguageModel.value = data;
     setState(() {});
   }
@@ -150,10 +132,7 @@ class _AppState extends State<_App> {
       safeBottom: true,
       mainAxisSize: MainAxisSize.min,
       decoration: const BoxDecoration(
-        borderRadius: BorderRadius.horizontal(
-          left: Radius.circular(10),
-          right: Radius.circular(10),
-        ),
+        borderRadius: BorderRadius.horizontal(left: Radius.circular(10), right: Radius.circular(10)),
       ),
       children: confidences.builder(
         (item) => Universal(
@@ -162,25 +141,18 @@ class _AppState extends State<_App> {
             pop(item);
           },
           padding: const EdgeInsets.symmetric(vertical: 10),
-          child: BText(item.toString(), textAlign: TextAlign.center),
+          child: FlText(item.toString(), textAlign: TextAlign.center),
         ),
       ),
-    ).popupBottomSheet(
-      options: const BottomSheetOptions(isScrollControlled: false),
-    );
+    ).popupModalBottomSheet(options: const ModalBottomSheetOptions(isScrollControlled: false));
   }
 }
 
 class AppBarText extends AppBar {
   AppBarText(String text, {super.key})
-    : super(
-        elevation: 0,
-        title: BText(text, fontSize: 18, fontWeight: FontWeight.bold),
-        centerTitle: true,
-      );
+    : super(elevation: 0, title: FlText(text, fontSize: 18, fontWeight: FontWeight.bold), centerTitle: true);
 }
 
 class ElevatedText extends ElevatedButton {
-  ElevatedText({super.key, required String text, required super.onPressed})
-    : super(child: Text(text));
+  ElevatedText({super.key, required String text, required super.onPressed}) : super(child: Text(text));
 }
