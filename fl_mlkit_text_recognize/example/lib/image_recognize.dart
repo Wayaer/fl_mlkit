@@ -38,11 +38,8 @@ class _ImageRecognizePageState extends State<ImageRecognizePage> {
                 (item) => DropdownMenuItem(
                   value: item,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
-                    child: BText(item.name, fontSize: 14),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    child: FlText(item.name, fontSize: 14),
                   ),
                 ),
               ),
@@ -83,8 +80,7 @@ class _ImageRecognizePageState extends State<ImageRecognizePage> {
     if (isAndroid) hasPermission = await getPermission(Permission.storage);
     if (hasPermission) {
       final File file = File(path!);
-      final AnalysisTextModel? data = await FlMlKitTextRecognizeController()
-          .recognizeImageByte(file.readAsBytesSync());
+      final AnalysisTextModel? data = await FlMlKitTextRecognizeController().recognizeImageByte(file.readAsBytesSync());
       if (data != null) {
         model = data;
         setState(() {});
@@ -99,7 +95,7 @@ class _ImageRecognizePageState extends State<ImageRecognizePage> {
     if (isAndroid) hasPermission = await getPermission(Permission.storage);
     if (isIOS) hasPermission = true;
     if (!hasPermission) return;
-    final result = await FilePicker.platform.pickFiles(type: FileType.image);
+    final result = await FilePicker.pickFiles(type: FileType.image);
     if (result == null || result.files.isEmpty) return;
     path = result.files.first.path;
     setState(() {});

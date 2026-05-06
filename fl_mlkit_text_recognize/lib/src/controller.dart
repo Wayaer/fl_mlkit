@@ -19,14 +19,15 @@ enum RecognizedLanguage {
 }
 
 class FlMlKitTextRecognizeController extends CameraController {
-  factory FlMlKitTextRecognizeController() =>
-      _singleton ??= FlMlKitTextRecognizeController._();
+  factory FlMlKitTextRecognizeController() => _instance;
 
   FlMlKitTextRecognizeController._();
 
-  final MethodChannel _channel = const MethodChannel('fl.mlkit.text.recognize');
+  static final FlMlKitTextRecognizeController _instance = FlMlKitTextRecognizeController._();
 
-  static FlMlKitTextRecognizeController? _singleton;
+  static FlMlKitTextRecognizeController get instance => _instance;
+
+  final MethodChannel _channel = const MethodChannel('fl.mlkit.text.recognize');
 
   /// 解析出来的数据回调
   /// Recognized data onChanged
@@ -63,12 +64,11 @@ class FlMlKitTextRecognizeController extends CameraController {
 
   /// 设置设别的语言
   /// Set recognized language
-  Future<bool> setRecognizedLanguage(
-      RecognizedLanguage recognizedLanguage) async {
+  Future<bool> setRecognizedLanguage(RecognizedLanguage recognizedLanguage) async {
     if (!_supportPlatform) return false;
     _recognizedLanguage = recognizedLanguage;
-    final state = await _channel.invokeMethod<bool>(
-        'setRecognizedLanguage', _recognizedLanguage.toString().split('.')[1]);
+    final state =
+        await _channel.invokeMethod<bool>('setRecognizedLanguage', _recognizedLanguage.toString().split('.')[1]);
     return state ?? false;
   }
 
@@ -90,12 +90,10 @@ class FlMlKitTextRecognizeController extends CameraController {
   /// [useEvent] 返回消息使用 [FlEvent]
   /// The return message uses [FlEvent]
   /// [rotationDegrees] Only Android is supported
-  Future<AnalysisTextModel?> recognizeImageByte(Uint8List uint8list,
-      {int rotationDegrees = 0}) async {
+  Future<AnalysisTextModel?> recognizeImageByte(Uint8List uint8list, {int rotationDegrees = 0}) async {
     if (!_supportPlatform) return null;
     final map = await _channel.invokeMethod<Map<dynamic, dynamic>>(
-        'recognizeImageByte',
-        {'byte': uint8list, 'rotationDegrees': rotationDegrees});
+        'recognizeImageByte', {'byte': uint8list, 'rotationDegrees': rotationDegrees});
     if (map != null) return AnalysisTextModel.fromMap(map);
     return null;
   }

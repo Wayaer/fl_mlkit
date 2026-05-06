@@ -9,12 +9,10 @@ class FlMlKitTextRecognizePage extends StatefulWidget {
   const FlMlKitTextRecognizePage({super.key});
 
   @override
-  State<FlMlKitTextRecognizePage> createState() =>
-      _FlMlKitTextRecognizePageState();
+  State<FlMlKitTextRecognizePage> createState() => _FlMlKitTextRecognizePageState();
 }
 
-class _FlMlKitTextRecognizePageState extends State<FlMlKitTextRecognizePage>
-    with TickerProviderStateMixin {
+class _FlMlKitTextRecognizePageState extends State<FlMlKitTextRecognizePage> with TickerProviderStateMixin {
   late AnimationController animationController;
   AnalysisTextModel? model;
 
@@ -60,10 +58,7 @@ class _FlMlKitTextRecognizePageState extends State<FlMlKitTextRecognizePage>
               uninitialized: Container(
                 color: Colors.black,
                 alignment: Alignment.center,
-                child: const Text(
-                  'Camera not initialized',
-                  style: TextStyle(color: Colors.blueAccent),
-                ),
+                child: const Text('Camera not initialized', style: TextStyle(color: Colors.blueAccent)),
               ),
               onDataChanged: (AnalysisTextModel data) {
                 if (data.text != null && data.text!.isNotEmpty) {
@@ -74,9 +69,7 @@ class _FlMlKitTextRecognizePageState extends State<FlMlKitTextRecognizePage>
             ),
             AnimatedBuilder(
               animation: animationController,
-              builder:
-                  (_, __) =>
-                      model != null ? _RectBox(model!) : const SizedBox(),
+              builder: (_, __) => model != null ? _RectBox(model!) : const SizedBox(),
             ),
             Universal(
               alignment: Alignment.bottomCenter,
@@ -90,21 +83,17 @@ class _FlMlKitTextRecognizePageState extends State<FlMlKitTextRecognizePage>
                 height: 300,
                 child: FlListWheel.builder(
                   onSelectedItemChanged: (int index) {
-                    FlMlKitTextRecognizeController()
-                        .setRecognizedLanguage(RecognizedLanguage.values[index])
-                        .then((value) {
-                          showToast('setRecognizedLanguage:$value');
-                        });
+                    FlMlKitTextRecognizeController().setRecognizedLanguage(RecognizedLanguage.values[index]).then((
+                      value,
+                    ) {
+                      showToast('setRecognizedLanguage:$value');
+                    });
                   },
                   options: const WheelOptions.cupertino(),
                   itemBuilder:
                       (_, int index) => Align(
                         alignment: Alignment.center,
-                        child: BText(
-                          RecognizedLanguage.values[index].name,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        child: FlText(RecognizedLanguage.values[index].name, fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                   itemCount: RecognizedLanguage.values.length,
                 ),
@@ -120,10 +109,7 @@ class _FlMlKitTextRecognizePageState extends State<FlMlKitTextRecognizePage>
                   const BackButton(color: Colors.white, onPressed: pop),
                   Row(
                     children: [
-                      ElevatedIcon(
-                        icon: Icons.flip_camera_ios,
-                        onPressed: switchCamera,
-                      ),
+                      ElevatedIcon(icon: Icons.flip_camera_ios, onPressed: switchCamera),
                       const SizedBox(width: 12),
                       previewButton,
                       const SizedBox(width: 12),
@@ -149,9 +135,7 @@ class _FlMlKitTextRecognizePageState extends State<FlMlKitTextRecognizePage>
           padding: const EdgeInsets.fromLTRB(10, 10, 10, 40),
           icon: state ? Icons.flash_on : Icons.flash_off,
           onTap: () {
-            FlMlKitTextRecognizeController().setFlashMode(
-              state ? FlashState.off : FlashState.on,
-            );
+            FlMlKitTextRecognizeController().setFlashMode(state ? FlashState.off : FlashState.on);
           },
         );
       },
@@ -168,9 +152,7 @@ class _FlMlKitTextRecognizePageState extends State<FlMlKitTextRecognizePage>
           max: maxRatio,
           divisions: maxRatio.toInt(),
           onChanged: (double value) {
-            FlMlKitTextRecognizeController().setZoomRatio(
-              value.floorToDouble(),
-            );
+            FlMlKitTextRecognizeController().setZoomRatio(value.floorToDouble());
           },
         );
       },
@@ -202,9 +184,7 @@ class _FlMlKitTextRecognizePageState extends State<FlMlKitTextRecognizePage>
         onPressed: () async {
           if (options == null) {
             if (FlMlKitTextRecognizeController().previousCamera != null) {
-              await FlMlKitTextRecognizeController().startPreview(
-                FlMlKitTextRecognizeController().previousCamera!,
-              );
+              await FlMlKitTextRecognizeController().startPreview(FlMlKitTextRecognizeController().previousCamera!);
             }
           } else {
             await FlMlKitTextRecognizeController().stopPreview();
@@ -215,10 +195,8 @@ class _FlMlKitTextRecognizePageState extends State<FlMlKitTextRecognizePage>
   );
 
   Future<void> switchCamera() async {
-    for (final CameraInfo cameraInfo
-        in FlMlKitTextRecognizeController().cameras!) {
-      if (cameraInfo.lensFacing ==
-          (isBackCamera ? CameraLensFacing.front : CameraLensFacing.back)) {
+    for (final CameraInfo cameraInfo in FlMlKitTextRecognizeController().cameras!) {
+      if (cameraInfo.lensFacing == (isBackCamera ? CameraLensFacing.front : CameraLensFacing.back)) {
         currentCamera = cameraInfo;
         break;
       }
@@ -255,9 +233,7 @@ class _RectBox extends StatelessWidget {
   Widget boundingBox(Rect rect, BuildContext context) {
     final double w = model.width! / context.devicePixelRatio;
     final double h = model.height! / context.devicePixelRatio;
-    return Center(
-      child: CustomPaint(size: Size(w, h), painter: _Painter(rect, context)),
-    );
+    return Center(child: CustomPaint(size: Size(w, h), painter: _Painter(rect, context)));
   }
 }
 

@@ -33,10 +33,7 @@ class _AppState extends State<_App> {
       body: Universal(
         width: double.infinity,
         children: [
-          ElevatedText(
-            onPressed: () => openCamera(),
-            text: 'Turn on camera  recognize',
-          ),
+          ElevatedText(onPressed: () => openCamera(), text: 'Turn on camera  recognize'),
           ElevatedText(onPressed: scanImage, text: 'Image recognize'),
         ],
       ),
@@ -70,12 +67,7 @@ class CodeBox extends StatelessWidget {
         TextBox('value=', model?.text),
         const Divider(),
         ...model?.textBlocks
-                ?.map(
-                  (TextBlock b) => SizedBox(
-                    width: double.infinity,
-                    child: TextBox('TextBlock', b.text),
-                  ),
-                )
+                ?.map((TextBlock b) => SizedBox(width: double.infinity, child: TextBox('TextBlock', b.text)))
                 .toList() ??
             [],
       ],
@@ -85,11 +77,7 @@ class CodeBox extends StatelessWidget {
 
 class AppBarText extends AppBar {
   AppBarText(String text, {super.key})
-    : super(
-        elevation: 0,
-        title: BText(text, fontSize: 18, fontWeight: FontWeight.bold),
-        centerTitle: true,
-      );
+    : super(elevation: 0, title: FlText(text, fontSize: 18, fontWeight: FontWeight.bold), centerTitle: true);
 }
 
 class TextBox extends StatelessWidget {
@@ -101,19 +89,13 @@ class TextBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Visibility(
-      visible:
-          value != null &&
-          value.toString().isNotEmpty &&
-          value.toString() != 'null',
+      visible: value != null && value.toString().isNotEmpty && value.toString() != 'null',
       child: Universal(
         padding: const EdgeInsets.all(10),
         direction: Axis.horizontal,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            '$keyName: ',
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
+          Text('$keyName: ', style: const TextStyle(fontWeight: FontWeight.bold)),
           Text(value.toString()).expanded,
         ],
       ),
@@ -139,8 +121,7 @@ class ElevatedText extends StatelessWidget {
   final String text;
 
   @override
-  Widget build(BuildContext context) =>
-      ElevatedButton(onPressed: onPressed, child: Text(text));
+  Widget build(BuildContext context) => ElevatedButton(onPressed: onPressed, child: Text(text));
 }
 
 class ElevatedIcon extends StatelessWidget {
@@ -150,6 +131,5 @@ class ElevatedIcon extends StatelessWidget {
   final IconData icon;
 
   @override
-  Widget build(BuildContext context) =>
-      ElevatedButton(onPressed: onPressed, child: Icon(icon));
+  Widget build(BuildContext context) => ElevatedButton(onPressed: onPressed, child: Icon(icon));
 }
