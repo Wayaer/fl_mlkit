@@ -3,11 +3,13 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 
 class FlMlKitTranslateText {
-  factory FlMlKitTranslateText() => _singleton ??= FlMlKitTranslateText._();
+  factory FlMlKitTranslateText() => _instance;
 
   FlMlKitTranslateText._();
 
-  static FlMlKitTranslateText? _singleton;
+  static final FlMlKitTranslateText _instance = FlMlKitTranslateText._();
+
+  static FlMlKitTranslateText get instance => _instance;
 
   final MethodChannel _channel = const MethodChannel('fl_mlkit_translate_text');
 
@@ -23,10 +25,7 @@ class FlMlKitTranslateText {
 
   /// translation
   /// [downloadModelIfNeeded] The model will be downloaded if needed
-  Future<String?> translate(
-    String text, {
-    bool downloadModelIfNeeded = false,
-  }) async {
+  Future<String?> translate(String text, {bool downloadModelIfNeeded = false}) async {
     if (text.isEmpty) return null;
     return await _channel.invokeMethod<String?>('translate', {
       'text': text,
@@ -35,10 +34,7 @@ class FlMlKitTranslateText {
   }
 
   /// Switching translation languages
-  Future<bool> switchLanguage(
-    TranslateLanguage source,
-    TranslateLanguage target,
-  ) async {
+  Future<bool> switchLanguage(TranslateLanguage source, TranslateLanguage target) async {
     bool? state = await _channel.invokeMethod<bool?>('switchLanguage', {
       'source': toAbbreviations(source),
       'target': toAbbreviations(target),
@@ -53,9 +49,7 @@ class FlMlKitTranslateText {
 
   /// Get current language
   Future<void> getCurrentLanguage() async {
-    final Map<dynamic, dynamic>? map = await _channel.invokeMapMethod(
-      'getCurrentLanguage',
-    );
+    final Map<dynamic, dynamic>? map = await _channel.invokeMapMethod('getCurrentLanguage');
     if (map != null) {
       _sourceLanguage = toTranslateLanguage(map['source'])!;
       _targetLanguage = toTranslateLanguage(map['target'])!;
@@ -64,40 +58,27 @@ class FlMlKitTranslateText {
 
   /// Get downloaded models
   Future<List<TranslateRemoteModel>> getDownloadedModels() async {
-    final List<dynamic>? list = await _channel.invokeListMethod(
-      'getDownloadedModels',
-    );
+    final List<dynamic>? list = await _channel.invokeListMethod('getDownloadedModels');
     return list != null
-        ? List<TranslateRemoteModel>.unmodifiable(
-          list.map<dynamic>((dynamic e) => TranslateRemoteModel.fromMap(e)),
-        )
+        ? List<TranslateRemoteModel>.unmodifiable(list.map<dynamic>((dynamic e) => TranslateRemoteModel.fromMap(e)))
         : [];
   }
 
   /// Downloaded model
   Future<bool> downloadedModel(TranslateLanguage language) async {
-    final bool? state = await _channel.invokeMethod(
-      'downloadedModel',
-      toAbbreviations(language),
-    );
+    final bool? state = await _channel.invokeMethod('downloadedModel', toAbbreviations(language));
     return state ?? false;
   }
 
   /// Delete downloaded model
   Future<bool> deleteDownloadedModel(TranslateLanguage language) async {
-    final bool? state = await _channel.invokeMethod(
-      'deleteDownloadedModel',
-      toAbbreviations(language),
-    );
+    final bool? state = await _channel.invokeMethod('deleteDownloadedModel', toAbbreviations(language));
     return state ?? false;
   }
 
   /// Whether downloaded model
   Future<bool> isModelDownloaded(TranslateLanguage language) async {
-    final bool? state = await _channel.invokeMethod(
-      'isModelDownloaded',
-      toAbbreviations(language),
-    );
+    final bool? state = await _channel.invokeMethod('isModelDownloaded', toAbbreviations(language));
     return state ?? false;
   }
 
@@ -197,10 +178,7 @@ class FlMlKitTranslateText {
 
 class TranslateRemoteModel {
   TranslateRemoteModel.fromMap(Map<dynamic, dynamic> data)
-    : language =
-          FlMlKitTranslateText().toTranslateLanguage(
-            data['language'] as String,
-          )!,
+    : language = FlMlKitTranslateText().toTranslateLanguage(data['language'] as String)!,
       modelType = _toTranslateRemoteModelType(data['modelType'] as String?),
       isBaseModel = data['isBaseModel'] as bool?;
 
@@ -235,15 +213,7 @@ TranslateRemoteModelType _toTranslateRemoteModelType(String? type) {
 }
 
 /// Android TranslateRemoteModel Type
-enum TranslateRemoteModelType {
-  unknown,
-  base,
-  automl,
-  translate,
-  entityextraction,
-  custom,
-  digitalink,
-}
+enum TranslateRemoteModelType { unknown, base, automl, translate, entityextraction, custom, digitalink }
 
 /// Translate Language
 enum TranslateLanguage {

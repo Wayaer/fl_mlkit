@@ -1,3 +1,7 @@
+## 1.2.2
+
+* Update version
+
 ## 1.2.1
 
 * Update gradle version
