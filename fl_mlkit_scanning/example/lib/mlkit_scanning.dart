@@ -12,8 +12,7 @@ class FlMlKitScanningPage extends StatefulWidget {
   State<FlMlKitScanningPage> createState() => _FlMlKitScanningPageState();
 }
 
-class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
-    with TickerProviderStateMixin {
+class _FlMlKitScanningPageState extends State<FlMlKitScanningPage> with TickerProviderStateMixin {
   late AnimationController animationController;
   AnalysisImageModel? model;
   ValueNotifier<bool> flashState = ValueNotifier<bool>(false);
@@ -60,10 +59,7 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
               uninitialized: Container(
                 color: Colors.black,
                 alignment: Alignment.center,
-                child: const Text(
-                  'Camera not initialized',
-                  style: TextStyle(color: Colors.blueAccent),
-                ),
+                child: const Text('Camera not initialized', style: TextStyle(color: Colors.blueAccent)),
               ),
               onDataChanged: (AnalysisImageModel data) {
                 final List<Barcode>? barcodes = data.barcodes;
@@ -75,9 +71,7 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
             ),
             AnimatedBuilder(
               animation: animationController,
-              builder:
-                  (_, __) =>
-                      model != null ? _RectBox(model!) : const SizedBox(),
+              builder: (_, __) => model != null ? _RectBox(model!) : const SizedBox(),
             ),
             Universal(
               alignment: Alignment.bottomCenter,
@@ -93,32 +87,27 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
                   initialItem: 1,
                   count: BarcodeFormat.values.length,
                   builder:
-                      (FixedExtentScrollController controller) =>
-                          FlListWheel.builder(
-                            controller: controller,
-                            onSelectedItemChanged: (int index) {
-                              var format = BarcodeFormat.values[index];
-                              FlMlKitScanningController()
-                                  .setBarcodeFormat([format])
-                                  .then((value) {
-                                    animationReset();
-                                    showToast(
-                                      'setBarcodeFormat:$format $value',
-                                    );
-                                  });
-                            },
-                            options: const WheelOptions.cupertino(),
-                            itemBuilder:
-                                (_, int index) => Align(
-                                  alignment: Alignment.center,
-                                  child: BText(
-                                    BarcodeFormat.values[index].name,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                            itemCount: BarcodeFormat.values.length,
-                          ),
+                      (FixedExtentScrollController controller) => FlListWheel.builder(
+                        controller: controller,
+                        onSelectedItemChanged: (int index) {
+                          var format = BarcodeFormat.values[index];
+                          FlMlKitScanningController().setBarcodeFormat([format]).then((value) {
+                            animationReset();
+                            showToast('setBarcodeFormat:$format $value');
+                          });
+                        },
+                        options: const WheelOptions.cupertino(),
+                        itemBuilder:
+                            (_, int index) => Align(
+                              alignment: Alignment.center,
+                              child: FlText(
+                                BarcodeFormat.values[index].name,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                        itemCount: BarcodeFormat.values.length,
+                      ),
                 ),
               ),
             ),
@@ -132,10 +121,7 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
                   const BackButton(color: Colors.white, onPressed: pop),
                   Row(
                     children: [
-                      ElevatedIcon(
-                        icon: Icons.flip_camera_ios,
-                        onPressed: switchCamera,
-                      ),
+                      ElevatedIcon(icon: Icons.flip_camera_ios, onPressed: switchCamera),
                       const SizedBox(width: 12),
                       previewButton,
                       const SizedBox(width: 12),
@@ -161,9 +147,7 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
           padding: const EdgeInsets.fromLTRB(10, 10, 10, 40),
           icon: state ? Icons.flash_on : Icons.flash_off,
           onTap: () {
-            FlMlKitScanningController().setFlashMode(
-              state ? FlashState.off : FlashState.on,
-            );
+            FlMlKitScanningController().setFlashMode(state ? FlashState.off : FlashState.on);
           },
         );
       },
@@ -193,9 +177,7 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
       return ElevatedText(
         text: value ? 'pause' : 'start',
         onPressed: () async {
-          value
-              ? await FlMlKitScanningController().pauseScanning()
-              : await FlMlKitScanningController().startScanning();
+          value ? await FlMlKitScanningController().pauseScanning() : await FlMlKitScanningController().startScanning();
           canScanning.value = !canScanning.value;
           animationReset();
         },
@@ -216,9 +198,7 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
         onPressed: () async {
           if (options == null) {
             if (FlMlKitScanningController().previousCamera != null) {
-              await FlMlKitScanningController().startPreview(
-                FlMlKitScanningController().previousCamera!,
-              );
+              await FlMlKitScanningController().startPreview(FlMlKitScanningController().previousCamera!);
             }
           } else {
             await FlMlKitScanningController().stopPreview();
@@ -230,8 +210,7 @@ class _FlMlKitScanningPageState extends State<FlMlKitScanningPage>
 
   Future<void> switchCamera() async {
     for (final CameraInfo cameraInfo in FlMlKitScanningController().cameras!) {
-      if (cameraInfo.lensFacing ==
-          (isBackCamera ? CameraLensFacing.front : CameraLensFacing.back)) {
+      if (cameraInfo.lensFacing == (isBackCamera ? CameraLensFacing.front : CameraLensFacing.back)) {
         currentCamera = cameraInfo;
         break;
       }
@@ -271,10 +250,7 @@ class _RectBox extends StatelessWidget {
     final double h = model.height! / context.devicePixelRatio;
     return Universal(
       alignment: Alignment.center,
-      child: CustomPaint(
-        size: Size(w, h),
-        painter: _LinePainter(rect, context),
-      ),
+      child: CustomPaint(size: Size(w, h), painter: _LinePainter(rect, context)),
     );
   }
 
@@ -283,10 +259,7 @@ class _RectBox extends StatelessWidget {
     final double h = model.height! / context.devicePixelRatio;
     return Universal(
       alignment: Alignment.center,
-      child: CustomPaint(
-        size: Size(w, h),
-        painter: _BoxPainter(corners, context),
-      ),
+      child: CustomPaint(size: Size(w, h), painter: _BoxPainter(corners, context)),
     );
   }
 }
@@ -331,14 +304,7 @@ class _BoxPainter extends CustomPainter {
           ..strokeWidth = 2;
 
     final offsets =
-        corners
-            .map(
-              (e) => Offset(
-                (e.dx / context.devicePixelRatio),
-                e.dy / context.devicePixelRatio,
-              ),
-            )
-            .toList();
+        corners.map((e) => Offset((e.dx / context.devicePixelRatio), e.dy / context.devicePixelRatio)).toList();
     final rect = Rect.fromPoints(offsets[1], offsets[3]);
     canvas.drawRect(rect, paint);
   }

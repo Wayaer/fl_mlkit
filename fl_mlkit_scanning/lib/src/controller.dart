@@ -1,12 +1,13 @@
 part of '../fl_mlkit_scanning.dart';
 
 class FlMlKitScanningController extends CameraController {
-  factory FlMlKitScanningController() =>
-      _singleton ??= FlMlKitScanningController._();
+  factory FlMlKitScanningController() => _instance;
 
   FlMlKitScanningController._();
 
-  static FlMlKitScanningController? _singleton;
+  static final FlMlKitScanningController _instance = FlMlKitScanningController._();
+
+  static FlMlKitScanningController get instance => _instance;
 
   final MethodChannel _channel = const MethodChannel('fl.mlkit.scanning');
 
@@ -47,17 +48,13 @@ class FlMlKitScanningController extends CameraController {
   /// Set type
   Future<bool> setBarcodeFormat(List<BarcodeFormat> barcodeFormats) async {
     if (!_supportPlatform) return false;
-    if (barcodeFormats.contains(BarcodeFormat.all) &&
-        barcodeFormats.length > 1) {
+    if (barcodeFormats.contains(BarcodeFormat.all) && barcodeFormats.length > 1) {
       barcodeFormats = [BarcodeFormat.all];
     }
     if (barcodeFormats.isEmpty) barcodeFormats = [BarcodeFormat.all];
     final state = await _channel.invokeMethod<bool>(
       'setBarcodeFormat',
-      barcodeFormats
-          .map((BarcodeFormat e) => e.toString().split('.')[1])
-          .toSet()
-          .toList(),
+      barcodeFormats.map((BarcodeFormat e) => e.toString().split('.')[1]).toSet().toList(),
     );
     if (state == true) _barcodeFormats = barcodeFormats;
     return state ?? false;

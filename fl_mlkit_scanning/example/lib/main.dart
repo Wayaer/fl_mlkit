@@ -99,7 +99,7 @@ class AppBarText extends AppBar {
   AppBarText(String text, {super.key})
     : super(
         elevation: 0,
-        title: BText(text, fontSize: 18, fontWeight: FontWeight.bold),
+        title: FlText(text, fontSize: 18, fontWeight: FontWeight.bold),
       );
 }
 

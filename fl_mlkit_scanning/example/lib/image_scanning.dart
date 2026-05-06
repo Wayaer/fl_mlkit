@@ -36,8 +36,7 @@ class _ImageScanningPageState extends State<ImageScanningPage> {
               margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
               child: Image.file(File(path!)),
             ),
-          if (list != null && list!.isEmpty)
-            const TextBox('Unrecognized', 'Unrecognized'),
+          if (list != null && list!.isEmpty) const TextBox('Unrecognized', 'Unrecognized'),
           CodeBox(list ?? [], expanded: false),
         ],
       ),
@@ -56,9 +55,7 @@ class _ImageScanningPageState extends State<ImageScanningPage> {
       final File file = File(path!);
       final call = FlMlKitScanningController();
       await call.setBarcodeFormat([BarcodeFormat.all]);
-      final AnalysisImageModel? data = await call.scanningImageByte(
-        file.readAsBytesSync(),
-      );
+      final AnalysisImageModel? data = await call.scanningImageByte(file.readAsBytesSync());
       if (data != null && data.barcodes != null && data.barcodes!.isNotEmpty) {
         list = data.barcodes;
         setState(() {});
@@ -73,10 +70,7 @@ class _ImageScanningPageState extends State<ImageScanningPage> {
     if (isAndroid) hasPermission = await getPermission(Permission.storage);
     if (isIOS) hasPermission = true;
     if (!hasPermission) return;
-    final result = await FilePicker.platform.pickFiles(
-      type: FileType.image,
-      allowCompression: false,
-    );
+    final result = await FilePicker.pickFiles(type: FileType.image);
     if (result == null || result.files.isEmpty) return;
     path = result.files.first.path;
     setState(() {});
