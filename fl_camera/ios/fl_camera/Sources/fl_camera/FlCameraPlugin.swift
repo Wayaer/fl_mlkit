@@ -23,5 +23,9 @@ public class FlCameraPlugin: NSObject, FlutterPlugin {
     public func detachFromEngine(for registrar: FlutterPluginRegistrar) {
         channel?.setMethodCallHandler(nil)
         channel = nil
+        FlCamera.shared.cameraTexture?.dispose()
+        FlCamera.shared.cameraTexture = nil
+        FlCamera.shared.clearEventChannels()
+        FlCamera.shared.registrar = nil
     }
 }

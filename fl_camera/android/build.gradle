@@ -1,37 +1,17 @@
+plugins {
+    id 'com.android.library'
+}
+
 group 'fl.camera'
-version '1.0'
-
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-    }
-
-    dependencies {
-        classpath 'com.android.tools.build:gradle:8.5.2'
-    }
-}
-
-rootProject.allprojects {
-    repositories {
-        google()
-        mavenCentral()
-    }
-}
-
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
+version '5.0.0'
 
 android {
-    compileSdk = 34
-
-    if (project.android.hasProperty("namespace")) {
-        namespace 'fl.camera'
-    }
+    namespace 'fl.camera'
+    compileSdk = 36
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 
     sourceSets {
@@ -39,13 +19,19 @@ android {
     }
 
     defaultConfig {
-        minSdk = 21
-    }
-
-    dependencies {
-        api "androidx.camera:camera-camera2:1.4.1"
-        api "androidx.camera:camera-lifecycle:1.4.1"
-        api 'androidx.camera:camera-core:1.4.1'
+        // CameraX 1.6.x 要求 minSdk 23
+        minSdk = 23
     }
 }
 
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
+    }
+}
+
+dependencies {
+    api 'androidx.camera:camera-core:1.6.2'
+    api 'androidx.camera:camera-camera2:1.6.2'
+    api 'androidx.camera:camera-lifecycle:1.6.2'
+}
