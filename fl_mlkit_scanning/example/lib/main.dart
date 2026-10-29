@@ -1,158 +1,157 @@
 import 'package:example/image_scanning.dart';
 import 'package:example/mlkit_scanning.dart';
 import 'package:fl_extended/fl_extended.dart';
-import 'package:fl_mlkit_scanning/fl_mlkit_scanning.dart';
 import 'package:flutter/material.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(
-    MaterialApp(
-      navigatorKey: FlExtended().navigatorKey,
-      scaffoldMessengerKey: FlExtended().scaffoldMessengerKey,
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData.light(useMaterial3: true),
-      darkTheme: ThemeData.dark(useMaterial3: true),
-      home: _App(),
-      title: 'FlMlKitScanning',
-    ),
-  );
+  runApp(const ScanningApp());
 }
 
-class _App extends StatefulWidget {
-  @override
-  _AppState createState() => _AppState();
-}
-
-class _AppState extends State<_App> {
-  List<Barcode> list = <Barcode>[];
+/// ML Kit 扫码示例应用。
+class ScanningApp extends StatelessWidget {
+  const ScanningApp({super.key});
 
   @override
   Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'FlMlKitScanning',
+      debugShowCheckedModeBanner: false,
+      navigatorKey: FlExtended().navigatorKey,
+      scaffoldMessengerKey: FlExtended().scaffoldMessengerKey,
+      theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF0F766E))),
+      darkTheme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF0F766E), brightness: Brightness.dark),
+      ),
+      home: const HomePage(),
+    );
+  }
+}
+
+/// 示例首页。
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
-      appBar: AppBarText('Fl MlKit Scanning'),
-      body: Universal(
-        width: double.infinity,
-        children: [
-          ElevatedText(onPressed: openCamera, text: 'Turn on camera scanning'),
-          ElevatedText(onPressed: scanImage, text: 'Image scanning'),
-          const SizedBox(height: 30),
-          CodeBox(list),
+      body: SafeArea(
+        child: Universal(
+          isScroll: true,
+          padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Row(
+              children: <Widget>[
+                Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                  child: Icon(Icons.qr_code_scanner, size: 32, color: colorScheme.onPrimaryContainer),
+                ),
+                const SizedBox(width: 14),
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      FlText('FlMlKitScanning', fontSize: 24),
+                      SizedBox(height: 2),
+                      FlText('ML Kit 条码扫描 · Android / iOS', fontSize: 13),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            _FeatureCard(
+              icon: Icons.camera_alt_outlined,
+              title: '相机实时扫描',
+              subtitle: '条码格式、扫描频率、暂停 / 继续、闪光灯、缩放、自定义浮层',
+              onTap: _openCamera,
+            ),
+            _FeatureCard(
+              icon: Icons.image_outlined,
+              title: '图片文件扫描',
+              subtitle: '从相册选择图片，识别条码并展示结构化解析结果',
+              onTap: () => push(const ImageScanningPage()),
+            ),
+            const SizedBox(height: 20),
+            const FlText('支持的条码格式', fontSize: 16),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: const <String>[
+                'QR Code',
+                'Code 128',
+                'Code 39',
+                'Code 93',
+                'Codabar',
+                'Data Matrix',
+                'EAN-13',
+                'EAN-8',
+                'ITF',
+                'UPC-A',
+                'UPC-E',
+                'PDF417',
+                'Aztec',
+              ].map((String item) => Chip(label: Text(item))).toList(growable: false),
+            ),
+            const SizedBox(height: 16),
+            const FlText('解析类型', fontSize: 16),
+            const SizedBox(height: 8),
+            const FlText('网址、WiFi、邮件、电话、短信、地理位置、日历事件、联系人名片、驾照 / 身份证、纯文本', fontSize: 12),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _openCamera() {
+    push(const FlMlKitScanningPage());
+  }
+}
+
+class _FeatureCard extends StatelessWidget {
+  const _FeatureCard({required this.icon, required this.title, required this.subtitle, required this.onTap});
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Universal(
+        onTap: onTap,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        direction: Axis.horizontal,
+        children: <Widget>[
+          IconLabel(icon: icon, size: 26, color: colorScheme.primary),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                FlText(title, fontSize: 16, fontWeight: FontWeight.w600),
+                const SizedBox(height: 4),
+                FlText(subtitle, fontSize: 12),
+              ],
+            ),
+          ),
+          Icon(Icons.chevron_right, color: colorScheme.outline),
         ],
       ),
     );
   }
-
-  void scanImage() {
-    push(const ImageScanningPage());
-  }
-
-  Future<void> openCamera() async {
-    bool permission = await getPermission(Permission.camera);
-    if (permission) {
-      final List<Barcode>? data = await push(const FlMlKitScanningPage());
-      if (data != null) {
-        list = data;
-        setState(() {});
-      }
-    }
-  }
-}
-
-class CodeBox extends StatelessWidget {
-  const CodeBox(this.list, {super.key, this.expanded = true});
-
-  final List<Barcode> list;
-  final bool expanded;
-
-  @override
-  Widget build(BuildContext context) {
-    return Universal(
-      expanded: expanded,
-      isScroll: expanded,
-      children: list.builderEntry((MapEntry<int, Barcode> entry) {
-        return Column(
-          children: <Widget>[
-            Text('NO.${entry.key + 1}'),
-            const SizedBox(height: 6),
-            Text('value:${entry.value.value}').sizedBox(width: double.infinity),
-            const SizedBox(height: 6),
-            Text('type:${entry.value.type}').sizedBox(width: double.infinity),
-            Text(
-              'boundingBox:${entry.value.boundingBox?.size}',
-            ).sizedBox(width: double.infinity),
-            Text(
-              'boundingBox:${entry.value.boundingBox}',
-            ).sizedBox(width: double.infinity),
-            Text(
-              'corners:${entry.value.corners}',
-            ).sizedBox(width: double.infinity),
-          ],
-        );
-      }),
-    );
-  }
-}
-
-class AppBarText extends AppBar {
-  AppBarText(String text, {super.key})
-    : super(
-        elevation: 0,
-        title: FlText(text, fontSize: 18, fontWeight: FontWeight.bold),
-      );
-}
-
-class TextBox extends StatelessWidget {
-  final dynamic keyName;
-  final dynamic value;
-
-  const TextBox(this.keyName, this.value, {super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Visibility(
-      visible:
-          value != null &&
-          value.toString().isNotEmpty &&
-          value.toString() != 'null',
-      child: Container(
-        margin: const EdgeInsets.all(10),
-        child: Text('$keyName = $value'),
-      ),
-    );
-  }
-}
-
-Future<bool> getPermission(Permission permission) async {
-  PermissionStatus status = await permission.status;
-  if (status.isGranted) {
-    return true;
-  } else {
-    status = await permission.request();
-    if (!status.isGranted) openAppSettings();
-    return status.isGranted;
-  }
-}
-
-class ElevatedText extends StatelessWidget {
-  const ElevatedText({super.key, this.onPressed, required this.text});
-
-  final VoidCallback? onPressed;
-  final String text;
-
-  @override
-  Widget build(BuildContext context) =>
-      ElevatedButton(onPressed: onPressed, child: Text(text));
-}
-
-class ElevatedIcon extends StatelessWidget {
-  const ElevatedIcon({super.key, this.onPressed, required this.icon});
-
-  final VoidCallback? onPressed;
-  final IconData icon;
-
-  @override
-  Widget build(BuildContext context) =>
-      ElevatedButton(onPressed: onPressed, child: Icon(icon));
 }

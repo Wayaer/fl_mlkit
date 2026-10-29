@@ -1,135 +1,122 @@
 # fl_mlkit_scanning
 
-基于[Google ML Kit](https://developers.google.com/ml-kit/vision/barcode-scanning)
-实现快速稳定扫码功能，支持Android\IOS
+[![pub package](https://img.shields.io/pub/v/fl_mlkit_scanning.svg)](https://pub.dev/packages/fl_mlkit_scanning)
+[![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Wayaer/fl_mlkit/blob/main/fl_mlkit_scanning/LICENSE)
 
-Realize fast and stable code scanning function based
-on [Google ML Kit](https://developers.google.com/ml-kit/vision/barcode-scanning), and support
-Android \ IOS
+基于 [Google ML Kit](https://developers.google.com/ml-kit/vision/barcode-scanning) 的 Flutter
+条码扫描插件，支持 Android 与 iOS。
 
-相机相关功能依赖于 [fl_camera](https://pub.dev/packages/fl_camera)
+Camera preview is provided by [fl_camera](https://pub.dev/packages/fl_camera).
 
-Camera related functions depend on [fl_camera](https://pub.dev/packages/fl_camera)
+## 特性 Features
 
-### 使用 use
+- 相机实时扫码，支持二维码、条形码等全部 ML Kit 格式
+- 图片字节扫码，支持旋转角度（Android）
+- 条码坐标：外接矩形、四角坐标、原图宽高
+- 结构化解析：网址、WiFi、邮件、电话、短信、地理位置、日历事件、联系人、驾照 / 身份证
+- 扫描频率、暂停 / 继续、闪光灯、缩放、分辨率、前后摄像头切换
+- 支持 `ScannerBox` / `ScannerLine` 浮层
 
-- ios 添加相机权限 Add camera permissions to IOS
+## 平台要求 Requirements
 
-```plist
+| 平台 | 要求 |
+| --- | --- |
+| Flutter | >= 3.35.0 |
+| Dart | >= 3.9.0 |
+| Android | minSdk 23，compileSdk 36，AGP 9.1.0，Kotlin 2.4.0 |
+| iOS | 15.5+（Google ML Kit 9.0.0 要求） |
+
+> Google ML Kit iOS 官方仅提供 CocoaPods，本插件使用 CocoaPods 集成。
+> 若使用 Flutter 3.47 且开启了 Swift Package Manager，请先执行
+> `flutter config --no-enable-swift-package-manager`。
+
+## 安装 Installation
+
+```yaml
+dependencies:
+  fl_mlkit_scanning: ^6.0.0
+```
+
+### iOS
+
+在 `ios/Runner/Info.plist` 中添加：
+
+```xml
 <key>NSCameraUsageDescription</key>
-<string>是否允许FlMlKitScanning使用你的相机？</string>
+<string>是否允许 FlMlKitScanning 使用你的相机？</string>
+<key>NSPhotoLibraryUsageDescription</key>
+<string>是否允许 FlMlKitScanning 访问你的相册？</string>
 ```
 
-- 预览 preview
+从相册选择图片时，建议使用 `file_picker` 等基于系统选择器的插件，无需申请存储权限。
+
+> Google ML Kit 的 iOS 静态库不支持 arm64 模拟器，请使用真机或 Rosetta 模拟器调试。
+
+## 使用 Usage
+
+### 相机实时扫码
 
 ```dart
-
-Widget build(BuildContext context) {
-  return FlMlKitScanning(
-
-    /// 如果你设置为10, 2次解析数据间隔为10 毫秒，数字越小 在ios上cpu占有率越高，数字越大，识别速度会变慢，建议设置500-100
-    /// If you set it to 10, The interval between data parsing is 10 milliseconds
-    /// The larger the number, the slower the parsing,If the number is too small, the CPU percentage will be too high on ios
-    /// Therefore, the recommended setting range is 500 to 1000
-      frequency: 500,
-
-      /// 需要预览的相机 不传值 默认为后摄像头
-      /// Camera ID to preview
-      camera: camera,
-
-      /// 预览相机支持的分辨率
-      /// Preview the resolution supported by the camera
-      resolution: CameraResolution.high,
-
-      /// 是否自动扫描 默认为[true]
-      /// Auto scan defaults to [true]
-      autoScanning: false,
-
-      /// 显示在预览上层
-      /// Display above preview box
-      overlay: const ScannerLine(),
-
-      /// 更新组件时是否重置相机
-      /// Reset camera when updating components
-      updateReset: false,
-
-      /// 相机预览位置
-      /// How a camera box should be inscribed into another box.
-      fit: BoxFit.fitWidth,
-
-      /// 闪光灯状态
-      /// Flash status
-      onFlashChanged: (FlashState state) {
-        showToast('$state');
-      },
-
-      /// 缩放变化
-      /// zoom ratio
-      onFlashChanged: (FlashState state) {
-        showToast('$state');
-      },
-
-      /// 相机在未初始化时显示的UI
-      /// The UI displayed when the camera is not initialized
-      uninitialized: Container(
-          color: Colors.black,
-          alignment: Alignment.center,
-          child:
-          const Text(
-              'Camera not initialized', style: TextStyle(color: Colors.white))),
-
-      /// 二维码识别类型  默认仅识别qr_code，需要识别几种就添加几种
-      /// Identification type Only QRcode is recognized by default
-      barcodeFormats: <BarcodeFormat>[BarcodeFormat.qr_code],
-
-      /// 扫码回调
-      /// Code scanning callback
-      onDataChanged: (AnalysisImageModel data) {
-        final List<Barcode>? barcodes = data.barcodes;
-        if (barcodes != null && barcodes.isNotEmpty) {
-          /// 返回数组 可识别多个码
-          /// Return array
-        }
-      });
-}
-
+FlMlKitScanning(
+  barcodeFormats: const <BarcodeFormat>[BarcodeFormat.all],
+  resolution: CameraResolution.high,
+  frequency: 600,
+  autoScanning: true,
+  overlay: const ScannerBox(scannerSize: Size(260, 260)),
+  onDataChanged: (AnalysisImageModel data) {
+    for (final Barcode barcode in data.barcodeList) {
+      debugPrint('${barcode.format} ${barcode.value}');
+    }
+  },
+)
 ```
 
-- 方法 method
+### 图片扫码
 
 ```dart
-void func() {
-
-  /// 设置设别码类型
-  /// Set type
-  controller.setBarcodeFormat();
-
-  /// 识别图片字节
-  /// Identify picture bytes
-  controller.scanningImageByte();
-
-  /// 打开\关闭 闪光灯 
-  /// Turn flash on / off
-  controller.setFlashMode();
-
-  /// 相机缩放
-  /// Camera zoom
-  controller.setZoomRatio();
-
-  /// 暂停扫描
-  /// Pause scanning
-  controller.pauseScanning();
-
-  /// 开始扫描
-  /// Start scanning
-  controller.startScanning();
-}
-
+final FlMlKitScanningController controller = FlMlKitScanningController();
+await controller.setBarcodeFormat(<BarcodeFormat>[BarcodeFormat.all]);
+final AnalysisImageModel? result = await controller.scanningImageByte(bytes, rotationDegrees: 0);
 ```
 
-|         | image                                                                                                         | scan                                                                                                         |
-|---------|---------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
-| android | <img src="https://raw.githubusercontent.com/Wayaer/fl_mlkit_scanning/main/example/assets/android_image.jpg"/> | <img src="https://raw.githubusercontent.com/Wayaer/fl_mlkit_scanning/main/example/assets/android_scan.jpg"/> |
-| ios     | <img src="https://raw.githubusercontent.com/Wayaer/fl_mlkit_scanning/main/example/assets/ios_image.png"/>     | <img src="https://raw.githubusercontent.com/Wayaer/fl_mlkit_scanning/main/example/assets/ios_scan.png"/>     |
+### 控制器
 
-<img src="https://raw.githubusercontent.com/Wayaer/fl_mlkit_scanning/main/example/assets/test.png"/>
+| 方法 | 说明 |
+| --- | --- |
+| `initialize()` | 初始化相机与事件通道 |
+| `startPreview(camera, resolution:)` | 开始预览 |
+| `stopPreview()` | 停止预览 |
+| `setBarcodeFormat(formats)` | 设置需要识别的条码格式 |
+| `setParams(frequency:, canScanning:)` | 设置扫描间隔与暂停状态 |
+| `startScanning()` / `pauseScanning()` | 继续 / 暂停扫描 |
+| `scanningImageByte(bytes, rotationDegrees:)` | 识别图片字节 |
+| `setFlashMode(state)` / `setZoomRatio(ratio)` | 闪光灯 / 缩放 |
+| `switchCamera(camera)` / `resetCamera()` | 切换 / 重置相机 |
+| `dispose()` | 释放资源 |
+
+## 数据模型 Data Model
+
+`AnalysisImageModel` 包含 `width`、`height` 与 `barcodeList`。
+`Barcode` 的坐标均基于原图尺寸，如果需要绘制到屏幕上，请按照预览的缩放与裁剪方式换算。
+
+解析结果字段：
+
+| 字段 | 类型 |
+| --- | --- |
+| `value` / `displayValue` / `bytes` | 原始内容 |
+| `format` | `BarcodeFormat` |
+| `type` | `BarcodeType` |
+| `boundingBox` / `corners` | 位置 |
+| `url` | `UrlBookmark` |
+| `wifi` | `WiFi` |
+| `email` | `Email` |
+| `phone` | `Phone` |
+| `sms` | `SMS` |
+| `geoPoint` | `GeoPoint` |
+| `calendarEvent` | `CalendarEvent` |
+| `contactInfo` | `ContactInfo` |
+| `driverLicense` | `DriverLicense` |
+
+## 示例 Example
+
+完整示例见 [example](https://github.com/Wayaer/fl_mlkit/tree/main/fl_mlkit_scanning/example)。

@@ -1,25 +1,23 @@
-#
-# To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html.
-# Run `pod lib lint fl_mlkit_scanning.podspec` to validate before publishing.
-#
 Pod::Spec.new do |s|
   s.name             = 'fl_mlkit_scanning'
-  s.version          = '0.0.1'
-  s.summary          = 'Google mlkit scanning plugin, supports Android and IOS.'
+  s.version          = '6.0.0'
+  s.summary          = 'Google ML Kit barcode scanning plugin, supports Android and iOS.'
   s.description      = <<-DESC
-  Google mlkit scanning plugin, supports Android and IOS.
-  DESC
-  s.homepage         = 'http://example.com'
-  s.license          = { :file => '../LICENSE' }
-  s.author           = { 'Your Company' => 'email@example.com' }
+Google ML Kit barcode scanning plugin for Flutter.
+Supports Android and iOS.
+                       DESC
+  s.homepage         = 'https://github.com/Wayaer/fl_mlkit/tree/main/fl_mlkit_scanning'
+  s.license          = { :type => 'MIT', :file => '../LICENSE' }
+  s.author           = { 'Wayaer' => 'https://github.com/Wayaer' }
   s.source           = { :path => '.' }
-  s.source_files = 'Classes/*.swift'
+  s.source_files     = 'Classes/**/*.swift'
+  s.resource_bundles = { 'fl_mlkit_scanning_privacy' => ['Resources/PrivacyInfo.xcprivacy'] }
   s.dependency 'Flutter'
   s.dependency 'fl_camera'
   s.dependency 'fl_channel'
   s.dependency 'GoogleMLKit/BarcodeScanning'
   s.static_framework = true
-  s.platform = :ios, '13.0'
-  s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
+  s.ios.deployment_target = '15.5'
+  s.pod_target_xcconfig  = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
   s.swift_version = '5.0'
 end

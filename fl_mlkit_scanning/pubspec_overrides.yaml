@@ -1,0 +1,4 @@
+# 本地开发时使用仓库内的 fl_camera，发布到 pub 时该文件不会被打包。
+dependency_overrides:
+  fl_camera:
+    path: ../fl_camera

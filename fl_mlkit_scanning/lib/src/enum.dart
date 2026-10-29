@@ -97,7 +97,8 @@ enum AddressType {
 
 /// Barcode value type constants
 enum BarcodeType {
-  /// Barcode value type unknown, which indicates the current version of SDK cannot recognize the structure of the barcode. Developers can inspect the raw value instead.
+  /// Barcode value type unknown, which indicates the current version of SDK cannot recognize the structure of the
+  /// barcode. Developers can inspect the raw value instead.
   ///
   /// Constant Value: 0
   unknown,
@@ -211,22 +212,22 @@ enum PhoneType {
 
 /// Wifi encryption type constants.
 enum EncryptionType {
-  /// Unknown encryption type.
+  /// 未知加密类型。
   ///
   /// Constant Value: 0
-  none,
+  unknown,
 
-  /// Not encrypted.
+  /// 未加密。
   ///
   /// Constant Value: 1
   open,
 
-  /// WPA level encryption.
+  /// WPA 加密。
   ///
   /// Constant Value: 2
   wpa,
 
-  /// WEP level encryption.
+  /// WEP 加密。
   ///
   /// Constant Value: 3
   wep,

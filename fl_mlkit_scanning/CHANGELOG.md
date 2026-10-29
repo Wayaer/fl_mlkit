@@ -1,3 +1,18 @@
+## 6.0.0
+
+* 修复快速切换页面时 `dispose` 与重新初始化并发，导致帧监听被取消、扫码不再返回结果的问题
+* 扫码结果改用独立事件通道 `fl.camera.scanning.event`，可与相机 / OCR 控制器共存
+* 修复图片扫码返回的宽高与条码坐标不一致（Android 按 `rotationDegrees`、iOS 按 EXIF 方向计算旋转后尺寸）
+* 最低版本与 `fl_camera` 对齐：Flutter 3.35 / Dart 3.9，Android minSdk 23，iOS 15.5（Google ML Kit 9.0.0）
+* 升级 `fl_camera` 至 5.0.0、`fl_channel` 至 2.0.0、Google ML Kit Barcode Scanning 至 17.3.0
+* 修复 Android 频率参数类型转换导致的崩溃
+* 修复图片扫描结果在识别失败时 Future 不返回的问题
+* 图片扫描改为后台线程解码，避免阻塞 UI
+* 新增 `barcodeList`、`isEmpty` 等便捷 API，模型字段改为不可变
+* 修正 WiFi 加密类型枚举命名
+* 修复 iOS 条码原始字节直接传 `Data` 导致平台通道编码失败
+* 修复 iOS 未知条码格式（0）被误映射为 `BarcodeFormat.all`
+
 ## 5.3.0
 
 * Update dependencies
