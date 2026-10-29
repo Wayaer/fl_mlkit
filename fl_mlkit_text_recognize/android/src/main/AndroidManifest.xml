@@ -1,10 +1,9 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="fl.mlkit.text.recognize">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application>
+        <!-- 预下载 OCR 模型，避免首次识别时等待模型加载 -->
         <meta-data
             android:name="com.google.mlkit.vision.DEPENDENCIES"
             android:value="ocr" />
-        <!-- To use multiple models: android:value="ocr,model2,model3" -->
     </application>
 </manifest>

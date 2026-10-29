@@ -1,126 +1,107 @@
 # fl_mlkit_text_recognize
 
-基于[Google ML Kit](https://developers.google.com/ml-kit/vision/text-recognition/v2)实现快速稳定识别文字功能，支持Android\IOS
+[![pub package](https://img.shields.io/pub/v/fl_mlkit_text_recognize.svg)](https://pub.dev/packages/fl_mlkit_text_recognize)
+[![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Wayaer/fl_mlkit/blob/main/fl_mlkit_text_recognize/LICENSE)
 
-Realize fast and stable text recognition function based
-on [Google ML Kit](https://developers.google.com/ml-kit/vision/text-recognition/v2), and support Android \ IOS
+基于 [Google ML Kit](https://developers.google.com/ml-kit/vision/text-recognition/v2) 的 Flutter
+文字识别（OCR）插件，支持 Android 与 iOS。
 
-相机相关功能依赖于 [fl_camera](https://pub.dev/packages/fl_camera)
+Camera preview is provided by [fl_camera](https://pub.dev/packages/fl_camera).
 
-Camera related functions depend on [fl_camera](https://pub.dev/packages/fl_camera)
+## 特性 Features
 
-### 使用 use
+- 相机实时识别，支持拉丁语系、中文、日语、韩语、天城文
+- 图片字节识别，支持旋转角度（Android）
+- 返回文字块（`TextBlock`）、行（`TextLine`）、元素（`TextElement`）及坐标
+- 识别频率、暂停 / 继续、闪光灯、缩放、分辨率、前后摄像头切换
+- 支持自定义浮层，可绘制文字块 / 行 / 元素区域
 
-- ios 添加相机权限 Add camera permissions to IOS
+## 平台要求 Requirements
 
-```plist
+| 平台 | 要求 |
+| --- | --- |
+| Flutter | >= 3.35.0 |
+| Dart | >= 3.9.0 |
+| Android | minSdk 23，compileSdk 36，AGP 9.1.0，Kotlin 2.4.0 |
+| iOS | 15.5+（Google ML Kit 9.0.0 要求） |
+
+> Google ML Kit iOS 官方仅提供 CocoaPods，本插件使用 CocoaPods 集成。
+> 若使用 Flutter 3.47 且开启了 Swift Package Manager，请先执行
+> `flutter config --no-enable-swift-package-manager`。
+
+## 安装 Installation
+
+```yaml
+dependencies:
+  fl_mlkit_text_recognize: ^4.0.0
+```
+
+### iOS
+
+在 `ios/Runner/Info.plist` 中添加：
+
+```xml
 <key>NSCameraUsageDescription</key>
-<string>是否允许FlMlKitTextRecognize使用你的相机？</string>
+<string>是否允许 FlMlKitTextRecognize 使用你的相机？</string>
+<key>NSPhotoLibraryUsageDescription</key>
+<string>是否允许 FlMlKitTextRecognize 访问你的相册？</string>
 ```
 
-- 预览 preview
+> Google ML Kit 的 iOS 静态库不支持 arm64 模拟器，请使用真机或 Rosetta 模拟器调试。
+
+## 使用 Usage
+
+### 相机实时识别
 
 ```dart
-
-Widget build(BuildContext context) {
-  return FlMlKitTextRecognize(
-
-    /// 如果你设置为10, 2次解析数据间隔为10 毫秒，数字越小 在ios上cpu占有率越高，数字越大，识别速度会变慢，建议设置500-100
-    /// If you set it to 10, The interval between data parsing is 10 milliseconds
-    /// The larger the number, the slower the parsing,If the number is too small, the CPU percentage will be too high on ios
-    /// Therefore, the recommended setting range is 500 to 1000
-      frequency: 500,
-
-      /// 需要预览的相机
-      /// Camera ID to preview
-      camera: camera,
-
-      /// 预览相机支持的分辨率
-      /// Preview the resolution supported by the camera
-      resolution: CameraResolution.high,
-
-      /// 是否自动识别 默认为[true]
-      /// Auto recognize defaults to [true]
-      autoRecognize: false,
-
-      /// 显示在预览上层
-      /// Display above preview box
-      overlay: const ScannerLine(),
-
-      /// 相机预览位置
-      /// How a camera box should be inscribed into another box.
-      fit: BoxFit.fitWidth,
-
-      /// 闪光灯状态
-      /// Flash status
-      onFlashChanged: (FlashState state) {
-        showToast('$state');
-      },
-
-      /// 缩放变化
-      /// zoom ratio
-      onFlashChanged: (FlashState state) {
-        showToast('$state');
-      },
-
-      /// 相机在未初始化时显示的UI
-      /// The UI displayed when the camera is not initialized
-      uninitialized: Container(
-          color: Colors.black,
-          alignment: Alignment.center,
-          child:
-          const Text(
-              'Camera not initialized', style: TextStyle(color: Colors.white))),
-
-      /// 识别文本的语言类型
-      /// Identifies the language type of the text
-      recognizedLanguage: RecognizedLanguage.latin,
-
-      /// 文本识别回调
-      /// Text recognized callback
-      onDataChanged: (AnalysisTextModel data) {
-        if (data.text != null && data.text!.isNotEmpty) {
-
-        }
-      });
-}
-
+FlMlKitTextRecognize(
+  recognizedLanguage: RecognizedLanguage.chinese,
+  resolution: CameraResolution.high,
+  frequency: 800,
+  autoRecognize: true,
+  overlay: const ScannerLine(),
+  onDataChanged: (AnalysisTextModel data) {
+    debugPrint(data.text);
+  },
+)
 ```
 
-- 方法 method
+### 图片识别
 
 ```dart
-void func() {
-
-  /// 设置识别文本的语言类型
-  /// Sets the language type that identifies the text
-  controller.setRecognizedLanguage();
-
-  /// 识别图片字节
-  /// Identify picture bytes
-  controller.scanImageByte();
-
-  /// 打开\关闭 闪光灯 
-  /// Turn flash on / off
-  controller.setFlashMode();
-
-  /// 相机缩放
-  /// Camera zoom
-  controller.setZoomRatio();
-
-  /// 暂停识别
-  /// Pause recognition
-  controller.pauseRecognize();
-
-  /// 开始识别
-  /// Start recognition
-  controller.startRecognize();
-}
-
+final FlMlKitTextRecognizeController controller = FlMlKitTextRecognizeController();
+await controller.setRecognizedLanguage(RecognizedLanguage.chinese);
+final AnalysisTextModel? result = await controller.recognizeImageByte(bytes, rotationDegrees: 0);
 ```
 
-| image                                                                                                        | scan                                                                                                       |
-|--------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------|
-| <img src="https://raw.githubusercontent.com/Wayaer/fl_mlkit_text_recognize/main/example/assets/image.jpg" /> | <img src="https://raw.githubusercontent.com/Wayaer/fl_mlkit_text_recognize/main/example/assets/scan.jpg"/> |
+### 控制器
 
-<img src="https://raw.githubusercontent.com/Wayaer/fl_mlkit_text_recognize/main/example/assets/test.jpg"/>
+| 方法 | 说明 |
+| --- | --- |
+| `initialize()` | 初始化相机与事件通道 |
+| `startPreview(camera, resolution:)` | 开始预览 |
+| `stopPreview()` | 停止预览 |
+| `setRecognizedLanguage(language)` | 设置识别语言 |
+| `setParams(frequency:, canRecognize:)` | 设置识别间隔与暂停状态 |
+| `startRecognize()` / `pauseRecognize()` | 继续 / 暂停识别 |
+| `recognizeImageByte(bytes, rotationDegrees:)` | 识别图片字节 |
+| `setFlashMode(state)` / `setZoomRatio(ratio)` | 闪光灯 / 缩放 |
+| `switchCamera(camera)` / `resetCamera()` | 切换 / 重置相机 |
+| `dispose()` | 释放资源 |
+
+## 数据模型 Data Model
+
+`AnalysisTextModel` 包含：
+
+| 字段 | 说明 |
+| --- | --- |
+| `text` | 全部识别文字 |
+| `textBlocks` / `blockList` | 文字块列表 |
+| `width` / `height` | 原图尺寸（像素） |
+
+`TextBlock`、`TextLine`、`TextElement` 均包含 `text`、`boundingBox`、`corners`，
+Android 额外提供 `recognizedLanguage`，iOS 额外提供 `recognizedLanguages`。
+
+## 示例 Example
+
+完整示例见 [example](https://github.com/Wayaer/fl_mlkit/tree/main/fl_mlkit_text_recognize/example)。

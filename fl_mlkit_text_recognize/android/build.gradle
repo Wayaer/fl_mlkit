@@ -1,37 +1,17 @@
+plugins {
+    id 'com.android.library'
+}
+
 group 'fl.mlkit.text.recognize'
-version '1.0'
-
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-    }
-
-    dependencies {
-        classpath 'com.android.tools.build:gradle:8.5.2'
-    }
-}
-
-rootProject.allprojects {
-    repositories {
-        google()
-        mavenCentral()
-    }
-}
-
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
+version '4.0.0'
 
 android {
-    compileSdk = 34
-
-    if (project.android.hasProperty("namespace")) {
-        namespace 'fl.mlkit.text.recognize'
-    }
+    namespace 'fl.mlkit.text.recognize'
+    compileSdk = 36
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 
     sourceSets {
@@ -39,23 +19,26 @@ android {
     }
 
     defaultConfig {
-        minSdk = 21
+        // 依赖 fl_camera，CameraX 要求 minSdk 23
+        minSdk = 23
     }
+}
 
-    dependencies {
-        // To recognize Latin script
-        implementation 'com.google.mlkit:text-recognition:16.0.1'
-
-        // To recognize Chinese script
-        implementation 'com.google.mlkit:text-recognition-chinese:16.0.1'
-
-        // To recognize Devanagari script
-        implementation 'com.google.mlkit:text-recognition-devanagari:16.0.1'
-
-        // To recognize Japanese script
-        implementation 'com.google.mlkit:text-recognition-japanese:16.0.1'
-
-        // To recognize Korean script
-        implementation 'com.google.mlkit:text-recognition-korean:16.0.1'
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
     }
+}
+
+dependencies {
+    // 拉丁语系
+    implementation 'com.google.mlkit:text-recognition:16.0.1'
+    // 中文
+    implementation 'com.google.mlkit:text-recognition-chinese:16.0.1'
+    // 天城文
+    implementation 'com.google.mlkit:text-recognition-devanagari:16.0.1'
+    // 日文
+    implementation 'com.google.mlkit:text-recognition-japanese:16.0.1'
+    // 韩文
+    implementation 'com.google.mlkit:text-recognition-korean:16.0.1'
 }
