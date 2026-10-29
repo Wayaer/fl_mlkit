@@ -2,6 +2,7 @@ import Flutter
 import MLKitLanguageID
 import UIKit
 
+/// 语言识别插件，负责识别器生命周期与置信度阈值设置。
 public class FlMlKitIdentifyLanguagePlugin: NSObject, FlutterPlugin {
     private var languageIdentification: LanguageIdentification?
     private var options: LanguageIdentificationOptions?
@@ -16,29 +17,36 @@ public class FlMlKitIdentifyLanguagePlugin: NSObject, FlutterPlugin {
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         switch call.method {
         case "identifyLanguage":
-            let text = call.arguments as! String
-            getLanguageIdentification().identifyLanguage(for: text, completion: {
-                languageCode, _ in
-                result(languageCode)
-            })
+            guard let text = call.arguments as? String, !text.isEmpty else {
+                result(nil)
+                return
+            }
+            getLanguageIdentification().identifyLanguage(for: text) { languageCode, error in
+                result(error == nil ? languageCode : nil)
+            }
         case "identifyPossibleLanguages":
-            let text = call.arguments as! String
-            getLanguageIdentification().identifyPossibleLanguages(for: text, completion: {
-                languageCodes, _ in
-                if languageCodes != nil {
-                    result(languageCodes!.map {
-                        $0.data
-                    })
-                } else {
+            guard let text = call.arguments as? String, !text.isEmpty else {
+                result(nil)
+                return
+            }
+            getLanguageIdentification().identifyPossibleLanguages(for: text) { languageCodes, error in
+                guard error == nil, let languageCodes else {
                     result(nil)
+                    return
                 }
-            })
+                result(languageCodes.map { $0.data })
+            }
         case "setConfidence":
-            currentConfidence = Float(call.arguments as! Double)
+            guard let confidence = (call.arguments as? NSNumber)?.floatValue,
+                  confidence >= 0.01, confidence <= 1 else {
+                result(false)
+                return
+            }
+            currentConfidence = confidence
             dispose()
             result(true)
         case "getCurrentConfidence":
-            result(currentConfidence)
+            result(Double(currentConfidence))
         case "dispose":
             dispose()
             result(true)
@@ -47,16 +55,20 @@ public class FlMlKitIdentifyLanguagePlugin: NSObject, FlutterPlugin {
         }
     }
 
+    public func detachFromEngine(for registrar: FlutterPluginRegistrar) {
+        dispose()
+    }
+
     private func dispose() {
         options = nil
         languageIdentification = nil
     }
 
     private func getLanguageIdentification() -> LanguageIdentification {
-        if languageIdentification == nil {
-            languageIdentification = LanguageIdentification.languageIdentification(options: getOptions())
-        }
-        return languageIdentification!
+        if let languageIdentification { return languageIdentification }
+        let newIdentification = LanguageIdentification.languageIdentification(options: getOptions())
+        languageIdentification = newIdentification
+        return newIdentification
     }
 
     private func getOptions() -> LanguageIdentificationOptions {
@@ -69,9 +81,6 @@ public class FlMlKitIdentifyLanguagePlugin: NSObject, FlutterPlugin {
 
 extension IdentifiedLanguage {
     var data: [String: Any?] {
-        [
-            "languageTag": languageTag,
-            "confidence": confidence
-        ]
+        ["languageTag": languageTag, "confidence": Double(confidence)]
     }
 }
