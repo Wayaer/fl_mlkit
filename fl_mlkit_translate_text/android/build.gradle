@@ -1,37 +1,17 @@
+plugins {
+    id 'com.android.library'
+}
+
 group 'fl.mlkit.translate.text'
-version '1.0'
-
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-    }
-
-    dependencies {
-        classpath 'com.android.tools.build:gradle:8.5.2'
-    }
-}
-
-rootProject.allprojects {
-    repositories {
-        google()
-        mavenCentral()
-    }
-}
-
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
+version '2.0.0'
 
 android {
-    compileSdk = 34
-
-    if (project.android.hasProperty("namespace")) {
-        namespace 'fl.mlkit.translate.text'
-    }
+    namespace 'fl.mlkit.translate.text'
+    compileSdk = 36
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 
     sourceSets {
@@ -39,10 +19,17 @@ android {
     }
 
     defaultConfig {
-        minSdk = 16
+        // 与 fl_camera 保持一致
+        minSdk = 23
     }
+}
 
-    dependencies {
-        implementation 'com.google.mlkit:translate:17.0.3'
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
     }
+}
+
+dependencies {
+    implementation 'com.google.mlkit:translate:17.0.3'
 }
