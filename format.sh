@@ -1,19 +1,11 @@
-#fl_camera
-dart format fl_camera/lib
-dart format fl_camera/example/lib
+#!/usr/bin/env bash
 
-#fl_mlkit_identify_language
-dart format fl_mlkit_identify_language/lib
-dart format fl_mlkit_identify_language/example/lib
+# 格式化所有插件与示例的 Dart 代码。
+# 行宽等规则由各目录 analysis_options.yaml 中的 formatter.page_width 决定（当前为 120）。
+set -e
 
-#fl_mlkit_scanning
-dart format fl_mlkit_scanning/lib
-dart format fl_mlkit_scanning/example/lib
+cd "$(dirname "$0")"
 
-#fl_mlkit_text_recognize
-dart format fl_mlkit_text_recognize/lib
-dart format fl_mlkit_text_recognize/example/lib
-
-#fl_mlkit_translate_text
-dart format fl_mlkit_translate_text/lib
-dart format fl_mlkit_translate_text/example/lib
+for package in fl_camera fl_mlkit_identify_language fl_mlkit_scanning fl_mlkit_text_recognize fl_mlkit_translate_text; do
+  dart format "$package/lib" "$package/example/lib"
+done
